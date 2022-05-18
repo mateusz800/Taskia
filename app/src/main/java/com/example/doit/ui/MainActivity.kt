@@ -1,17 +1,11 @@
-package com.example.doit
+package com.example.doit.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.doit.ui.browseTasks.view.TaskList
-import com.example.doit.ui.taskForm.view.TaskFormViewModel
-import com.example.doit.ui.theme.DoItTheme
+import com.example.doit.MainView
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

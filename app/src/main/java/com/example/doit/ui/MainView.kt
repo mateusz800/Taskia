@@ -6,6 +6,9 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -22,8 +25,30 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainView(viewModel: MainViewModel) {
     val coroutineScope = rememberCoroutineScope()
+    val snackBarHostState = remember { SnackbarHostState() }
     val modalBottomSheetState =
         rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
+    val messageState = viewModel.message.observeAsState()
+    LaunchedEffect(messageState.value){
+        if(messageState.value != null){
+            coroutineScope.launch {
+                val message = messageState.value!!
+                val snackbarResult = snackBarHostState.showSnackbar(
+                    message = message.text,
+                    actionLabel = message.actionText,
+                    duration = SnackbarDuration.Long
+                )
+                when (snackbarResult) {
+                    SnackbarResult.ActionPerformed -> {
+                        message.actionFun.invoke()
+                    }
+                    SnackbarResult.Dismissed -> {}
+                }
+            }
+        }
+    }
+
+
     DoItTheme {
         // A surface container using the 'background' color from the theme
         Surface(
@@ -49,14 +74,17 @@ fun MainView(viewModel: MainViewModel) {
                     }) {
                         Icon(Icons.Filled.Add, "")
                     }
+                }, snackbarHost = {
+                    SnackbarHost(hostState = snackBarHostState)
                 }) {
                     TaskList(viewModel = hiltViewModel())
                 }
-
             }
+
         }
     }
 }
+
 
 @OptIn(ExperimentalMaterialApi::class)
 @Preview

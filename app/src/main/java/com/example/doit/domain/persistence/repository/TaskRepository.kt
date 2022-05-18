@@ -25,4 +25,8 @@ class TaskRepository(
     fun insertAll(vararg tasks: Task) {
         taskDao.insertAll(*tasks)
     }
+
+    fun remove(task: Task){
+        taskDao.delete(task)
+    }
 }
