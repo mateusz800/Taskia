@@ -7,10 +7,10 @@ import androidx.room.PrimaryKey
 @Entity
 data class Task(
     @PrimaryKey(autoGenerate = true)
-    val id: Int = 0 ,
-    val title: String,
-    val status: Boolean = false,
-    val description: String? = null,
-    val parentId: Int? = null,
-    val order: Int? = id
+    val id: Long = 0 ,
+    var title: String,
+    var status: Boolean = false,
+    var description: String? = null,
+    var parentId: Long? = null,
+    var order: Int? = id.toInt()
 )

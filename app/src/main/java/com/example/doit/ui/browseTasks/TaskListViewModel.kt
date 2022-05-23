@@ -1,10 +1,13 @@
 package com.example.doit.ui.browseTasks
 
+import android.annotation.SuppressLint
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.doit.domain.model.Message
+import com.example.doit.domain.model.MessageType
 import com.example.doit.domain.model.Task
 import com.example.doit.domain.persistence.repository.MessageRepository
 import com.example.doit.domain.persistence.repository.TaskRepository
@@ -12,8 +15,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.util.*
 import javax.inject.Inject
 import kotlin.collections.LinkedHashMap
 
@@ -22,8 +23,8 @@ class TaskListViewModel @Inject constructor(
     private val taskRepository: TaskRepository,
     private val messageRepository: MessageRepository
 ) : ViewModel() {
-    private val _tasks = MutableLiveData<LinkedHashMap<Task, List<Task>>>()
-    val tasks: LiveData<LinkedHashMap<Task, List<Task>>>
+    private val _tasks = MutableLiveData<SnapshotStateMap<Task, List<Task>>>()
+    val tasks: LiveData<SnapshotStateMap<Task, List<Task>>>
         get() = _tasks
     private var recentlyRemovedTask: Task? = null
 
@@ -36,11 +37,47 @@ class TaskListViewModel @Inject constructor(
         recentlyRemovedTask = task
         viewModelScope.launch(Dispatchers.IO) {
             taskRepository.remove(task)
-            messageRepository.insertMessage(Message(
-                text = "Task removed",
-                actionText = "undo",
-                actionFun = { restoreRemovedTask() }
-            ))
+            messageRepository.insertMessage(
+                Message(
+                    text = "Task removed",
+                    actionText = "undo",
+                    actionFun = { restoreRemovedTask() },
+                    type = MessageType.SNACKBAR
+                )
+            )
+        }
+    }
+
+    fun toggleTaskStatus(task: Task) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val subtasksList = _tasks.value?.get(task)
+            var newStatus = task.status
+            if (subtasksList.isNullOrEmpty()) {
+                newStatus = !task.status
+            } else {
+                val allSubtasksCompleted = subtasksList.stream().allMatch { task -> task.status }
+                if (allSubtasksCompleted || task.status) {
+                    newStatus = !task.status;
+                } else {
+                    messageRepository.insertMessage(
+                        Message(text = "You have some uncompleted tasks")
+                    )
+                }
+            }
+
+            if (newStatus != task.status) {
+                task.status = newStatus
+                taskRepository.update(task)
+                if (task.parentId != null && !newStatus) {
+                    val parentTask =
+                        _tasks.value!!
+                            .filter { (key, _) -> key.id == task.parentId }
+                            .keys
+                            .first()
+                    parentTask.status = false
+                    taskRepository.update(parentTask)
+                }
+            }
         }
     }
 
@@ -63,7 +100,7 @@ class TaskListViewModel @Inject constructor(
     private fun collectTasks() {
         viewModelScope.launch(Dispatchers.IO) {
             taskRepository.getAll().collect { result ->
-                val newTasksData = LinkedHashMap<Task, List<Task>>()
+                val newTasksData = SnapshotStateMap<Task, List<Task>>()
                 result.forEach {
                     newTasksData[it.task] = it.subtasks
                 }

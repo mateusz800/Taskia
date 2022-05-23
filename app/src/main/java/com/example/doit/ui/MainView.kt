@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.doit.domain.model.MessageType
 import com.example.doit.ui.MainViewModel
 import com.example.doit.ui.browseTasks.view.TaskList
 import com.example.doit.ui.taskForm.view.TaskForm
@@ -28,15 +29,17 @@ fun MainView(viewModel: MainViewModel) {
     val snackBarHostState = remember { SnackbarHostState() }
     val modalBottomSheetState =
         rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
+
+    // Handle displaying snackbar if any message
     val messageState = viewModel.message.observeAsState()
-    LaunchedEffect(messageState.value){
-        if(messageState.value != null){
+    LaunchedEffect(messageState.value) {
+        if (messageState.value != null) {
             coroutineScope.launch {
                 val message = messageState.value!!
                 val snackbarResult = snackBarHostState.showSnackbar(
                     message = message.text,
                     actionLabel = message.actionText,
-                    duration = SnackbarDuration.Long
+                    duration = if (message.type == MessageType.SNACKBAR) SnackbarDuration.Long else SnackbarDuration.Short
                 )
                 when (snackbarResult) {
                     SnackbarResult.ActionPerformed -> {
@@ -50,7 +53,6 @@ fun MainView(viewModel: MainViewModel) {
 
 
     DoItTheme {
-        // A surface container using the 'background' color from the theme
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colors.background
@@ -58,7 +60,9 @@ fun MainView(viewModel: MainViewModel) {
             ModalBottomSheetLayout(
                 sheetContent = {
                     TaskForm(hiltViewModel()) {
-                        coroutineScope.launch(Dispatchers.Main) { modalBottomSheetState.hide() }
+                        coroutineScope.launch(Dispatchers.Main) {
+                            modalBottomSheetState.hide()
+                        }
                     }
 
                 },

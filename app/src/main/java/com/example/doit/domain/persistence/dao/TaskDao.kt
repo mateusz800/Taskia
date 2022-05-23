@@ -8,14 +8,14 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface TaskDao {
     @Insert
-    fun insertAll(vararg tasks: Task)
+    fun insertAll(vararg tasks: Task):List<Long>
 
     @Update
-    fun updateUsers(vararg tasks: Task)
+    fun update(vararg tasks: Task)
 
     @Delete
     fun delete(task: Task)
 
-    @Query("SELECT * FROM Task  ")
+    @Query("SELECT * FROM Task WHERE parentId is null  ")
     fun getAll(): Flow<List<TaskAndSubtasks>>
 }

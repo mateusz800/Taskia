@@ -17,13 +17,16 @@ import kotlin.collections.LinkedHashMap
 
 @Composable
 fun TaskList(viewModel: TaskListViewModel) {
-       val coroutineScope = rememberCoroutineScope()
+    val coroutineScope = rememberCoroutineScope()
     val taskHashMap = viewModel.tasks.observeAsState()
     if (taskHashMap.value != null) {
         TaskList(
             taskMap = taskHashMap.value!!,
             onTaskRemove = { task ->
                 viewModel.removeTask(task)
+            },
+            toggleStatusFun = { task ->
+                viewModel.toggleTaskStatus(task)
             }
         )
 
@@ -31,13 +34,18 @@ fun TaskList(viewModel: TaskListViewModel) {
 }
 
 @Composable
-private fun TaskList(taskMap: Map<Task, List<Task>>, onTaskRemove: (task:Task) -> Unit) {
+private fun TaskList(
+    taskMap: Map<Task, List<Task>>,
+    onTaskRemove: (task: Task) -> Unit,
+    toggleStatusFun: (task: Task) -> Unit
+) {
     LazyColumn {
         items(taskMap.keys.toList()) { task ->
             TaskItem(
                 task = task,
                 subtasks = taskMap[task],
-                removeItemFunc = onTaskRemove
+                removeItemFunc = onTaskRemove,
+                toggleStatusFun = toggleStatusFun
             )
         }
     }
@@ -50,6 +58,10 @@ private fun TaskList_Preview() {
     taskMap[Task(id = 1, title = "First task")] = listOf(Task(title = "subtask", parentId = 1))
     taskMap[Task(id = 2, title = "Second task")] = listOf()
     MaterialTheme {
-        TaskList(taskMap = taskMap.toSortedMap(compareBy { it.order }), onTaskRemove = {})
+        TaskList(
+            taskMap = taskMap.toSortedMap(compareBy { it.order }),
+            onTaskRemove = {},
+            toggleStatusFun = {true}
+        )
     }
 }

@@ -5,12 +5,7 @@ import com.example.doit.domain.model.TaskAndSubtasks
 import com.example.doit.domain.persistence.dao.TaskDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.withContext
-import java.util.*
-import kotlin.collections.LinkedHashMap
 
 class TaskRepository(
     private val taskDao: TaskDao
@@ -22,11 +17,16 @@ class TaskRepository(
         }
     }
 
-    fun insertAll(vararg tasks: Task) {
-        taskDao.insertAll(*tasks)
+
+    fun insertAll(vararg tasks: Task):List<Long> {
+        return taskDao.insertAll(*tasks)
     }
 
     fun remove(task: Task){
         taskDao.delete(task)
+    }
+
+    fun update(task:Task){
+        taskDao.update(task)
     }
 }

@@ -19,7 +19,12 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun TaskItem(task: Task, subtasks: List<Task>?, removeItemFunc: (task: Task) -> Unit) {
+fun TaskItem(
+    task: Task,
+    subtasks: List<Task>?,
+    removeItemFunc: (task: Task) -> Unit,
+    toggleStatusFun: (task: Task) -> Unit
+) {
     val dismissState = rememberDismissState(confirmStateChange = {
         if (it == DismissValue.DismissedToEnd) {
             removeItemFunc(task)
@@ -36,7 +41,9 @@ fun TaskItem(task: Task, subtasks: List<Task>?, removeItemFunc: (task: Task) -> 
             )
 
         }) {
-            TaskGeneralInfo(task.status, task.title)
+            TaskGeneralInfo(task.status, task.title, onCheck = {
+                toggleStatusFun(task)
+            })
         }
         if (!subtasks.isNullOrEmpty()) {
             Column(
@@ -45,40 +52,57 @@ fun TaskItem(task: Task, subtasks: List<Task>?, removeItemFunc: (task: Task) -> 
                     .padding(start = 20.dp)
                     .padding(vertical = 10.dp)
             ) {
-                SubtasksList(subtasks = subtasks)
+                SubtasksList(
+                    subtasks = subtasks,
+                    removeItemFunc = removeItemFunc,
+                    toggleStatusFun = toggleStatusFun
+                )
             }
         }
     }
 }
 
 @Composable
-private fun TaskGeneralInfo(status: Boolean, title: String) {
+fun TaskGeneralInfo(status: Boolean, title: String, onCheck: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colors.background)
     ) {
-        CustomCheckbox(status)
+        CustomCheckbox(status) {
+            onCheck()
+        }
         Spacer(modifier = Modifier.width(20.dp))
         Text(text = title)
     }
 }
 
 @Composable
-private fun SubtasksList(subtasks: List<Task>) {
+private fun SubtasksList(
+    subtasks: List<Task>,
+    removeItemFunc: (Task) -> Unit,
+    toggleStatusFun: (Task) -> Unit
+) {
     Column {
         subtasks.forEach { subtask ->
-            TaskGeneralInfo(status = subtask.status, title = subtask.title)
+            TaskItem(
+                task = subtask,
+                subtasks = null,
+                removeItemFunc = { removeItemFunc(subtask) },
+                toggleStatusFun = { toggleStatusFun(subtask) }
+            )
+
         }
     }
 }
 
 @Composable
-private fun CustomCheckbox(status: Boolean) {
-    val checkedState = remember { mutableStateOf(status) }
+fun CustomCheckbox(status: Boolean, onCheck: () -> Unit) {
     Checkbox(
-        checked = checkedState.value,
-        onCheckedChange = { checkedState.value = it }
+        checked = status,
+        onCheckedChange = {
+            onCheck()
+        }
     )
 }
 
@@ -88,6 +112,11 @@ private fun TaskItem_Preview() {
     val task = Task(title = "Shopping")
     val subtasks = listOf(Task(title = "Bread"))
     MaterialTheme {
-        TaskItem(task = task, subtasks = subtasks, removeItemFunc = {})
+        TaskItem(
+            task = task,
+            subtasks = subtasks,
+            removeItemFunc = {},
+            toggleStatusFun = {}
+        )
     }
 }
