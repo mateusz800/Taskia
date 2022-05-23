@@ -22,6 +22,7 @@ import kotlin.streams.toList
 class TaskFormViewModel @Inject constructor(
     private val taskRepository: TaskRepository
 ) : ViewModel() {
+    private var _task: Task? = null
     private val _title = MutableStateFlow("")
     val title: StateFlow<String>
         get() = _title
@@ -34,19 +35,43 @@ class TaskFormViewModel @Inject constructor(
 
     fun saveTask() {
         //TODO data verification
-        val task = Task(title = title.value)
+        val task: Task = if (_task == null) {
+            Task(title = title.value)
+        } else {
+            _task!!
+        }
         val subtaskList = subtasks.parallelStream()
             .filter { it.title.isNotEmpty() }
             .toList()
         viewModelScope.launch(Dispatchers.IO) {
-            val parentId = taskRepository.insertAll(task)[0]
+            val parentId =
+                if (task.id == 0L) {
+                    taskRepository.insertAll(task)[0]
+                } else {
+                    task.id
+                }
             subtaskList.forEach {
                 val subtask = it
                 subtask.parentId = parentId
+                if (subtask.id == 0L) {
+                    taskRepository.insertAll(subtask)
+                } else {
+                    taskRepository.update(subtask)
+                }
             }
-            taskRepository.insertAll(*subtaskList.toTypedArray())
         }
         clear()
+    }
+
+    fun setTask(task: Task) {
+        _task = task
+        _title.value = task.title
+        viewModelScope.launch(Dispatchers.IO) {
+            subtasks.clear()
+            val temp = taskRepository.getSubtasks(task)
+            subtasks.addAll(temp)
+        }
+
     }
 
     fun addNewSubtask() {
@@ -58,7 +83,8 @@ class TaskFormViewModel @Inject constructor(
             subtasks[subtasks.indexOf(subtask)].copy(title = newTitle)
     }
 
-    private fun clear() {
+    fun clear() {
+        _task = null
         _title.value = ""
         subtasks.clear()
     }

@@ -1,4 +1,4 @@
-package com.example.doit
+package com.example.doit.ui
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,8 +15,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.doit.domain.model.MessageType
-import com.example.doit.ui.MainViewModel
 import com.example.doit.ui.browseTasks.view.TaskList
+import com.example.doit.ui.taskForm.TaskFormViewModel
 import com.example.doit.ui.taskForm.view.TaskForm
 import com.example.doit.ui.theme.DoItTheme
 import kotlinx.coroutines.Dispatchers
@@ -29,17 +29,17 @@ fun MainView(viewModel: MainViewModel) {
     val snackBarHostState = remember { SnackbarHostState() }
     val modalBottomSheetState =
         rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
-
+    val taskFormViewModel:TaskFormViewModel = hiltViewModel()
     // Handle displaying snackbar if any message
     val messageState = viewModel.message.observeAsState()
-    LaunchedEffect(messageState.value) {
+    LaunchedEffect(messageState.value, modalBottomSheetState) {
         if (messageState.value != null) {
             coroutineScope.launch {
                 val message = messageState.value!!
                 val snackbarResult = snackBarHostState.showSnackbar(
                     message = message.text,
                     actionLabel = message.actionText,
-                    duration = if (message.type == MessageType.SNACKBAR) SnackbarDuration.Long else SnackbarDuration.Short
+                    duration = if (message.type == MessageType.SNACKBAR) SnackbarDuration.Short else SnackbarDuration.Short
                 )
                 when (snackbarResult) {
                     SnackbarResult.ActionPerformed -> {
@@ -47,6 +47,7 @@ fun MainView(viewModel: MainViewModel) {
                     }
                     SnackbarResult.Dismissed -> {}
                 }
+                viewModel.clearMessage()
             }
         }
     }
@@ -59,7 +60,7 @@ fun MainView(viewModel: MainViewModel) {
         ) {
             ModalBottomSheetLayout(
                 sheetContent = {
-                    TaskForm(hiltViewModel()) {
+                    TaskForm(taskFormViewModel) {
                         coroutineScope.launch(Dispatchers.Main) {
                             modalBottomSheetState.hide()
                         }
@@ -73,6 +74,7 @@ fun MainView(viewModel: MainViewModel) {
                 Scaffold(floatingActionButton = {
                     FloatingActionButton(onClick = {
                         coroutineScope.launch(Dispatchers.Main) {
+                            taskFormViewModel.clear()
                             modalBottomSheetState.show()
                         }
                     }) {
@@ -81,7 +83,16 @@ fun MainView(viewModel: MainViewModel) {
                 }, snackbarHost = {
                     SnackbarHost(hostState = snackBarHostState)
                 }) {
-                    TaskList(viewModel = hiltViewModel())
+                    TaskList(
+                        viewModel = hiltViewModel(),
+                        showTaskForm = { task ->
+                            coroutineScope.launch(Dispatchers.Main) {
+                                taskFormViewModel.setTask(task)
+                                modalBottomSheetState.show()
+                            }
+
+                        }
+                    )
                 }
             }
 

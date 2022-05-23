@@ -1,6 +1,7 @@
 package com.example.doit.ui.browseTasks.view
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -23,7 +24,8 @@ fun TaskItem(
     task: Task,
     subtasks: List<Task>?,
     removeItemFunc: (task: Task) -> Unit,
-    toggleStatusFun: (task: Task) -> Unit
+    toggleStatusFun: (task: Task) -> Unit,
+    onClick: (task: Task) -> Unit
 ) {
     val dismissState = rememberDismissState(confirmStateChange = {
         if (it == DismissValue.DismissedToEnd) {
@@ -41,9 +43,17 @@ fun TaskItem(
             )
 
         }) {
-            TaskGeneralInfo(task.status, task.title, onCheck = {
-                toggleStatusFun(task)
-            })
+
+            TaskGeneralInfo(
+                task.status,
+                task.title,
+                onCheck = {
+                    toggleStatusFun(task)
+                },
+                onClick = {
+                    onClick(task)
+                }
+            )
         }
         if (!subtasks.isNullOrEmpty()) {
             Column(
@@ -63,7 +73,12 @@ fun TaskItem(
 }
 
 @Composable
-fun TaskGeneralInfo(status: Boolean, title: String, onCheck: () -> Unit) {
+fun TaskGeneralInfo(
+    status: Boolean,
+    title: String,
+    onCheck: () -> Unit,
+    onClick: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -73,7 +88,7 @@ fun TaskGeneralInfo(status: Boolean, title: String, onCheck: () -> Unit) {
             onCheck()
         }
         Spacer(modifier = Modifier.width(20.dp))
-        Text(text = title)
+        Text(text = title, modifier = Modifier.clickable { onClick() })
     }
 }
 
@@ -89,7 +104,8 @@ private fun SubtasksList(
                 task = subtask,
                 subtasks = null,
                 removeItemFunc = { removeItemFunc(subtask) },
-                toggleStatusFun = { toggleStatusFun(subtask) }
+                toggleStatusFun = { toggleStatusFun(subtask) },
+                onClick = {/* do nothing */ }
             )
 
         }
@@ -116,7 +132,8 @@ private fun TaskItem_Preview() {
             task = task,
             subtasks = subtasks,
             removeItemFunc = {},
-            toggleStatusFun = {}
+            toggleStatusFun = {},
+            onClick = {}
         )
     }
 }

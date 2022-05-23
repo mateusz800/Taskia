@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface TaskDao {
     @Insert
-    fun insertAll(vararg tasks: Task):List<Long>
+    fun insertAll(vararg tasks: Task): List<Long>
 
     @Update
     fun update(vararg tasks: Task)
@@ -18,4 +18,7 @@ interface TaskDao {
 
     @Query("SELECT * FROM Task WHERE parentId is null  ")
     fun getAll(): Flow<List<TaskAndSubtasks>>
+
+    @Query("SELECT * FROM Task WHERE parentId=:parentId")
+    fun getSubtasks(parentId: Long): List<Task>
 }

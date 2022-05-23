@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.*
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.doit.MainView
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

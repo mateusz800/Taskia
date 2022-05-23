@@ -16,7 +16,10 @@ import kotlin.collections.HashMap
 import kotlin.collections.LinkedHashMap
 
 @Composable
-fun TaskList(viewModel: TaskListViewModel) {
+fun TaskList(
+    viewModel: TaskListViewModel,
+    showTaskForm: (Task) -> Unit
+) {
     val coroutineScope = rememberCoroutineScope()
     val taskHashMap = viewModel.tasks.observeAsState()
     if (taskHashMap.value != null) {
@@ -27,7 +30,8 @@ fun TaskList(viewModel: TaskListViewModel) {
             },
             toggleStatusFun = { task ->
                 viewModel.toggleTaskStatus(task)
-            }
+            },
+            onItemClick = showTaskForm
         )
 
     }
@@ -37,7 +41,8 @@ fun TaskList(viewModel: TaskListViewModel) {
 private fun TaskList(
     taskMap: Map<Task, List<Task>>,
     onTaskRemove: (task: Task) -> Unit,
-    toggleStatusFun: (task: Task) -> Unit
+    toggleStatusFun: (task: Task) -> Unit,
+    onItemClick: (task: Task) -> Unit
 ) {
     LazyColumn {
         items(taskMap.keys.toList()) { task ->
@@ -45,7 +50,8 @@ private fun TaskList(
                 task = task,
                 subtasks = taskMap[task],
                 removeItemFunc = onTaskRemove,
-                toggleStatusFun = toggleStatusFun
+                toggleStatusFun = toggleStatusFun,
+                onClick = { onItemClick(task) }
             )
         }
     }
@@ -61,7 +67,8 @@ private fun TaskList_Preview() {
         TaskList(
             taskMap = taskMap.toSortedMap(compareBy { it.order }),
             onTaskRemove = {},
-            toggleStatusFun = {true}
+            toggleStatusFun = {},
+            onItemClick = {}
         )
     }
 }

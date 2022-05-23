@@ -17,16 +17,21 @@ class TaskRepository(
         }
     }
 
+    fun getSubtasks(task: Task): List<Task> {
+        return taskDao.getSubtasks(task.id)
 
-    fun insertAll(vararg tasks: Task):List<Long> {
+    }
+
+
+    fun insertAll(vararg tasks: Task): List<Long> {
         return taskDao.insertAll(*tasks)
     }
 
-    fun remove(task: Task){
+    fun remove(task: Task) {
         taskDao.delete(task)
     }
 
-    fun update(task:Task){
+    fun update(task: Task) {
         taskDao.update(task)
     }
 }

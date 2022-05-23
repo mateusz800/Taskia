@@ -30,6 +30,10 @@ class MainViewModel @Inject constructor(
         collectData()
     }
 
+    fun clearMessage(){
+        _message.postValue(null)
+    }
+
     private fun collectData(){
         viewModelScope.launch(Dispatchers.IO) {
             messageRepository.getAll().collect {
