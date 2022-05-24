@@ -1,7 +1,6 @@
 package com.example.doit.ui.taskList
 
 import android.content.res.Resources
-import android.provider.Settings.Global.getString
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.LiveData
@@ -9,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.doit.R
+import com.example.doit.domain.ResourcesProvider
 import com.example.doit.domain.model.Message
 import com.example.doit.domain.model.MessageType
 import com.example.doit.domain.model.Task
@@ -23,7 +23,8 @@ import javax.inject.Inject
 @HiltViewModel
 class TaskListViewModel @Inject constructor(
     private val taskRepository: TaskRepository,
-    private val messageRepository: MessageRepository
+    private val messageRepository: MessageRepository,
+    private val resourcesProvider: ResourcesProvider
 ) : ViewModel() {
     private val _tasks = MutableLiveData<SnapshotStateMap<Task, List<Task>>>()
     val tasks: LiveData<SnapshotStateMap<Task, List<Task>>>
@@ -41,8 +42,8 @@ class TaskListViewModel @Inject constructor(
             if (taskRepository.remove(task)) {
                 messageRepository.insertMessage(
                     Message(
-                        text = Resources.getSystem().getString(R.string.task_removed),
-                        actionText = Resources.getSystem().getString(R.string.undo),
+                        text = resourcesProvider.getString(R.string.task_removed),
+                        actionText = resourcesProvider.getString(R.string.undo),
                         actionFun = { restoreRemovedTask() },
                         type = MessageType.SNACKBAR
                     )
@@ -70,7 +71,7 @@ class TaskListViewModel @Inject constructor(
                     newStatus = !task.status;
                 } else {
                     messageRepository.insertMessage(
-                        Message(text = Resources.getSystem().getString(R.string.uncompleted_tasks))
+                        Message(text = resourcesProvider.getString(R.string.uncompleted_tasks))
                     )
                 }
             }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -79,7 +80,9 @@ fun TaskGeneralInfo(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colors.background)
+            .height(30.dp)
+            .background(MaterialTheme.colors.background),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         CustomCheckbox(status) {
             onCheck()
