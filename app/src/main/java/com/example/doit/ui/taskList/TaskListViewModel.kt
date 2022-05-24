@@ -1,11 +1,14 @@
-package com.example.doit.ui.browseTasks
+package com.example.doit.ui.taskList
 
-import android.annotation.SuppressLint
+import android.content.res.Resources
+import android.provider.Settings.Global.getString
 import androidx.compose.runtime.snapshots.SnapshotStateMap
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.doit.R
 import com.example.doit.domain.model.Message
 import com.example.doit.domain.model.MessageType
 import com.example.doit.domain.model.Task
@@ -16,7 +19,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.collections.LinkedHashMap
 
 @HiltViewModel
 class TaskListViewModel @Inject constructor(
@@ -29,22 +31,22 @@ class TaskListViewModel @Inject constructor(
     private var recentlyRemovedTask: Task? = null
 
     init {
-        //initSampleData()
         collectTasks()
     }
 
     fun removeTask(task: Task) {
         recentlyRemovedTask = task
         viewModelScope.launch(Dispatchers.IO) {
-            taskRepository.remove(task)
-            messageRepository.insertMessage(
-                Message(
-                    text = "Task removed",
-                    actionText = "undo",
-                    actionFun = { restoreRemovedTask() },
-                    type = MessageType.SNACKBAR
+            if (taskRepository.remove(task)) {
+                messageRepository.insertMessage(
+                    Message(
+                        text = Resources.getSystem().getString(R.string.task_removed),
+                        actionText = Resources.getSystem().getString(R.string.undo),
+                        actionFun = { restoreRemovedTask() },
+                        type = MessageType.SNACKBAR
+                    )
                 )
-            )
+            }
         }
     }
 
@@ -60,7 +62,7 @@ class TaskListViewModel @Inject constructor(
                     newStatus = !task.status;
                 } else {
                     messageRepository.insertMessage(
-                        Message(text = "You have some uncompleted tasks")
+                        Message(text = Resources.getSystem().getString(R.string.uncompleted_tasks))
                     )
                 }
             }
@@ -68,13 +70,22 @@ class TaskListViewModel @Inject constructor(
             if (newStatus != task.status) {
                 task.status = newStatus
                 taskRepository.update(task)
-                if (task.parentId != null && !newStatus) {
+                if (task.parentId != null) {
                     val parentTask =
                         _tasks.value!!
                             .filter { (key, _) -> key.id == task.parentId }
                             .keys
                             .first()
-                    parentTask.status = false
+                    if(!newStatus) {
+                        parentTask.status = false
+                    } else{
+                        // check if all subtasks completed
+                        // if yes complete task
+                        val allSubtasks = taskRepository.getSubtasks(parentTask)
+                        if(allSubtasks.stream().allMatch{task -> task.status}){
+                            parentTask.status = true
+                        }
+                    }
                     taskRepository.update(parentTask)
                 }
             }
@@ -89,13 +100,6 @@ class TaskListViewModel @Inject constructor(
         }
     }
 
-    private fun initSampleData() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val parent = Task(id = 1, title = "Shopping")
-            val children = Task(title = "bread", parentId = 1)
-            taskRepository.insertAll(parent, children)
-        }
-    }
 
     private fun collectTasks() {
         viewModelScope.launch(Dispatchers.IO) {

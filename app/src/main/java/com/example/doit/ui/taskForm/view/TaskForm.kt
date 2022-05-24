@@ -1,22 +1,22 @@
 package com.example.doit.ui.taskForm.view
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.LiveData
+import androidx.compose.ui.unit.sp
+import com.example.doit.R
 import com.example.doit.domain.model.Task
-import com.example.doit.ui.browseTasks.view.TaskItem
 import com.example.doit.ui.taskForm.TaskFormViewModel
 
 @Composable
@@ -45,17 +45,51 @@ private fun TaskForm(
     addNewSubtaskFun: () -> Unit,
     saveFun: () -> Unit
 ) {
-    Column(modifier = Modifier.padding(20.dp)) {
-        TextField(value = title, onValueChange = { onTitleChanged(it) })
+    val configuration = LocalConfiguration.current
+
+    Column(
+        modifier = Modifier
+            .padding(20.dp)
+            .fillMaxSize()
+    ) {
+        TitleTextField(value = title, onValueChanged = onTitleChanged)
         Subtasks(
             subtasks = subtasks,
             addNewFun = addNewSubtaskFun,
             onTitleChanged = updateSubtaskTitle
         )
-        SaveButton {
-            saveFun()
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 20.dp)
+        ) {
+            SaveButton {
+                saveFun()
+            }
         }
+
+
     }
+}
+
+@Composable
+private fun TitleTextField(value: String, onValueChanged: (String) -> Unit) {
+    TextField(
+        value = value,
+        onValueChange = onValueChanged,
+        singleLine = true,
+        textStyle = TextStyle(
+            fontWeight = FontWeight.Bold,
+            fontSize = 20.sp
+        ),
+        colors = TextFieldDefaults.textFieldColors(
+            backgroundColor = Color.Transparent
+        ),
+        modifier = Modifier
+            .fillMaxWidth(),
+        placeholder = { Text(stringResource(id = R.string.task_name)) }
+    )
 }
 
 @Composable

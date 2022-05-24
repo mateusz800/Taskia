@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">DoIt</string>
+    <string name="task_name">Task name</string>
+    <string name="add_subtask">Add new subtask</string>
+    <string name="subtasks">Subtasks</string>
+    <string name="no_tasks">No tasks!</string>
+    <string name="click_to_add">Click \"+\" button to add a new one</string>
+    <string name="uncompleted_tasks">You have some uncompleted tasks</string>
+    <string name="task_removed">Task removed</string>
+    <string name="undo">undo</string>
 </resources>
