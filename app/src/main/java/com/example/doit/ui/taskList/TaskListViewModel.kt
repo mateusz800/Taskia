@@ -37,6 +37,7 @@ class TaskListViewModel @Inject constructor(
     fun removeTask(task: Task) {
         recentlyRemovedTask = task
         viewModelScope.launch(Dispatchers.IO) {
+            val parentTaskId = task.parentId
             if (taskRepository.remove(task)) {
                 messageRepository.insertMessage(
                     Message(
@@ -47,6 +48,13 @@ class TaskListViewModel @Inject constructor(
                     )
                 )
             }
+            if (parentTaskId != null) {
+                val parentTask = taskRepository.getById(parentTaskId)
+                if (parentTask != null) {
+                    checkIfCompleted(parentTask)
+                }
+            }
+
         }
     }
 
@@ -76,20 +84,22 @@ class TaskListViewModel @Inject constructor(
                             .filter { (key, _) -> key.id == task.parentId }
                             .keys
                             .first()
-                    if(!newStatus) {
+                    if (!newStatus) {
                         parentTask.status = false
-                    } else{
-                        // check if all subtasks completed
-                        // if yes complete task
-                        val allSubtasks = taskRepository.getSubtasks(parentTask)
-                        if(allSubtasks.stream().allMatch{task -> task.status}){
-                            parentTask.status = true
-                        }
+                        taskRepository.update(parentTask)
+                    } else {
+                        checkIfCompleted(parentTask)
                     }
-                    taskRepository.update(parentTask)
+
                 }
             }
         }
+    }
+
+    private fun checkIfCompleted(task: Task) {
+        val allSubtasks = taskRepository.getSubtasks(task)
+        task.status = allSubtasks.stream().allMatch { t -> t.status }
+        taskRepository.update(task)
     }
 
     private fun restoreRemovedTask() {

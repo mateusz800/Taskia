@@ -14,10 +14,13 @@ interface TaskDao {
     fun update(vararg tasks: Task)
 
     @Delete
-    fun delete(task: Task):Int
+    fun delete(task: Task): Int
 
     @Query("SELECT * FROM Task WHERE parentId is null  ")
     fun getAll(): Flow<List<TaskAndSubtasks>>
+
+    @Query("SELECT * FROM TASK WHERE id=:id")
+    fun getById(id: Long): Task?
 
     @Query("SELECT * FROM Task WHERE parentId=:parentId")
     fun getSubtasks(parentId: Long): List<Task>

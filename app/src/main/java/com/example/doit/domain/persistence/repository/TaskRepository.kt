@@ -17,6 +17,10 @@ class TaskRepository(
         }
     }
 
+    fun getById(id:Long):Task?{
+        return taskDao.getById(id)
+    }
+
     fun getSubtasks(task: Task): List<Task> {
         return taskDao.getSubtasks(task.id)
 

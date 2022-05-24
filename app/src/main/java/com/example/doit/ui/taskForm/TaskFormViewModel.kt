@@ -38,7 +38,7 @@ class TaskFormViewModel @Inject constructor(
         val task: Task = if (_task == null) {
             Task(title = title.value)
         } else {
-            _task!!
+            _task!!.copy(title = title.value)
         }
         val subtaskList = subtasks.parallelStream()
             .filter { it.title.isNotEmpty() }
@@ -54,11 +54,14 @@ class TaskFormViewModel @Inject constructor(
                 val subtask = it
                 subtask.parentId = parentId
                 if (subtask.id == 0L) {
+                    task.status = false
                     taskRepository.insertAll(subtask)
                 } else {
                     taskRepository.update(subtask)
                 }
             }
+            taskRepository.update(task)
+
         }
         clear()
     }

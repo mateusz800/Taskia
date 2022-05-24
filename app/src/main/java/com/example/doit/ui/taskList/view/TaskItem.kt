@@ -5,10 +5,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.doit.domain.model.Task
@@ -83,7 +85,11 @@ fun TaskGeneralInfo(
             onCheck()
         }
         Spacer(modifier = Modifier.width(20.dp))
-        Text(text = title, modifier = Modifier.clickable { onClick() })
+        Text(
+            text = title,
+            modifier = Modifier.clickable { onClick() },
+            textDecoration = if (status) TextDecoration.LineThrough else TextDecoration.None
+        )
     }
 }
 
@@ -95,14 +101,15 @@ private fun SubtasksList(
 ) {
     Column {
         subtasks.forEach { subtask ->
-            TaskItem(
-                task = subtask,
-                subtasks = null,
-                removeItemFunc = { removeItemFunc(subtask) },
-                toggleStatusFun = { toggleStatusFun(subtask) },
-                onClick = {/* do nothing */ }
-            )
-
+            key(subtask.id) {
+                TaskItem(
+                    task = subtask,
+                    subtasks = null,
+                    removeItemFunc = { removeItemFunc(subtask) },
+                    toggleStatusFun = { toggleStatusFun(subtask) },
+                    onClick = {/* do nothing */ }
+                )
+            }
         }
     }
 }
