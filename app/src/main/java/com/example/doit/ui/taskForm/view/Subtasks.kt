@@ -37,6 +37,7 @@ fun Subtasks(
                 SubtaskInput(
                     task = task,
                     onTitleChanged = onTitleChanged,
+                    onEnter = addNewFun,
                     focus = (index == subtasks.size - 1 && task.title.isEmpty())
                 )
             }
@@ -52,11 +53,12 @@ fun Subtasks(
 private fun SubtaskInput(
     task: Task,
     onTitleChanged: (Task, String) -> Unit,
+    onEnter: () -> Unit,
     focus: Boolean = false
 ) {
     val focusRequester = FocusRequester()
-    LaunchedEffect(focus){
-        if(focus){
+    LaunchedEffect(focus) {
+        if (focus) {
             focusRequester.requestFocus()
         }
     }
@@ -71,6 +73,7 @@ private fun SubtaskInput(
             value = task.title,
             onValueChange = { onTitleChanged(task, it) },
             fontSize = 14.sp,
+            onEnter = onEnter,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(30.dp)

@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.lang.IndexOutOfBoundsException
 import javax.inject.Inject
 import kotlin.streams.toList
 
@@ -34,8 +35,8 @@ class TaskFormViewModel @Inject constructor(
         _title.value = title
     }
 
-    fun verifyData():Boolean{
-        if(_title.value.isNullOrEmpty()){
+    fun verifyData(): Boolean {
+        if (_title.value.isNullOrEmpty()) {
             return false
         }
         return true
@@ -85,12 +86,18 @@ class TaskFormViewModel @Inject constructor(
     }
 
     fun addNewSubtask() {
-        subtasks.add(Task(title = ""))
+        if (subtasks.isEmpty() || subtasks.last().title.isNotBlank()) {
+            subtasks.add(Task(title = ""))
+        }
     }
 
     fun updateSubtaskTitle(subtask: Task, newTitle: String) {
-        subtasks[subtasks.indexOf(subtask)] =
-            subtasks[subtasks.indexOf(subtask)].copy(title = newTitle)
+        try {
+            subtasks[subtasks.indexOf(subtask)] =
+                subtasks[subtasks.indexOf(subtask)].copy(title = newTitle)
+        } catch (e:IndexOutOfBoundsException){
+            e.printStackTrace()
+        }
     }
 
     fun clear() {
