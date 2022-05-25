@@ -36,8 +36,8 @@ class TaskListViewModel @Inject constructor(
     }
 
     fun removeTask(task: Task) {
-        recentlyRemovedTask = task
         viewModelScope.launch(Dispatchers.IO) {
+            recentlyRemovedTask = taskRepository.getById(task.id)
             val parentTaskId = task.parentId
             if (taskRepository.remove(task)) {
                 messageRepository.insertMessage(
@@ -107,6 +107,8 @@ class TaskListViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             if (recentlyRemovedTask != null) {
                 taskRepository.insertAll(recentlyRemovedTask!!)
+                _tasks.value?.keys?.filter { it.id == recentlyRemovedTask!!.parentId }?.get(0)
+                    ?.let { checkIfCompleted(it) }
             }
         }
     }

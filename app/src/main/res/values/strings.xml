@@ -8,4 +8,5 @@
     <string name="uncompleted_tasks">You have some uncompleted tasks</string>
     <string name="task_removed">Task removed</string>
     <string name="undo">undo</string>
+    <string name="new_subtask">New subtask</string>
 </resources>

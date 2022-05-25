@@ -3,12 +3,17 @@ package com.example.doit.ui.taskForm.view
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -22,16 +27,21 @@ import com.example.doit.ui.taskForm.TaskFormViewModel
 @Composable
 fun TaskForm(viewModel: TaskFormViewModel, closeFunc: () -> Unit) {
     val title by viewModel.title.collectAsState()
+    val isVisible = viewModel.isVisible.collectAsState()
     val subtasks = viewModel.subtasks
 
-    TaskForm(title = title,
+    TaskForm(
+        isVisible = isVisible.value,
+        title = title,
         subtasks = subtasks,
         onTitleChanged = viewModel::onTitleChanged,
         updateSubtaskTitle = viewModel::updateSubtaskTitle,
         addNewSubtaskFun = viewModel::addNewSubtask,
         saveFun = {
-            viewModel.saveTask()
-            closeFunc()
+            if (viewModel.verifyData()) {
+                viewModel.saveTask()
+                closeFunc()
+            }
         }
     )
 }
@@ -43,16 +53,19 @@ private fun TaskForm(
     onTitleChanged: (String) -> Unit,
     updateSubtaskTitle: (Task, String) -> Unit,
     addNewSubtaskFun: () -> Unit,
-    saveFun: () -> Unit
+    saveFun: () -> Unit,
+    isVisible: Boolean = false
 ) {
-    val configuration = LocalConfiguration.current
-
     Column(
         modifier = Modifier
             .padding(20.dp)
             .fillMaxSize()
     ) {
-        TitleTextField(value = title, onValueChanged = onTitleChanged)
+        TitleTextField(
+            value = title,
+            onValueChanged = onTitleChanged,
+            isVisible = isVisible
+        )
         Subtasks(
             subtasks = subtasks,
             addNewFun = addNewSubtaskFun,
@@ -73,8 +86,21 @@ private fun TaskForm(
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-private fun TitleTextField(value: String, onValueChanged: (String) -> Unit) {
+private fun TitleTextField(
+    value: String,
+    onValueChanged: (String) -> Unit,
+    isVisible: Boolean = true
+) {
+    val focusRequester = FocusRequester()
+    val keyboardController = LocalSoftwareKeyboardController.current
+    LaunchedEffect(isVisible) {
+        if (isVisible && value.isEmpty()) {
+            focusRequester.requestFocus()
+            keyboardController?.show()
+        }
+    }
     TextField(
         value = value,
         onValueChange = onValueChanged,
@@ -87,8 +113,10 @@ private fun TitleTextField(value: String, onValueChanged: (String) -> Unit) {
             backgroundColor = Color.Transparent
         ),
         modifier = Modifier
-            .fillMaxWidth(),
-        placeholder = { Text(stringResource(id = R.string.task_name)) }
+            .fillMaxWidth()
+            .focusRequester(focusRequester),
+        placeholder = { Text(stringResource(id = R.string.task_name)) },
+        isError = value.isEmpty(),
     )
 }
 

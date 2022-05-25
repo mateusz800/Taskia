@@ -16,7 +16,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.TextUnit
+import com.example.doit.R
 
 
 @Composable
@@ -26,7 +28,7 @@ fun CustomTextField(
     modifier: Modifier = Modifier,
     leadingIcon: (@Composable () -> Unit)? = null,
     trailingIcon: (@Composable () -> Unit)? = null,
-    placeholderText: String = "Placeholder",
+    placeholderText: String = stringResource(id = R.string.new_subtask),
     fontSize: TextUnit = MaterialTheme.typography.body2.fontSize,
 ) {
     var text by rememberSaveable { mutableStateOf(value) }

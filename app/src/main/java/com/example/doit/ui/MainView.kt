@@ -1,5 +1,6 @@
 package com.example.doit.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -65,11 +66,20 @@ fun MainView(viewModel: MainViewModel) {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colors.background
         ) {
+            BackHandler {
+                if(modalBottomSheetState.isVisible){
+                    coroutineScope.launch(Dispatchers.Main){
+                        modalBottomSheetState.hide()
+                    }
+                    taskFormViewModel.isVisible.value = false
+                }
+            }
             ModalBottomSheetLayout(
                 sheetContent = {
                     Column(Modifier.requiredHeight((configuration.screenHeightDp - 50).dp)) {
                         TaskForm(taskFormViewModel) {
                             coroutineScope.launch(Dispatchers.Main) {
+                                taskFormViewModel.isVisible.value = false
                                 modalBottomSheetState.hide()
                             }
                         }
@@ -83,6 +93,7 @@ fun MainView(viewModel: MainViewModel) {
                     FloatingActionButton(onClick = {
                         coroutineScope.launch(Dispatchers.Main) {
                             taskFormViewModel.clear()
+                            taskFormViewModel.isVisible.value = true
                             modalBottomSheetState.animateTo(ModalBottomSheetValue.Expanded)
                         }
                     }) {
@@ -96,6 +107,7 @@ fun MainView(viewModel: MainViewModel) {
                         showTaskForm = { task ->
                             coroutineScope.launch(Dispatchers.Main) {
                                 taskFormViewModel.setTask(task)
+                                taskFormViewModel.isVisible.value = true
                                 modalBottomSheetState.animateTo(ModalBottomSheetValue.Expanded)
                             }
 

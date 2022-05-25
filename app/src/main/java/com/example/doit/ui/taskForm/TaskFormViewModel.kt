@@ -22,6 +22,7 @@ import kotlin.streams.toList
 class TaskFormViewModel @Inject constructor(
     private val taskRepository: TaskRepository
 ) : ViewModel() {
+    var isVisible = MutableStateFlow(false)
     private var _task: Task? = null
     private val _title = MutableStateFlow("")
     val title: StateFlow<String>
@@ -33,8 +34,14 @@ class TaskFormViewModel @Inject constructor(
         _title.value = title
     }
 
+    fun verifyData():Boolean{
+        if(_title.value.isNullOrEmpty()){
+            return false
+        }
+        return true
+    }
+
     fun saveTask() {
-        //TODO data verification
         val task: Task = if (_task == null) {
             Task(title = title.value)
         } else {
