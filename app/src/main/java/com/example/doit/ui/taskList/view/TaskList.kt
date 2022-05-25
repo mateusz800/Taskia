@@ -45,13 +45,15 @@ fun TaskList(
                 },
                 onItemClick = showTaskForm
             )
-        } else {
+        } else if (taskMap.value?.isEmpty() == true) {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier.fillMaxSize()
             ) {
                 NoTasks()
             }
+        } else {
+            // TODO : loading animation
         }
     }
 }
