@@ -9,4 +9,9 @@
     <string name="task_removed">Task removed</string>
     <string name="undo">undo</string>
     <string name="new_subtask">New subtask</string>
+    <string name="menu_more">More menu</string>
+    <string name="remove_completed">Remove all completed tasks</string>
+    <string name="remove_all">Remove all tasks</string>
+    <string name="share_app">Share app</string>
+    <string name="menu">Menu</string>
 </resources>

@@ -6,18 +6,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.doit.domain.model.MessageType
+import com.example.doit.ui.common.Drawer
+import com.example.doit.ui.common.TopBar
 import com.example.doit.ui.taskList.view.TaskList
 import com.example.doit.ui.taskForm.TaskFormViewModel
 import com.example.doit.ui.taskForm.view.TaskForm
@@ -25,26 +26,34 @@ import com.example.doit.ui.theme.DoItTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalComposeUiApi::class)
 @ExperimentalMaterialApi
 @Composable
 fun MainView(viewModel: MainViewModel) {
     val coroutineScope = rememberCoroutineScope()
-    val snackBarHostState = remember { SnackbarHostState() }
+    val scaffoldState = rememberScaffoldState()
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val taskFormViewModel: TaskFormViewModel = hiltViewModel()
     val modalBottomSheetState =
         rememberModalBottomSheetState(
             initialValue = ModalBottomSheetValue.Hidden,
             confirmStateChange = {
+                if (it == ModalBottomSheetValue.Hidden) {
+                    keyboardController?.hide()
+                    taskFormViewModel.isVisible.value = false
+                }
                 it != ModalBottomSheetValue.HalfExpanded
             })
-    val taskFormViewModel: TaskFormViewModel = hiltViewModel()
+
     // Handle displaying snackbar if any message
     val messageState = viewModel.message.observeAsState()
-    LaunchedEffect(messageState.value, modalBottomSheetState) {
+    LaunchedEffect(messageState.value) {
         if (messageState.value != null) {
             coroutineScope.launch {
-                snackBarHostState.currentSnackbarData?.dismiss()
+
+                scaffoldState.snackbarHostState.currentSnackbarData?.dismiss()
                 val message = messageState.value!!
-                val snackbarResult = snackBarHostState.showSnackbar(
+                val snackbarResult = scaffoldState.snackbarHostState.showSnackbar(
                     message = message.text,
                     actionLabel = message.actionText,
                     duration = if (message.type == MessageType.SNACKBAR) SnackbarDuration.Short else SnackbarDuration.Short
@@ -74,6 +83,7 @@ fun MainView(viewModel: MainViewModel) {
                 if (modalBottomSheetState.isVisible) {
                     coroutineScope.launch(Dispatchers.Main) {
                         modalBottomSheetState.hide()
+                        keyboardController?.hide()
                     }
                     taskFormViewModel.isVisible.value = false
                 }
@@ -93,21 +103,33 @@ fun MainView(viewModel: MainViewModel) {
                 sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
                 sheetBackgroundColor = MaterialTheme.colors.background,
             ) {
-                Scaffold(floatingActionButton = {
-                    FloatingActionButton(
-                        modifier = Modifier.testTag("add_task_button"),
-                        onClick = {
+                Scaffold(
+                    scaffoldState = scaffoldState,
+                    topBar = {
+                        TopBar {
                             coroutineScope.launch(Dispatchers.Main) {
-                                taskFormViewModel.clear()
-                                taskFormViewModel.isVisible.value = true
-                                modalBottomSheetState.animateTo(ModalBottomSheetValue.Expanded)
+                                scaffoldState.drawerState.open()
                             }
-                        }) {
-                        Icon(Icons.Filled.Add, "")
-                    }
-                }, snackbarHost = {
-                    SnackbarHost(hostState = snackBarHostState)
-                }) {
+                        }
+                    },
+                    drawerContent = {
+                        Drawer()
+                    },
+                    floatingActionButton = {
+                        FloatingActionButton(
+                            modifier = Modifier.testTag("add_task_button"),
+                            onClick = {
+                                coroutineScope.launch(Dispatchers.Main) {
+                                    taskFormViewModel.clear()
+                                    taskFormViewModel.isVisible.value = true
+                                    modalBottomSheetState.animateTo(ModalBottomSheetValue.Expanded)
+                                }
+                            }) {
+                            Icon(Icons.Filled.Add, "")
+                        }
+                    }, snackbarHost = {
+                        SnackbarHost(hostState = scaffoldState.snackbarHostState)
+                    }) {
                     TaskList(
                         viewModel = hiltViewModel(),
                         showTaskForm = { task ->

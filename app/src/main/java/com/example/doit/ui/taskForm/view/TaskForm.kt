@@ -98,10 +98,11 @@ private fun TitleTextField(
     val focusRequester = FocusRequester()
     val keyboardController = LocalSoftwareKeyboardController.current
     LaunchedEffect(isVisible) {
-        if (isVisible && value.isEmpty()) {
+        if (isVisible && value.isBlank()) {
             focusRequester.requestFocus()
             keyboardController?.show()
         }
+
     }
     TextField(
         value = value,
