@@ -1,8 +1,6 @@
 package com.example.doit.ui.taskList
 
-import android.content.res.Resources
 import androidx.compose.runtime.snapshots.SnapshotStateMap
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -68,7 +66,7 @@ class TaskListViewModel @Inject constructor(
             } else {
                 val allSubtasksCompleted = subtasksList.stream().allMatch { task -> task.status }
                 if (allSubtasksCompleted || task.status) {
-                    newStatus = !task.status;
+                    newStatus = !task.status
                 } else {
                     messageRepository.insertMessage(
                         Message(text = resourcesProvider.getString(R.string.uncompleted_tasks))
@@ -121,10 +119,17 @@ class TaskListViewModel @Inject constructor(
                 result.forEach {
                     newTasksData[it.task] = it.subtasks
                 }
+                val prevValue = _tasks.value
                 _tasks.postValue(newTasksData)
+                if (prevValue == null) {
+                    messageRepository.insertMessage(
+                        Message(
+                            text = "Tasks loaded",
+                            type = MessageType.LOADED_EVENT
+                        )
+                    )
+                }
             }
         }
     }
-
-
 }

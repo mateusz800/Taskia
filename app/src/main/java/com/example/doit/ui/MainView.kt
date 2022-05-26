@@ -48,9 +48,9 @@ fun MainView(viewModel: MainViewModel) {
     // Handle displaying snackbar if any message
     val messageState = viewModel.message.observeAsState()
     LaunchedEffect(messageState.value) {
-        if (messageState.value != null) {
+        if (messageState.value != null
+            && (messageState.value!!.type == MessageType.SNACKBAR || messageState.value!!.type == MessageType.TOAST)) {
             coroutineScope.launch {
-
                 scaffoldState.snackbarHostState.currentSnackbarData?.dismiss()
                 val message = messageState.value!!
                 val snackbarResult = scaffoldState.snackbarHostState.showSnackbar(

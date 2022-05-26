@@ -11,11 +11,12 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val viewModel:MainViewModel by lazy {ViewModelProvider(this).get(MainViewModel::class.java)}
+    private val viewModel: MainViewModel by lazy { ViewModelProvider(this).get(MainViewModel::class.java) }
+
     @OptIn(ExperimentalMaterialApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
-        splashScreen.setKeepOnScreenCondition { false/*loading condition */ }
+        splashScreen.setKeepOnScreenCondition { viewModel.currentState.value != MainViewState.Loaded }
         super.onCreate(savedInstanceState)
         setContent {
             MainView(viewModel)

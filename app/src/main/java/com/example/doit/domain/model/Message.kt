@@ -1,7 +1,7 @@
 package com.example.doit.domain.model
 
 enum class MessageType{
-    TOAST, SNACKBAR
+    TOAST, SNACKBAR, LOADED_EVENT
 }
 
 data class Message(

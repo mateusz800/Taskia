@@ -8,10 +8,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.doit.domain.model.Message
+import com.example.doit.domain.model.MessageType
 import com.example.doit.domain.model.Task
 import com.example.doit.domain.persistence.repository.MessageRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
@@ -22,6 +24,9 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val messageRepository: MessageRepository
 ) : ViewModel() {
+    private val _currentState = MutableStateFlow<MainViewState>(MainViewState.Loading)
+    val currentState: StateFlow<MainViewState>
+        get() = _currentState
     private val _message = MutableLiveData<Message?>(null)
     val message: LiveData<Message?>
         get() = _message
@@ -30,14 +35,17 @@ class MainViewModel @Inject constructor(
         collectData()
     }
 
-    fun clearMessage(){
+    fun clearMessage() {
         _message.postValue(null)
     }
 
-    private fun collectData(){
+    private fun collectData() {
         viewModelScope.launch(Dispatchers.IO) {
             messageRepository.getAll().collect {
-               _message.postValue(it)
+                if (it.type == MessageType.LOADED_EVENT) {
+                    _currentState.emit(MainViewState.Loaded)
+                }
+                _message.postValue(it)
             }
         }
     }
