@@ -2,8 +2,10 @@ package com.example.doit.domain.di
 
 import android.content.Context
 import androidx.room.Room
+import com.example.doit.domain.ResourcesProvider
 import com.example.doit.domain.persistence.AppDatabase
 import com.example.doit.domain.persistence.dao.TaskDao
+import com.example.doit.domain.persistence.repository.MessageRepository
 import com.example.doit.domain.persistence.repository.TaskRepository
 import dagger.Module
 import dagger.Provides
@@ -31,5 +33,17 @@ class TestApplicationModule {
     @Singleton
     fun provideTaskRepository(taskDao: TaskDao): TaskRepository {
         return TaskRepository(taskDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMessageRepository(): MessageRepository {
+        return MessageRepository()
+    }
+
+    @Provides
+    @Singleton
+    fun provideResourceProvider(@ApplicationContext context: Context): ResourcesProvider {
+        return ResourcesProvider(context)
     }
 }

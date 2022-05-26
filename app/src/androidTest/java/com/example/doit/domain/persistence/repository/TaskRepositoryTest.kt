@@ -6,6 +6,8 @@ import com.example.doit.domain.persistence.AppDatabase
 import com.example.doit.domain.persistence.dao.TaskDao
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
@@ -16,14 +18,14 @@ import javax.inject.Inject
 @SmallTest
 @HiltAndroidTest
 class TaskRepositoryTest {
-    @Rule
-    var hiltRule = HiltAndroidRule(this)
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
 
     @Inject
     lateinit var db: AppDatabase
 
     @Inject
-    private lateinit var taskDao: TaskDao
+    lateinit var taskDao: TaskDao
 
     @Before
     fun createDb() {
@@ -36,12 +38,12 @@ class TaskRepositoryTest {
     }
 
     @Test
-    fun writeTaskAndReadItInList() {
-        val task = Task(title="Task no 1")
-        val taskId:Int = taskDao.insertAll(task)[0];
+    fun writeTaskAndReadItInList() = runBlocking {
+        val task = Task(title = "Task no 1")
+        val taskId: Long = taskDao.insertAll(task)[0]
         val subtask = Task(title = "subtask", parentId = taskId)
         taskDao.insertAll(subtask)
-        val result = taskDao.getAll()
-        assertEquals(result.keys.size, 1)
+        val result = taskDao.getAll().first()
+        assertEquals(result.size, 1)
     }
 }

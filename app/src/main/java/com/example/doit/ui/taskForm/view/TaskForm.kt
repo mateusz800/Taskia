@@ -14,6 +14,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -60,6 +61,7 @@ private fun TaskForm(
         modifier = Modifier
             .padding(20.dp)
             .fillMaxSize()
+            .testTag("task_form")
     ) {
         TitleTextField(
             value = title,
@@ -114,7 +116,8 @@ private fun TitleTextField(
         ),
         modifier = Modifier
             .fillMaxWidth()
-            .focusRequester(focusRequester),
+            .focusRequester(focusRequester)
+            .testTag("title_input"),
         placeholder = { Text(stringResource(id = R.string.task_name)) },
         isError = value.isEmpty(),
     )
@@ -122,9 +125,12 @@ private fun TitleTextField(
 
 @Composable
 private fun SaveButton(saveFun: () -> Unit) {
-    Button(onClick = {
-        saveFun()
-    }) {
+    Button(
+        modifier = Modifier.testTag("save_task_button"),
+        onClick = {
+            saveFun()
+        }
+    ) {
         Text("Save")
     }
 }

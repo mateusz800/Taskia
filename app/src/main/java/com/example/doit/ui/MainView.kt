@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -33,7 +34,8 @@ fun MainView(viewModel: MainViewModel) {
         rememberModalBottomSheetState(
             initialValue = ModalBottomSheetValue.Hidden,
             confirmStateChange = {
-                it != ModalBottomSheetValue.HalfExpanded })
+                it != ModalBottomSheetValue.HalfExpanded
+            })
     val taskFormViewModel: TaskFormViewModel = hiltViewModel()
     // Handle displaying snackbar if any message
     val messageState = viewModel.message.observeAsState()
@@ -51,7 +53,9 @@ fun MainView(viewModel: MainViewModel) {
                     SnackbarResult.ActionPerformed -> {
                         message.actionFun.invoke()
                     }
-                    SnackbarResult.Dismissed -> {viewModel.clearMessage()}
+                    SnackbarResult.Dismissed -> {
+                        viewModel.clearMessage()
+                    }
                 }
                 viewModel.clearMessage()
             }
@@ -67,8 +71,8 @@ fun MainView(viewModel: MainViewModel) {
             color = MaterialTheme.colors.background
         ) {
             BackHandler {
-                if(modalBottomSheetState.isVisible){
-                    coroutineScope.launch(Dispatchers.Main){
+                if (modalBottomSheetState.isVisible) {
+                    coroutineScope.launch(Dispatchers.Main) {
                         modalBottomSheetState.hide()
                     }
                     taskFormViewModel.isVisible.value = false
@@ -90,13 +94,15 @@ fun MainView(viewModel: MainViewModel) {
                 sheetBackgroundColor = MaterialTheme.colors.background,
             ) {
                 Scaffold(floatingActionButton = {
-                    FloatingActionButton(onClick = {
-                        coroutineScope.launch(Dispatchers.Main) {
-                            taskFormViewModel.clear()
-                            taskFormViewModel.isVisible.value = true
-                            modalBottomSheetState.animateTo(ModalBottomSheetValue.Expanded)
-                        }
-                    }) {
+                    FloatingActionButton(
+                        modifier = Modifier.testTag("add_task_button"),
+                        onClick = {
+                            coroutineScope.launch(Dispatchers.Main) {
+                                taskFormViewModel.clear()
+                                taskFormViewModel.isVisible.value = true
+                                modalBottomSheetState.animateTo(ModalBottomSheetValue.Expanded)
+                            }
+                        }) {
                         Icon(Icons.Filled.Add, "")
                     }
                 }, snackbarHost = {
