@@ -17,4 +17,5 @@
     <string name="sure_perform_operation">Are you sure you want to perform this operation?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="settings">Settings</string>
 </resources>

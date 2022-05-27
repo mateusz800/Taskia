@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -20,6 +21,9 @@ import com.example.doit.R
 fun OptionsDropdownMenu(expanded: Boolean, onDismissRequest: () -> Unit) {
     val viewModel: OptionsDropdownMenViewModel = hiltViewModel()
     val showAlertDialog = remember { mutableStateOf(false) }
+    val deleteAllTasksAvailable = viewModel.deleteAllTaskButtonAvailable.observeAsState(true)
+    val deleteCompletedTasksAvailable =
+        viewModel.deleteCompleteTaskButtonAvailable.observeAsState(true)
 
     val dismiss = {
         onDismissRequest()
@@ -29,23 +33,27 @@ fun OptionsDropdownMenu(expanded: Boolean, onDismissRequest: () -> Unit) {
         expanded = expanded,
         onDismissRequest = onDismissRequest
     ) {
-        DropdownMenuItem(onClick = {
-            viewModel.queueTask {
-                viewModel.removeAllTasks()
-                dismiss()
-            }
-            showAlertDialog.value = true
-        }) {
+        DropdownMenuItem(
+            enabled = deleteAllTasksAvailable.value,
+            onClick = {
+                viewModel.queueTask {
+                    viewModel.removeAllTasks()
+                    dismiss()
+                }
+                showAlertDialog.value = true
+            }) {
             Text(stringResource(id = R.string.remove_all))
         }
         Divider()
-        DropdownMenuItem(onClick = {
-            viewModel.queueTask {
-                viewModel.removeAllCompletedTasks()
-                dismiss()
-            }
-            showAlertDialog.value = true
-        }) {
+        DropdownMenuItem(
+            enabled = deleteCompletedTasksAvailable.value,
+            onClick = {
+                viewModel.queueTask {
+                    viewModel.removeAllCompletedTasks()
+                    dismiss()
+                }
+                showAlertDialog.value = true
+            }) {
             Text(stringResource(id = R.string.remove_completed))
         }
         if (showAlertDialog.value) {

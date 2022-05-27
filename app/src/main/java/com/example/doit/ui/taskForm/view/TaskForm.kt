@@ -47,6 +47,7 @@ fun TaskForm(viewModel: TaskFormViewModel, closeFunc: () -> Unit) {
     )
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun TaskForm(
     title: String,
@@ -57,6 +58,7 @@ private fun TaskForm(
     saveFun: () -> Unit,
     isVisible: Boolean = false
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
     Column(
         modifier = Modifier
             .padding(20.dp)
@@ -80,6 +82,7 @@ private fun TaskForm(
                 .padding(vertical = 20.dp)
         ) {
             SaveButton {
+                keyboardController?.hide()
                 saveFun()
             }
         }

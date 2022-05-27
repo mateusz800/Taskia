@@ -2,7 +2,7 @@ package com.example.doit.domain.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.doit.domain.ResourcesProvider
+import com.example.doit.domain.ContextProvider
 import com.example.doit.domain.persistence.AppDatabase
 import com.example.doit.domain.persistence.dao.TaskDao
 import com.example.doit.domain.persistence.repository.MessageRepository
@@ -43,7 +43,7 @@ class TestApplicationModule {
 
     @Provides
     @Singleton
-    fun provideResourceProvider(@ApplicationContext context: Context): ResourcesProvider {
-        return ResourcesProvider(context)
+    fun provideResourceProvider(@ApplicationContext context: Context): ContextProvider {
+        return ContextProvider(context)
     }
 }
