@@ -37,7 +37,7 @@ class TaskListViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             recentlyRemovedTask = taskRepository.getById(task.id)
             val parentTaskId = task.parentId
-            if (taskRepository.remove(task)) {
+            if (taskRepository.delete(task)) {
                 messageRepository.insertMessage(
                     Message(
                         text = resourcesProvider.getString(R.string.task_removed),

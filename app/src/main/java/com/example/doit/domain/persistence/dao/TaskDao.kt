@@ -14,7 +14,8 @@ interface TaskDao {
     fun update(vararg tasks: Task)
 
     @Delete
-    fun delete(task: Task): Int
+    fun deleteAll(vararg task: Task): Int
+
 
     @Query("SELECT * FROM Task WHERE parentId is null  ")
     fun getAll(): Flow<List<TaskAndSubtasks>>

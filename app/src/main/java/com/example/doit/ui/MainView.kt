@@ -1,6 +1,7 @@
 package com.example.doit.ui
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -10,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
@@ -49,7 +51,8 @@ fun MainView(viewModel: MainViewModel) {
     val messageState = viewModel.message.observeAsState()
     LaunchedEffect(messageState.value) {
         if (messageState.value != null
-            && (messageState.value!!.type == MessageType.SNACKBAR || messageState.value!!.type == MessageType.TOAST)) {
+            && (messageState.value!!.type == MessageType.SNACKBAR || messageState.value!!.type == MessageType.TOAST)
+        ) {
             coroutineScope.launch {
                 scaffoldState.snackbarHostState.currentSnackbarData?.dismiss()
                 val message = messageState.value!!
@@ -73,6 +76,14 @@ fun MainView(viewModel: MainViewModel) {
 
     val configuration = LocalConfiguration.current
 
+    val hideBottomSheet = {
+        coroutineScope.launch(Dispatchers.Main) {
+            modalBottomSheetState.hide()
+            keyboardController?.hide()
+        }
+        taskFormViewModel.isVisible.value = false
+    }
+
 
     DoItTheme {
         Surface(
@@ -81,16 +92,16 @@ fun MainView(viewModel: MainViewModel) {
         ) {
             BackHandler {
                 if (modalBottomSheetState.isVisible) {
-                    coroutineScope.launch(Dispatchers.Main) {
-                        modalBottomSheetState.hide()
-                        keyboardController?.hide()
-                    }
-                    taskFormViewModel.isVisible.value = false
+                    hideBottomSheet()
                 }
             }
             ModalBottomSheetLayout(
+                modifier = Modifier,
                 sheetContent = {
-                    Column(Modifier.requiredHeight((configuration.screenHeightDp - 50).dp)) {
+                    Column(
+                        modifier = Modifier
+                            .requiredHeight((configuration.screenHeightDp - 50).dp)
+                    ) {
                         TaskForm(taskFormViewModel) {
                             coroutineScope.launch(Dispatchers.Main) {
                                 taskFormViewModel.isVisible.value = false

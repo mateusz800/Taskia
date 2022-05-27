@@ -31,8 +31,12 @@ class TaskRepository(
         return taskDao.insertAll(*tasks)
     }
 
-    fun remove(task: Task):Boolean {
-        return taskDao.delete(task) > 0
+    fun delete(task: Task):Boolean {
+        return taskDao.deleteAll(task) > 0
+    }
+
+    fun deleteAll(vararg task:Task){
+        taskDao.deleteAll(*task)
     }
 
     fun update(task: Task) {

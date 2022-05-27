@@ -14,4 +14,7 @@
     <string name="remove_all">Remove all tasks</string>
     <string name="share_app">Share app</string>
     <string name="menu">Menu</string>
+    <string name="sure_perform_operation">Are you sure you want to perform this operation?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>
