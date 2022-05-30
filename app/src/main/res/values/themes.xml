@@ -5,9 +5,9 @@
         <item name="android:statusBarColor">@color/purple_700</item>
     </style>
 
-    <style name="Theme.SplashScreenTheme" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/white</item>
+    <style name="Theme.SplashScreenTheme" parent="Theme.DoIt">
         <item name="postSplashScreenTheme">@style/Theme.DoIt</item>
         <item name="windowSplashScreenAnimationDuration">800</item>
+        <item name="android:windowBackground">@drawable/splash_screen</item>
     </style>
 </resources>
