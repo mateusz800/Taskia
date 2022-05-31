@@ -21,6 +21,5 @@ class DrawerViewModel @Inject constructor(
         }
         val shareIntent = Intent.createChooser(sendIntent, null)
         contextProvider.startActivity(shareIntent)
-
     }
 }

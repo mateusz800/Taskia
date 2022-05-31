@@ -6,6 +6,9 @@ import com.example.doit.domain.persistence.dao.TaskDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 class TaskRepository(
     private val taskDao: TaskDao
@@ -14,10 +17,63 @@ class TaskRepository(
     suspend fun getAll(): Flow<List<TaskAndSubtasks>> {
         return withContext(Dispatchers.IO) {
             taskDao.getAll()
+
         }
     }
 
-    fun getById(id:Long):Task?{
+    suspend fun getAllOverdue(): Flow<List<TaskAndSubtasks>> {
+        return withContext(Dispatchers.IO) {
+            taskDao.getUncompletedByTime(
+                LocalDate.now()
+                    .atStartOfDay()
+                    .toInstant(ZoneOffset.UTC)
+                    .toEpochMilli()
+            )
+        }
+    }
+
+    suspend fun getAllUpcoming(): Flow<List<TaskAndSubtasks>> {
+        return withContext(Dispatchers.IO) {
+            taskDao.getUpcoming(
+                LocalDate.now()
+                    .plusDays(1)
+                    .atStartOfDay()
+                    .toInstant(ZoneOffset.UTC)
+                    .toEpochMilli()
+            )
+        }
+    }
+
+    suspend fun getAllUnscheduled(): Flow<List<TaskAndSubtasks>> {
+        return withContext(Dispatchers.IO) {
+            taskDao.getAllUnscheduled()
+        }
+    }
+
+    suspend fun getAllCompleted(): Flow<List<TaskAndSubtasks>> {
+        return withContext(Dispatchers.IO) {
+            taskDao.getAllCompleted()
+        }
+    }
+
+    suspend fun getTodayTasks(): Flow<List<TaskAndSubtasks>> {
+        return withContext(Dispatchers.IO) {
+            taskDao.getAll(
+                LocalDate.now()
+                    .atStartOfDay()
+                    .toInstant(ZoneOffset.UTC)
+                    .toEpochMilli(),
+                LocalDate.now()
+                    .plusDays(1)
+                    .atStartOfDay()
+                    .minusNanos(1)
+                    .toInstant(ZoneOffset.UTC)
+                    .toEpochMilli()
+            )
+        }
+    }
+
+    fun getById(id: Long): Task? {
         return taskDao.getById(id)
     }
 
@@ -31,11 +87,11 @@ class TaskRepository(
         return taskDao.insertAll(*tasks)
     }
 
-    fun delete(task: Task):Boolean {
+    fun delete(task: Task): Boolean {
         return taskDao.deleteAll(task) > 0
     }
 
-    fun deleteAll(vararg task:Task){
+    fun deleteAll(vararg task: Task) {
         taskDao.deleteAll(*task)
     }
 

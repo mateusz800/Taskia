@@ -1,5 +1,6 @@
 package com.example.doit.ui.taskList
 
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -14,6 +15,8 @@ import com.example.doit.domain.persistence.repository.MessageRepository
 import com.example.doit.domain.persistence.repository.TaskRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,11 +28,130 @@ class TaskListViewModel @Inject constructor(
     private val contextProvider: ContextProvider
 ) : ViewModel() {
     private val _tasks = MutableLiveData<SnapshotStateMap<Task, List<Task>>>()
-    val tasks: LiveData<SnapshotStateMap<Task, List<Task>>>
-        get() = _tasks
+    val tasks: LiveData<SnapshotStateList<Pair<Task, List<Task>>>>
+        get() {
+            return when (_listType.value) {
+                is ListType.Today -> _todayTasks
+                ListType.Completed -> _completedTasks
+                ListType.Unscheduled -> _unscheduledTasks
+                ListType.Upcoming -> _upcomingTasks
+            }
+        }
+
+    private val _overdueTasks = MutableLiveData<SnapshotStateList<Pair<Task, List<Task>>>>()
+    val overdueTasks: LiveData<SnapshotStateList<Pair<Task, List<Task>>>> = _overdueTasks
+
+    private val _todayTasks = MutableLiveData<SnapshotStateList<Pair<Task, List<Task>>>>()
+    private val _unscheduledTasks = MutableLiveData<SnapshotStateList<Pair<Task, List<Task>>>>()
+    private val _completedTasks = MutableLiveData<SnapshotStateList<Pair<Task, List<Task>>>>()
+    private val _upcomingTasks = MutableLiveData<SnapshotStateList<Pair<Task, List<Task>>>>()
+
+    private val _listType = MutableStateFlow<ListType>(ListType.Today)
+    private val _jobs = mutableListOf<Job>()
+
+
     private var recentlyRemovedTask: Task? = null
 
     init {
+        collectTasks()
+    }
+
+    private fun collectTasks() {
+        when (_listType.value) {
+            is ListType.Today -> {
+                collectOverdueTasks()
+                collectTodayTasks()
+            }
+            is ListType.Unscheduled -> collectUnscheduledTasks()
+            is ListType.Completed -> collectCompletedTasks()
+            is ListType.Upcoming -> collectUpcomingTasks()
+        }
+        _jobs.add(viewModelScope.launch(Dispatchers.IO) {
+            taskRepository.getAll().collect { result ->
+                val newTasksData = SnapshotStateMap<Task, List<Task>>()
+                result.forEach {
+                    newTasksData[it.task] = it.subtasks
+                }
+                val prevValue = _tasks.value
+                _tasks.postValue(newTasksData)
+                if (prevValue == null) {
+                    messageRepository.insertMessage(
+                        Message(
+                            text = "Tasks loaded",
+                            type = MessageType.LOADED_EVENT
+                        )
+                    )
+                }
+            }
+        })
+    }
+
+    private fun collectOverdueTasks() {
+        _jobs.add(viewModelScope.launch(Dispatchers.IO) {
+            taskRepository.getAllOverdue().collect { result ->
+                val overdueTaskList = SnapshotStateList<Pair<Task, List<Task>>>()
+                result.forEach {
+                    overdueTaskList.add(Pair(it.task, it.subtasks))
+                }
+                _overdueTasks.postValue(overdueTaskList)
+            }
+        })
+    }
+
+    private fun collectTodayTasks() {
+        _jobs.add(viewModelScope.launch(Dispatchers.IO) {
+            taskRepository.getTodayTasks().collect { result ->
+                val todayTaskList = SnapshotStateList<Pair<Task, List<Task>>>()
+                result.forEach {
+                    todayTaskList.add(Pair(it.task, it.subtasks))
+                }
+                _todayTasks.postValue(todayTaskList)
+            }
+        })
+    }
+
+    private fun collectUnscheduledTasks() {
+        _jobs.add(viewModelScope.launch(Dispatchers.IO) {
+            taskRepository.getAllUnscheduled().collect { result ->
+                val unscheduledTaskList = SnapshotStateList<Pair<Task, List<Task>>>()
+                result.forEach {
+                    unscheduledTaskList.add(Pair(it.task, it.subtasks))
+                }
+                _unscheduledTasks.postValue(unscheduledTaskList)
+            }
+        })
+    }
+
+    private fun collectCompletedTasks() {
+        _jobs.add(viewModelScope.launch(Dispatchers.IO) {
+            taskRepository.getAllCompleted().collect { result ->
+                val completedTaskList = SnapshotStateList<Pair<Task, List<Task>>>()
+                result.forEach {
+                    completedTaskList.add(Pair(it.task, it.subtasks))
+                }
+                _completedTasks.postValue(completedTaskList)
+            }
+        })
+    }
+
+    private fun collectUpcomingTasks() {
+        _jobs.add(viewModelScope.launch(Dispatchers.IO) {
+            taskRepository.getAllUpcoming().collect { result ->
+                val upcomingTaskList = SnapshotStateList<Pair<Task, List<Task>>>()
+                result.forEach {
+                    upcomingTaskList.add(Pair(it.task, it.subtasks))
+                }
+                _upcomingTasks.postValue(upcomingTaskList)
+            }
+        })
+    }
+
+
+    fun setListType(type: ListType) {
+        _listType.value = type
+        _jobs.forEach {
+            it.cancel()
+        }
         collectTasks()
     }
 
@@ -47,13 +169,6 @@ class TaskListViewModel @Inject constructor(
                     )
                 )
             }
-            if (parentTaskId != null) {
-                val parentTask = taskRepository.getById(parentTaskId)
-                if (parentTask != null) {
-                    checkIfCompleted(parentTask)
-                }
-            }
-
         }
     }
 
@@ -86,8 +201,6 @@ class TaskListViewModel @Inject constructor(
                     if (!newStatus) {
                         parentTask.status = false
                         taskRepository.update(parentTask)
-                    } else {
-                        checkIfCompleted(parentTask)
                     }
 
                 }
@@ -95,41 +208,13 @@ class TaskListViewModel @Inject constructor(
         }
     }
 
-    private fun checkIfCompleted(task: Task) {
-        val allSubtasks = taskRepository.getSubtasks(task)
-        task.status = allSubtasks.stream().allMatch { t -> t.status }
-        taskRepository.update(task)
-    }
-
     private fun restoreRemovedTask() {
         viewModelScope.launch(Dispatchers.IO) {
             if (recentlyRemovedTask != null) {
                 taskRepository.insertAll(recentlyRemovedTask!!)
-                _tasks.value?.keys?.filter { it.id == recentlyRemovedTask!!.parentId }?.get(0)
-                    ?.let { checkIfCompleted(it) }
             }
         }
     }
 
 
-    private fun collectTasks() {
-        viewModelScope.launch(Dispatchers.IO) {
-            taskRepository.getAll().collect { result ->
-                val newTasksData = SnapshotStateMap<Task, List<Task>>()
-                result.forEach {
-                    newTasksData[it.task] = it.subtasks
-                }
-                val prevValue = _tasks.value
-                _tasks.postValue(newTasksData)
-                if (prevValue == null) {
-                    messageRepository.insertMessage(
-                        Message(
-                            text = "Tasks loaded",
-                            type = MessageType.LOADED_EVENT
-                        )
-                    )
-                }
-            }
-        }
-    }
 }

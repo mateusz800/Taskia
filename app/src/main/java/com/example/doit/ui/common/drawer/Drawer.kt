@@ -21,9 +21,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.doit.R
 
 @Composable
-fun Drawer() {
+fun Drawer(content: @Composable () -> Unit) {
     val viewModel: DrawerViewModel = hiltViewModel()
-    Column(modifier = Modifier.padding(horizontal = 30.dp)) {
+    Column(modifier = Modifier) {
+        content()
         Box(
             modifier = Modifier
                 .fillMaxSize(),
@@ -93,6 +94,8 @@ private fun ShareAppButton(onClick: () -> Unit) {
 @Composable
 private fun Drawer_Preview() {
     MaterialTheme {
-        Drawer()
+        Drawer {
+            Text("Today")
+        }
     }
 }

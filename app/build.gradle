@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.doit"
-        minSdk 24
+        minSdk 26
         targetSdk 32
         versionCode 1
         versionName "1.0"
@@ -86,6 +86,7 @@ dependencies {
    // androidTestAnnotationProcessor 'com.google.dagger:hilt-android-compiler:2.42'
     kaptAndroidTest 'com.google.dagger:hilt-android-compiler:2.42'
     implementation 'androidx.hilt:hilt-navigation-compose:1.0.0'
+    implementation "androidx.compose.material:material-icons-extended:$compose_version"
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

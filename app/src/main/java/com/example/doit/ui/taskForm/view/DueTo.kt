@@ -3,25 +3,35 @@ package com.example.doit.ui.taskForm.view
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.widget.DatePicker
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.CalendarViewDay
+import androidx.compose.material.icons.filled.CalendarViewMonth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.doit.R
 import java.util.*
 
 @Composable
 fun DueTo(
     dayLabel: String,
-    timeLabel: String,
     updateDate: (String) -> Unit
 ) {
     val context = LocalContext.current
@@ -29,43 +39,33 @@ fun DueTo(
     val year = calendar.get(Calendar.YEAR)
     val month = calendar.get(Calendar.MONTH)
     val day = calendar.get(Calendar.DAY_OF_MONTH)
-    val hour = calendar[Calendar.HOUR_OF_DAY]
-    val minute = calendar[Calendar.MINUTE]
-    calendar.time = Date()
 
-    val date = remember { mutableStateOf("$year-${"%02d".format(month + 1)}-${"%02d".format(day)}") }
-    val time = remember { mutableStateOf("00:00:00") }
+    val date =
+        remember { mutableStateOf("$year-${"%02d".format(month + 1)}-${"%02d".format(day)}") }
 
     val datePickerDialog = DatePickerDialog(
         context, { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
             date.value = "$mYear-${"%02d".format(mMonth + 1)}-${"%02d".format(mDayOfMonth)}"
-            updateDate("${date.value}T${time.value}")
+            updateDate(date.value)
         }, year, month, day
     )
-    val timePickerDialog = TimePickerDialog(
-        context,
-        { _, mHour: Int, mMinute: Int ->
-            time.value = "$mHour:$mMinute:00"
-            updateDate("${date.value}T${time.value}")
-        }, hour, minute, false
-    )
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(
-            stringResource(id = R.string.due_to),
-            fontWeight = FontWeight.Bold
+    Button(
+        elevation = null,
+        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent),
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(1.dp, Color.Gray),
+        contentPadding = PaddingValues(vertical = 0.dp, horizontal = 10.dp),
+        modifier = Modifier.defaultMinSize(minHeight = 30.dp),
+        onClick = { datePickerDialog.show() }) {
+        Icon(
+            Icons.Default.CalendarToday,
+            contentDescription = stringResource(id = R.string.deadline),
+            modifier = Modifier
+                .height(14.dp)
+                .padding(end = 10.dp)
         )
-        Button(
-            elevation = null,
-            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent),
-            onClick = { datePickerDialog.show() }) {
-            Text(dayLabel)
-        }
-        Button(
-            elevation = null,
-            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent),
-            onClick = { timePickerDialog.show() }) {
-            Text(timeLabel)
-        }
+        Text(dayLabel)
     }
+
 
 }

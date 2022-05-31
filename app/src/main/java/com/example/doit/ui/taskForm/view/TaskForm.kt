@@ -1,33 +1,40 @@
 package com.example.doit.ui.taskForm.view
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Send
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.doit.R
 import com.example.doit.domain.model.Task
 import com.example.doit.ui.taskForm.TaskFormViewModel
+import java.util.*
 
 @Composable
 fun TaskForm(viewModel: TaskFormViewModel, closeFunc: () -> Unit) {
     val title by viewModel.title.collectAsState()
+    val dueToDayText by viewModel.dueDay.collectAsState()
     val isVisible = viewModel.isVisible.collectAsState()
     val subtasks = viewModel.subtasks
 
@@ -41,9 +48,12 @@ fun TaskForm(viewModel: TaskFormViewModel, closeFunc: () -> Unit) {
         saveFun = {
             if (viewModel.verifyData()) {
                 viewModel.saveTask()
+                viewModel.clear()
                 closeFunc()
             }
-        }
+        },
+        endDateText = dueToDayText,
+        updateDueTo = { value -> viewModel.updateDueToDate(value) }
     )
 }
 
@@ -56,9 +66,12 @@ private fun TaskForm(
     updateSubtaskTitle: (Task, String) -> Unit,
     addNewSubtaskFun: () -> Unit,
     saveFun: () -> Unit,
-    isVisible: Boolean = false
+    isVisible: Boolean = false,
+    endDateText: String,
+    updateDueTo: (String) -> Unit
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
+
     Column(
         modifier = Modifier
             .padding(20.dp)
@@ -68,34 +81,40 @@ private fun TaskForm(
         TitleTextField(
             value = title,
             onValueChanged = onTitleChanged,
-            isVisible = isVisible
+            isVisible = isVisible,
+            onDoneKeyClick = saveFun
         )
-        Subtasks(
-            subtasks = subtasks,
-            addNewFun = addNewSubtaskFun,
-            onTitleChanged = updateSubtaskTitle
-        )
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 20.dp)
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
         ) {
-            SaveButton {
+            DueTo(
+                dayLabel = endDateText,
+                updateDate = updateDueTo
+            )
+            SaveButton(enabled = title.isNotBlank()) {
                 keyboardController?.hide()
                 saveFun()
             }
         }
 
+        Subtasks(
+            subtasks = subtasks,
+            addNewFun = addNewSubtaskFun,
+            onTitleChanged = updateSubtaskTitle
+        )
+
 
     }
 }
+
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun TitleTextField(
     value: String,
     onValueChanged: (String) -> Unit,
+    onDoneKeyClick: () -> Unit,
     isVisible: Boolean = true
 ) {
     val focusRequester = FocusRequester()
@@ -121,21 +140,29 @@ private fun TitleTextField(
         modifier = Modifier
             .fillMaxWidth()
             .focusRequester(focusRequester)
-            .testTag("title_input"),
+            .testTag("title_input")
+            .onKeyEvent {
+                if (it.key == Key.Enter) {
+                    onDoneKeyClick.invoke()
+                }
+                true
+            },
         placeholder = { Text(stringResource(id = R.string.task_name)) },
-        isError = value.isEmpty(),
+        keyboardActions = KeyboardActions(onDone = { onDoneKeyClick() }),
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
     )
 }
 
 @Composable
-private fun SaveButton(saveFun: () -> Unit) {
-    Button(
+private fun SaveButton(enabled: Boolean = true, saveFun: () -> Unit) {
+    IconButton(
         modifier = Modifier.testTag("save_task_button"),
         onClick = {
             saveFun()
-        }
+        },
+        enabled = enabled
     ) {
-        Text("Save")
+        Icon(Icons.Default.Send, contentDescription = stringResource(id = R.string.save))
     }
 }
 
@@ -149,7 +176,9 @@ private fun TaskForm_Preview() {
             addNewSubtaskFun = {},
             onTitleChanged = {},
             updateSubtaskTitle = { _, _ -> },
-            saveFun = {}
+            saveFun = {},
+            endDateText = "Today",
+            updateDueTo = { }
         )
     }
 }

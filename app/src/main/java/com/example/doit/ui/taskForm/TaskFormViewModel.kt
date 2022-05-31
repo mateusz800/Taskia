@@ -1,33 +1,54 @@
 package com.example.doit.ui.taskForm
 
-import android.os.Build
-import androidx.annotation.RequiresApi
-import androidx.compose.runtime.mutableStateListOf
+import android.content.Context
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.doit.R
+import com.example.doit.domain.ContextProvider
 import com.example.doit.domain.model.Task
 import com.example.doit.domain.persistence.repository.TaskRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import java.lang.IndexOutOfBoundsException
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 import javax.inject.Inject
 import kotlin.streams.toList
 
 @HiltViewModel
 class TaskFormViewModel @Inject constructor(
-    private val taskRepository: TaskRepository
+    private val taskRepository: TaskRepository,
+    private val contextProvider: ContextProvider
 ) : ViewModel() {
     var isVisible = MutableStateFlow(false)
     private var _task: Task? = null
+
     private val _title = MutableStateFlow("")
     val title: StateFlow<String>
         get() = _title
+
+    private val _dueTo = MutableStateFlow<LocalDateTime?>(null)
+    private val _dueDay = MutableStateFlow(contextProvider.getString(R.string.no_deadline))
+    val dueDay: StateFlow<String>
+        get() = _dueDay
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            _dueTo.collect {
+                if (it != null) {
+                    val day = it.dayOfMonth.toString() + "." +
+                            it.month.toString()
+                    _dueDay.emit(day)
+                }
+            }
+        }
+    }
 
     val subtasks = SnapshotStateList<Task>()
 
@@ -35,8 +56,20 @@ class TaskFormViewModel @Inject constructor(
         _title.value = title
     }
 
+    fun updateDueToDate(value: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val processedValue: LocalDateTime = try {
+                LocalDateTime.parse(value)
+            } catch (e: DateTimeParseException) {
+                LocalDate.parse(value).atStartOfDay()
+            }
+            _dueTo.emit(processedValue)
+        }
+    }
+
+
     fun verifyData(): Boolean {
-        if (_title.value.isNullOrEmpty()) {
+        if (_title.value.isEmpty()) {
             return false
         }
         return true
@@ -44,9 +77,12 @@ class TaskFormViewModel @Inject constructor(
 
     fun saveTask() {
         val task: Task = if (_task == null) {
-            Task(title = title.value)
+            Task(title = title.value, endDate = _dueTo.value)
         } else {
-            _task!!.copy(title = title.value)
+            _task!!.copy(
+                title = title.value,
+                endDate = _dueTo.value
+            )
         }
         val subtaskList = subtasks.parallelStream()
             .filter { it.title.isNotEmpty() }
@@ -74,9 +110,11 @@ class TaskFormViewModel @Inject constructor(
         clear()
     }
 
-    fun setTask(task: Task) {
+    fun setTask(task: Task, context: Context) {
         _task = task
         _title.value = task.title
+        _dueTo.value = task.endDate
+        _dueDay.value = task.getEndDay(context) ?: ""
         viewModelScope.launch(Dispatchers.IO) {
             subtasks.clear()
             val temp = taskRepository.getSubtasks(task)
@@ -95,7 +133,7 @@ class TaskFormViewModel @Inject constructor(
         try {
             subtasks[subtasks.indexOf(subtask)] =
                 subtasks[subtasks.indexOf(subtask)].copy(title = newTitle)
-        } catch (e:IndexOutOfBoundsException){
+        } catch (e: IndexOutOfBoundsException) {
             e.printStackTrace()
         }
     }
@@ -103,6 +141,8 @@ class TaskFormViewModel @Inject constructor(
     fun clear() {
         _task = null
         _title.value = ""
+        _dueTo.value = null
+        _dueDay.value = contextProvider.getString(R.string.no_deadline)
         subtasks.clear()
     }
 }

@@ -11,15 +11,19 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.doit.R
 import com.example.doit.domain.model.MessageType
 import com.example.doit.ui.common.drawer.Drawer
 import com.example.doit.ui.common.TopBar
-import com.example.doit.ui.taskList.view.TaskList
+import com.example.doit.ui.common.drawer.DrawerItem
+import com.example.doit.ui.taskList.view.TaskEntireList
 import com.example.doit.ui.taskForm.TaskFormViewModel
 import com.example.doit.ui.taskForm.view.TaskForm
 import com.example.doit.ui.theme.DoItTheme
@@ -34,6 +38,7 @@ fun MainView(viewModel: MainViewModel) {
     val scaffoldState = rememberScaffoldState()
     val keyboardController = LocalSoftwareKeyboardController.current
     val taskFormViewModel: TaskFormViewModel = hiltViewModel()
+    val currentList = viewModel.currentList.collectAsState()
     val modalBottomSheetState =
         rememberModalBottomSheetState(
             initialValue = ModalBottomSheetValue.Hidden,
@@ -42,7 +47,8 @@ fun MainView(viewModel: MainViewModel) {
                     keyboardController?.hide()
                     taskFormViewModel.isVisible.value = false
                 }
-                it != ModalBottomSheetValue.HalfExpanded
+                true
+                // it != ModalBottomSheetValue.HalfExpanded
             })
 
     // Handle displaying snackbar if any message
@@ -81,6 +87,7 @@ fun MainView(viewModel: MainViewModel) {
         }
         taskFormViewModel.isVisible.value = false
     }
+    val context = LocalContext.current
 
 
     DoItTheme {
@@ -88,10 +95,8 @@ fun MainView(viewModel: MainViewModel) {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colors.background
         ) {
-            BackHandler {
-                if (modalBottomSheetState.isVisible) {
-                    hideBottomSheet()
-                }
+            BackHandler(enabled = true) {
+                hideBottomSheet()
             }
             ModalBottomSheetLayout(
                 modifier = Modifier,
@@ -122,7 +127,22 @@ fun MainView(viewModel: MainViewModel) {
                         }
                     },
                     drawerContent = {
-                        Drawer()
+                        Drawer {
+                            viewModel.availableListSet.forEach {
+                                DrawerItem(
+                                    text = stringResource(id = it.textId),
+                                    active = (currentList.value == it),
+                                    onClick = {
+                                        viewModel.showList(it)
+                                        coroutineScope.launch(Dispatchers.Main) {
+                                            scaffoldState.drawerState.close()
+                                        }
+                                    }
+                                )
+
+
+                            }
+                        }
                     },
                     floatingActionButton = {
                         FloatingActionButton(
@@ -131,7 +151,8 @@ fun MainView(viewModel: MainViewModel) {
                                 coroutineScope.launch(Dispatchers.Main) {
                                     taskFormViewModel.clear()
                                     taskFormViewModel.isVisible.value = true
-                                    modalBottomSheetState.animateTo(ModalBottomSheetValue.Expanded)
+                                    modalBottomSheetState.show()
+                                    //modalBottomSheetState.animateTo(ModalBottomSheetValue.Expanded)
                                 }
                             }) {
                             Icon(Icons.Filled.Add, "")
@@ -139,15 +160,15 @@ fun MainView(viewModel: MainViewModel) {
                     }, snackbarHost = {
                         SnackbarHost(hostState = scaffoldState.snackbarHostState)
                     }) {
-                    TaskList(
+                    TaskEntireList(
                         viewModel = hiltViewModel(),
+                        listType = currentList.value,
                         showTaskForm = { task ->
                             coroutineScope.launch(Dispatchers.Main) {
-                                taskFormViewModel.setTask(task)
+                                taskFormViewModel.setTask(task, context = context)
                                 taskFormViewModel.isVisible.value = true
                                 modalBottomSheetState.animateTo(ModalBottomSheetValue.Expanded)
                             }
-
                         }
                     )
                 }

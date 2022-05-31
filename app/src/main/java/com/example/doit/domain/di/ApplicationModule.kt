@@ -7,6 +7,7 @@ import com.example.doit.domain.persistence.AppDatabase
 import com.example.doit.domain.persistence.dao.TaskDao
 import com.example.doit.domain.persistence.repository.MessageRepository
 import com.example.doit.domain.persistence.repository.TaskRepository
+import com.example.doit.domain.util.LocalDateTimeConverter
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,7 +21,8 @@ class ApplicationModule {
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): AppDatabase {
-        return Room.databaseBuilder(context, AppDatabase::class.java, "doit").build()
+        return Room.databaseBuilder(context, AppDatabase::class.java, "doit")
+            .build()
     }
 
     @Provides

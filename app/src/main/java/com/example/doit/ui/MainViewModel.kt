@@ -11,6 +11,7 @@ import com.example.doit.domain.model.Message
 import com.example.doit.domain.model.MessageType
 import com.example.doit.domain.model.Task
 import com.example.doit.domain.persistence.repository.MessageRepository
+import com.example.doit.ui.taskList.ListType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -27,6 +28,17 @@ class MainViewModel @Inject constructor(
     private val _currentState = MutableStateFlow<MainViewState>(MainViewState.Loading)
     val currentState: StateFlow<MainViewState>
         get() = _currentState
+
+
+    val availableListSet = setOf(
+        ListType.Today,
+        ListType.Unscheduled,
+        ListType.Upcoming,
+        ListType.Completed
+    )
+    private val _currentList = MutableStateFlow<ListType>(ListType.Today)
+    val currentList: StateFlow<ListType> = _currentList
+
     private val _message = MutableLiveData<Message?>(null)
     val message: LiveData<Message?>
         get() = _message
@@ -39,6 +51,10 @@ class MainViewModel @Inject constructor(
         _message.postValue(null)
     }
 
+    fun showList(listType: ListType) {
+        _currentList.value = listType
+    }
+
     private fun collectData() {
         viewModelScope.launch(Dispatchers.IO) {
             messageRepository.getAll().collect {
@@ -49,4 +65,5 @@ class MainViewModel @Inject constructor(
             }
         }
     }
+
 }
