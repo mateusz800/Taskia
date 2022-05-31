@@ -95,9 +95,7 @@ fun MainView(viewModel: MainViewModel) {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colors.background
         ) {
-            BackHandler(enabled = true) {
-                hideBottomSheet()
-            }
+
             ModalBottomSheetLayout(
                 modifier = Modifier,
                 sheetContent = {
@@ -152,7 +150,6 @@ fun MainView(viewModel: MainViewModel) {
                                     taskFormViewModel.clear()
                                     taskFormViewModel.isVisible.value = true
                                     modalBottomSheetState.show()
-                                    //modalBottomSheetState.animateTo(ModalBottomSheetValue.Expanded)
                                 }
                             }) {
                             Icon(Icons.Filled.Add, "")
@@ -167,7 +164,7 @@ fun MainView(viewModel: MainViewModel) {
                             coroutineScope.launch(Dispatchers.Main) {
                                 taskFormViewModel.setTask(task, context = context)
                                 taskFormViewModel.isVisible.value = true
-                                modalBottomSheetState.animateTo(ModalBottomSheetValue.Expanded)
+                                modalBottomSheetState.show()
                             }
                         }
                     )

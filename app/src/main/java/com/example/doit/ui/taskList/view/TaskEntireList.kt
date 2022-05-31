@@ -60,8 +60,8 @@ fun TaskEntireList(
             )
         }
         if (
-            overdueTasks.value.isNullOrEmpty() &&
-            tasks.value.isNullOrEmpty()
+            overdueTasks.value?.isEmpty() == true &&
+            tasks.value?.isEmpty() == true
         ) {
             Box(
                 contentAlignment = Alignment.Center,

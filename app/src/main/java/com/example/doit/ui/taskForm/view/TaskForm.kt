@@ -12,6 +12,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
@@ -144,21 +145,28 @@ private fun TitleTextField(
             .onKeyEvent {
                 if (it.key == Key.Enter) {
                     onDoneKeyClick.invoke()
+                    keyboardController?.hide()
                 }
                 true
             },
         placeholder = { Text(stringResource(id = R.string.task_name)) },
-        keyboardActions = KeyboardActions(onDone = { onDoneKeyClick() }),
+        keyboardActions = KeyboardActions(onDone = {
+            onDoneKeyClick()
+            keyboardController?.hide()
+        }),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
     )
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun SaveButton(enabled: Boolean = true, saveFun: () -> Unit) {
+    val keyboardController = LocalSoftwareKeyboardController.current
     IconButton(
         modifier = Modifier.testTag("save_task_button"),
         onClick = {
             saveFun()
+            keyboardController?.hide()
         },
         enabled = enabled
     ) {

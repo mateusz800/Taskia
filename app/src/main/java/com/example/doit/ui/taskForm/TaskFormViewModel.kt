@@ -45,6 +45,8 @@ class TaskFormViewModel @Inject constructor(
                     val day = it.dayOfMonth.toString() + "." +
                             it.month.toString()
                     _dueDay.emit(day)
+                } else {
+                    _dueDay.emit(contextProvider.getString(R.string.no_deadline))
                 }
             }
         }
@@ -58,6 +60,10 @@ class TaskFormViewModel @Inject constructor(
 
     fun updateDueToDate(value: String) {
         viewModelScope.launch(Dispatchers.IO) {
+            if (value.isBlank()) {
+                _dueTo.emit(null)
+                return@launch
+            }
             val processedValue: LocalDateTime = try {
                 LocalDateTime.parse(value)
             } catch (e: DateTimeParseException) {

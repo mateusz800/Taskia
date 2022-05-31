@@ -1,9 +1,7 @@
 package com.example.doit.ui.common
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -39,23 +37,25 @@ fun CustomTextField(
     trailingIcon: (@Composable () -> Unit)? = null,
     placeholderText: String = stringResource(id = R.string.new_subtask),
     fontSize: TextUnit = MaterialTheme.typography.body2.fontSize,
+    enabled:Boolean = true,
     onEnter: (() -> Unit)? = null
 ) {
     var text by rememberSaveable { mutableStateOf(value) }
     BasicTextField(
+        enabled = enabled,
         modifier = modifier
             .background(
                 MaterialTheme.colors.surface,
                 MaterialTheme.shapes.small,
             )
-            .fillMaxWidth()
+            .width(IntrinsicSize.Min)
             .onKeyEvent {
                 if (it.key == Key.Enter) {
                     onEnter?.invoke()
                 }
                 true
             },
-        value = text,
+        value = value,
         onValueChange = {
             text = it
             onValueChange(text)
@@ -76,7 +76,7 @@ fun CustomTextField(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (leadingIcon != null) leadingIcon()
-                Box(Modifier.weight(1f)) {
+                Box() {
                     if (text.isEmpty()) Text(
                         placeholderText,
                         style = LocalTextStyle.current.copy(
