@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DoIt</string>
+    <string name="app_name">Taskia</string>
     <string name="task_name">Task name</string>
     <string name="add_subtask">Add new subtask</string>
     <string name="subtasks">Subtasks</string>

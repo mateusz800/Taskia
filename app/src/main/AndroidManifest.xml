@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.doit">
+    package="com.mabn.taskia">
 
     <application
-        android:name=".App"
+        android:name="com.mabn.taskia.App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SplashScreenTheme">
         <activity
-            android:name=".ui.MainActivity"
+            android:name="com.mabn.taskia.ui.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.SplashScreenTheme">
             <intent-filter>
