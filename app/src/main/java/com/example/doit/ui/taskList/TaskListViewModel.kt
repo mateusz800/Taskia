@@ -51,6 +51,7 @@ class TaskListViewModel @Inject constructor(
 
 
     private var recentlyRemovedTask: Task? = null
+    private var recentlyChangedStatusTask: Task? = null
 
     init {
         collectTasks()
@@ -202,8 +203,25 @@ class TaskListViewModel @Inject constructor(
                         parentTask.status = false
                         taskRepository.update(parentTask)
                     }
-
+                } else {
+                    recentlyChangedStatusTask = task
+                    messageRepository.insertMessage(Message(
+                        text = contextProvider.getString(R.string.task_completed),
+                        actionText = contextProvider.getString(R.string.undo),
+                        actionFun = {
+                            undoToggleStatus()
+                        }
+                    ))
                 }
+            }
+        }
+    }
+
+    private fun undoToggleStatus() {
+        if (recentlyChangedStatusTask != null) {
+            viewModelScope.launch(Dispatchers.IO) {
+                recentlyChangedStatusTask!!.status = !recentlyChangedStatusTask!!.status
+                taskRepository.update(recentlyChangedStatusTask!!)
             }
         }
     }
