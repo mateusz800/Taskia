@@ -3,7 +3,7 @@ package com.mabn.taskia.domain.model
 import android.content.Context
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.mabn.taskia.R
+import com.mabn.taskia.domain.util.LocalDateTimeConverter
 import java.time.LocalDateTime
 
 @Entity
@@ -19,12 +19,7 @@ data class Task(
 ) {
     fun getEndDay(context: Context): String {
         if (endDate != null) {
-            if (endDate!!.dayOfYear == LocalDateTime.now().dayOfYear) {
-                return context.getString(R.string.today)
-            } else if (endDate!!.dayOfYear == LocalDateTime.now().dayOfYear + 1) {
-                return context.getString(R.string.tomorrow)
-            }
-            return "%02d".format(endDate!!.dayOfMonth) + " " + endDate!!.month.toString()
+            return LocalDateTimeConverter.dateToString(endDate!!, context)
         }
         return ""
     }

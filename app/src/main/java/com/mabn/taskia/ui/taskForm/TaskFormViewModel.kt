@@ -8,6 +8,8 @@ import com.mabn.taskia.R
 import com.mabn.taskia.domain.ContextProvider
 import com.mabn.taskia.domain.model.Task
 import com.mabn.taskia.domain.persistence.repository.TaskRepository
+import com.mabn.taskia.domain.util.LocalDateTimeConverter
+import com.mabn.taskia.ui.taskList.ListType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,6 +30,7 @@ class TaskFormViewModel @Inject constructor(
     var isVisible = MutableStateFlow(false)
     private var _task: Task? = null
 
+    private var _currentList: ListType = ListType.Today
     private val _title = MutableStateFlow("")
     val title: StateFlow<String>
         get() = _title
@@ -41,9 +44,12 @@ class TaskFormViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             _dueTo.collect {
                 if (it != null) {
-                    val day = it.dayOfMonth.toString() + "." +
-                            it.month.toString()
-                    _dueDay.emit(day)
+                    _dueDay.emit(
+                        LocalDateTimeConverter.dateToString(
+                            it,
+                            contextProvider.getContext()
+                        )
+                    )
                 } else {
                     _dueDay.emit(contextProvider.getString(R.string.no_deadline))
                 }
@@ -115,6 +121,33 @@ class TaskFormViewModel @Inject constructor(
         clear()
     }
 
+    fun setCurrentList(currentList: ListType) {
+        _currentList = currentList
+        initDueToDefaultValue()
+    }
+
+    private fun initDueToDefaultValue() {
+        viewModelScope.launch(Dispatchers.IO) {
+            when (_currentList) {
+                is ListType.Today -> {
+                    val date = LocalDate.now().atStartOfDay()
+                    _dueTo.emit(date)
+                    _dueDay.emit(
+                        LocalDateTimeConverter.dateToString(
+                            date,
+                            contextProvider.getContext()
+                        )
+                    )
+
+                }
+                else -> {
+                    _dueTo.emit(null)
+                    _dueDay.emit(contextProvider.getString(R.string.no_deadline))
+                }
+            }
+        }
+    }
+
     fun setTask(task: Task, context: Context) {
         _task = task
         _title.value = task.title
@@ -146,8 +179,7 @@ class TaskFormViewModel @Inject constructor(
     fun clear() {
         _task = null
         _title.value = ""
-        _dueTo.value = null
-        _dueDay.value = contextProvider.getString(R.string.no_deadline)
+        initDueToDefaultValue()
         subtasks.clear()
     }
 }

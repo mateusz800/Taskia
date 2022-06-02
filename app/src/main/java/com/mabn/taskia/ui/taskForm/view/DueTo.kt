@@ -44,6 +44,7 @@ fun DueTo(
             updateDate(date.value)
         }, year, month, day
     )
+    datePickerDialog.datePicker.minDate = System.currentTimeMillis()
     Box(
         contentAlignment = Alignment.BottomStart,
     ) {
@@ -71,7 +72,7 @@ fun DueTo(
                     .padding(horizontal = 10.dp)
                     //.border(width = 1.dp, color = Color.Gray, shape = RoundedCornerShape(12.dp))
                     .height(30.dp)
-                    .widthIn(min=100.dp)
+                    .widthIn(min=200.dp)
                     .focusable(false)
 
 

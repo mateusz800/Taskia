@@ -19,14 +19,14 @@ import com.mabn.taskia.R
 @Composable
 fun Drawer(content: @Composable () -> Unit) {
     val viewModel: DrawerViewModel = hiltViewModel()
-    Column(modifier = Modifier) {
+    Column(modifier = Modifier.padding(top=30.dp)) {
         content()
         Box(
             modifier = Modifier
                 .fillMaxSize(),
             contentAlignment = Alignment.BottomCenter
         ) {
-            ButtonsBar(viewModel = viewModel)
+            //ButtonsBar(viewModel = viewModel)
         }
 
     }

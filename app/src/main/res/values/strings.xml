@@ -30,4 +30,10 @@
     <string name="completed_tasks">Completed</string>
     <string name="pick_date">Pick a date</string>
     <string name="task_completed">Task completed</string>
+    <string name="remove">Remove</string>
+    <string name="no_today_tasks">Nothing more todo today</string>
+    <string name="relax_or_add">Relax or add a new task</string>
+    <string name="complete_to_show">Complete some task to make it visible here</string>
+    <string name="drag">Drag</string>
+    <string name="yesterday">Yesterday</string>
 </resources>

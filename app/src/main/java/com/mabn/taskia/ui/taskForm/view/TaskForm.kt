@@ -1,34 +1,36 @@
 package com.mabn.taskia.ui.taskForm.view
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.mabn.taskia.R
 import com.mabn.taskia.domain.model.Task
+import com.mabn.taskia.ui.common.CustomTextField
 import com.mabn.taskia.ui.taskForm.TaskFormViewModel
 
 @Composable
@@ -38,23 +40,35 @@ fun TaskForm(viewModel: TaskFormViewModel, closeFunc: () -> Unit) {
     val isVisible = viewModel.isVisible.collectAsState()
     val subtasks = viewModel.subtasks
 
-    TaskForm(
-        isVisible = isVisible.value,
-        title = title,
-        subtasks = subtasks,
-        onTitleChanged = viewModel::onTitleChanged,
-        updateSubtaskTitle = viewModel::updateSubtaskTitle,
-        addNewSubtaskFun = viewModel::addNewSubtask,
-        saveFun = {
-            if (viewModel.verifyData()) {
-                viewModel.saveTask()
-                viewModel.clear()
-                closeFunc()
-            }
-        },
-        endDateText = dueToDayText,
-        updateDueTo = { value -> viewModel.updateDueToDate(value) }
-    )
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(
+            modifier = Modifier
+                .padding(top = 10.dp, bottom = 20.dp)
+                .width(50.dp)
+                .height(5.dp)
+                .background(
+                    MaterialTheme.colors.onBackground.copy(alpha = 0.1f),
+                    RoundedCornerShape(20.dp),
+                )
+        )
+        TaskForm(
+            isVisible = isVisible.value,
+            title = title,
+            subtasks = subtasks,
+            onTitleChanged = viewModel::onTitleChanged,
+            updateSubtaskTitle = viewModel::updateSubtaskTitle,
+            addNewSubtaskFun = viewModel::addNewSubtask,
+            saveFun = {
+                if (viewModel.verifyData()) {
+                    viewModel.saveTask()
+                    viewModel.clear()
+                    closeFunc()
+                }
+            },
+            endDateText = dueToDayText,
+            updateDueTo = { value -> viewModel.updateDueToDate(value) }
+        )
+    }
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -74,16 +88,28 @@ private fun TaskForm(
 
     Column(
         modifier = Modifier
-            .padding(20.dp)
+            .padding(horizontal = 20.dp)
             .fillMaxSize()
             .testTag("task_form")
     ) {
-        TitleTextField(
-            value = title,
-            onValueChanged = onTitleChanged,
-            isVisible = isVisible,
-            onDoneKeyClick = saveFun
-        )
+        Box(
+            contentAlignment = Alignment.CenterEnd,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 10.dp)
+        ) {
+            TitleTextField(
+                value = title,
+                onValueChanged = onTitleChanged,
+                isVisible = isVisible,
+                onDoneKeyClick = saveFun,
+            )
+            SaveButton(enabled = title.isNotBlank()) {
+                keyboardController?.hide()
+                saveFun()
+            }
+        }
+
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth()
@@ -92,10 +118,6 @@ private fun TaskForm(
                 dayLabel = endDateText,
                 updateDate = updateDueTo
             )
-            SaveButton(enabled = title.isNotBlank()) {
-                keyboardController?.hide()
-                saveFun()
-            }
         }
 
         Subtasks(
@@ -115,7 +137,7 @@ private fun TitleTextField(
     value: String,
     onValueChanged: (String) -> Unit,
     onDoneKeyClick: () -> Unit,
-    isVisible: Boolean = true
+    isVisible: Boolean = true,
 ) {
     val focusRequester = FocusRequester()
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -126,33 +148,30 @@ private fun TitleTextField(
         }
 
     }
-    TextField(
+    CustomTextField(
         value = value,
         onValueChange = onValueChanged,
-        singleLine = true,
-        textStyle = TextStyle(
-            fontWeight = FontWeight.Bold,
-            fontSize = 20.sp
-        ),
-        colors = TextFieldDefaults.textFieldColors(
-            backgroundColor = Color.Transparent
-        ),
+        style = MaterialTheme.typography.subtitle1,
         modifier = Modifier
             .fillMaxWidth()
+            .padding(end = 20.dp, start = 5.dp, top = 10.dp)
             .focusRequester(focusRequester)
             .testTag("title_input")
             .onKeyEvent {
-                if (it.key == Key.Enter) {
+                if (it.key == Key.Enter && value.isNotBlank()) {
                     onDoneKeyClick.invoke()
                     keyboardController?.hide()
                 }
                 true
             },
 
-        placeholder = { Text(stringResource(id = R.string.task_name)) },
+        placeholderText = stringResource(id = R.string.task_name),
+        underline = true,
         keyboardActions = KeyboardActions(onDone = {
             onDoneKeyClick()
             keyboardController?.hide()
+        }, onPrevious = {
+            println("previous")
         }),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
     )
@@ -170,7 +189,11 @@ private fun SaveButton(enabled: Boolean = true, saveFun: () -> Unit) {
         },
         enabled = enabled
     ) {
-        Icon(Icons.Default.Send, contentDescription = stringResource(id = R.string.save))
+        Icon(
+            Icons.Default.Save,
+            contentDescription = stringResource(id = R.string.save),
+            tint = MaterialTheme.colors.secondary
+        )
     }
 }
 

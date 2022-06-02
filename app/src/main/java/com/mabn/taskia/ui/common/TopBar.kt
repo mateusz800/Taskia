@@ -27,12 +27,15 @@ fun TopBar(onMenuClick: () -> Unit) {
                     contentDescription = stringResource(id = R.string.menu)
                 )
             }
+            /*
             IconButton(onClick = { menuExpanded.value = !menuExpanded.value }) {
                 Icon(
                     Icons.Filled.MoreVert,
                     contentDescription = stringResource(id = R.string.menu_more)
                 )
             }
+
+             */
         }
 
         Box(

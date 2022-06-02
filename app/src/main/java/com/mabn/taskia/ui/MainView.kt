@@ -57,6 +57,7 @@ fun MainView(viewModel: MainViewModel) {
 
     // Handle displaying snackbar if any message
     val messageState = viewModel.message.observeAsState()
+
     LaunchedEffect(messageState.value) {
         if (messageState.value != null
             && (messageState.value!!.type == MessageType.SNACKBAR || messageState.value!!.type == MessageType.TOAST)
@@ -82,6 +83,11 @@ fun MainView(viewModel: MainViewModel) {
         }
     }
 
+    LaunchedEffect(currentList.value){
+        taskFormViewModel.setCurrentList(currentList.value)
+    }
+
+
     val configuration = LocalConfiguration.current
 
     val hideBottomSheet = {
@@ -89,17 +95,27 @@ fun MainView(viewModel: MainViewModel) {
             modalBottomSheetState.hide()
             keyboardController?.hide()
         }
+        taskFormViewModel.clear()
         taskFormViewModel.isVisible.value = false
     }
+
     val context = LocalContext.current
+    BackHandler(scaffoldState.drawerState.isOpen) {
+        coroutineScope.launch(Dispatchers.Main) {
+            scaffoldState.drawerState.close()
+        }
+    }
+    BackHandler(modalBottomSheetState.isVisible) {
+        coroutineScope.launch(Dispatchers.Main) {
+            hideBottomSheet()
+        }
+    }
     DoItTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colors.background
         ) {
-            BackHandler {
-                hideBottomSheet()
-            }
+
             ModalBottomSheetLayout(
                 modifier = Modifier,
                 sheetContent = {
@@ -148,6 +164,7 @@ fun MainView(viewModel: MainViewModel) {
                     },
                     floatingActionButton = {
                         FloatingActionButton(
+                            backgroundColor = MaterialTheme.colors.primary,
                             modifier = Modifier.testTag("add_task_button"),
                             onClick = {
                                 coroutineScope.launch(Dispatchers.Main) {

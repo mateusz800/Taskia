@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -19,13 +18,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.text.TextStyle
 import com.mabn.taskia.R
 
 
@@ -38,52 +36,54 @@ fun CustomTextField(
     leadingIcon: (@Composable () -> Unit)? = null,
     trailingIcon: (@Composable () -> Unit)? = null,
     placeholderText: String = stringResource(id = R.string.new_subtask),
-    fontSize: TextUnit = MaterialTheme.typography.body2.fontSize,
-    enabled:Boolean = true,
-    onEnter: (() -> Unit)? = null
+    style: TextStyle = MaterialTheme.typography.body2,
+    enabled: Boolean = true,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+    underline: Boolean = false
 ) {
     var text by rememberSaveable { mutableStateOf(value) }
     BasicTextField(
         enabled = enabled,
         modifier = modifier
             .background(
-                MaterialTheme.colors.surface,
+                Color.Transparent,
                 MaterialTheme.shapes.small,
             )
-            .width(IntrinsicSize.Min)
-            .onKeyEvent {
-                if (it.key == Key.Enter) {
-                    onEnter?.invoke()
-                }
-                true
-            },
+            .width(IntrinsicSize.Min),
+
         value = value,
         onValueChange = {
-            text = it
+            text = it.replace("\n", "")
             onValueChange(text)
         },
-        singleLine = true,
         cursorBrush = SolidColor(MaterialTheme.colors.primary),
-        textStyle = LocalTextStyle.current.copy(
-            color = MaterialTheme.colors.onSurface,
-            fontSize = fontSize
-        ),
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-        keyboardActions = KeyboardActions(
-            onDone = { onEnter?.invoke() }
-        ),
+        textStyle = style.copy(color = MaterialTheme.colors.onBackground),
+        keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardActions,
         decorationBox = { innerTextField ->
             Row(
-                modifier,
+                modifier.drawBehind {
+                    if (underline) {
+                        val strokeWidth = 1 * density
+                        val y = size.height  +5 * density + strokeWidth / 2
+
+                        drawLine(
+                            Color.LightGray,
+                            Offset(0f, y),
+                            Offset(size.width, y),
+                            strokeWidth
+                        )
+                    }
+                },
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (leadingIcon != null) leadingIcon()
                 Box {
-                    if (text.isEmpty()) Text(
+                    if (value.isEmpty()) Text(
                         placeholderText,
-                        style = LocalTextStyle.current.copy(
+                        style = style.copy(
                             color = MaterialTheme.colors.onSurface.copy(alpha = 0.3f),
-                            fontSize = fontSize
                         )
                     )
                     innerTextField()

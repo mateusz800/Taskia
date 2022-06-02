@@ -9,6 +9,10 @@ class ContextProvider(private val context: Context) {
         return context.getString(id)
     }
 
+    fun getContext(): Context {
+        return context
+    }
+
     fun startActivity(intent: Intent) {
         intent.addFlags(FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
