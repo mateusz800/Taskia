@@ -1,8 +1,11 @@
 plugins {
     id 'com.android.application'
+    id 'com.google.gms.google-services'
     id 'org.jetbrains.kotlin.android'
     id 'dagger.hilt.android.plugin'
     id 'kotlin-kapt'
+   id 'com.google.firebase.crashlytics'
+
 }
 
 android {
@@ -13,7 +16,7 @@ android {
         minSdk 26
         targetSdk 32
         versionCode 1
-        versionName "1.0"
+        versionName "0.1"
 
         testInstrumentationRunner "com.mabn.taskia.domain.di.HiltTestRunner"
 
@@ -101,6 +104,12 @@ dependencies {
     testImplementation 'org.robolectric:robolectric:4.8'
     testImplementation 'androidx.compose.ui:ui-test-junit4:1.1.1'
     debugImplementation 'androidx.compose.ui:ui-test-manifest:1.1.1'
+
+    // firebase
+    implementation platform('com.google.firebase:firebase-bom:30.1.0')
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-crashlytics'
+
 
     // social media
     //implementation 'com.facebook.android:facebook-share:latest.release'
