@@ -1,4 +1,4 @@
-package com.mabn.taskia.domain
+package com.mabn.taskia.domain.util
 
 import android.content.Context
 import android.content.Intent

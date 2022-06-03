@@ -2,7 +2,7 @@ package com.mabn.taskia.ui.common.drawer
 
 import android.content.Intent
 import androidx.lifecycle.ViewModel
-import com.mabn.taskia.domain.ContextProvider
+import com.mabn.taskia.domain.util.ContextProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

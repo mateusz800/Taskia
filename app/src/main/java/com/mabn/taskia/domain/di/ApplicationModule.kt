@@ -2,11 +2,11 @@ package com.mabn.taskia.domain.di
 
 import android.content.Context
 import androidx.room.Room
-import com.mabn.taskia.domain.ContextProvider
 import com.mabn.taskia.domain.persistence.AppDatabase
 import com.mabn.taskia.domain.persistence.dao.TaskDao
 import com.mabn.taskia.domain.persistence.repository.MessageRepository
 import com.mabn.taskia.domain.persistence.repository.TaskRepository
+import com.mabn.taskia.domain.util.ContextProvider
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

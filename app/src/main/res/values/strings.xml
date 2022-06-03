@@ -36,4 +36,9 @@
     <string name="complete_to_show">Complete some task to make it visible here</string>
     <string name="drag">Drag</string>
     <string name="yesterday">Yesterday</string>
+    <string name="day_end_is_coming">The end of the day is coming</string>
+    <plurals name="uncompleted_tasks_with_count">
+        <item quantity="one">You have still uncompleted %d task</item>
+        <item quantity="other">You have still uncompleted %d tasks</item>
+    </plurals>
 </resources>

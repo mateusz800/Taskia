@@ -7,7 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mabn.taskia.R
-import com.mabn.taskia.domain.ContextProvider
+import com.mabn.taskia.domain.util.ContextProvider
 import com.mabn.taskia.domain.model.Message
 import com.mabn.taskia.domain.model.MessageType
 import com.mabn.taskia.domain.model.Task
