@@ -1,14 +1,15 @@
 package com.mabn.taskia.ui.common
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -17,14 +18,20 @@ import com.mabn.taskia.R
 import com.mabn.taskia.ui.common.optionsDropdownMenu.OptionsDropdownMenu
 
 @Composable
-fun TopBar(onMenuClick: () -> Unit) {
+fun TopBar(tabs: List<Pair<String, () -> Unit>>, onMenuClick: () -> Unit) {
     val menuExpanded = remember { mutableStateOf(false) }
-    Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.End) {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colors.primary)
+    ) {
+
+        Row(modifier = Modifier.fillMaxWidth()) {
             IconButton(onClick = onMenuClick) {
                 Icon(
                     Icons.Filled.Menu,
-                    contentDescription = stringResource(id = R.string.menu)
+                    contentDescription = stringResource(id = R.string.menu),
+                    tint = MaterialTheme.colors.onPrimary
                 )
             }
             /*
@@ -37,6 +44,7 @@ fun TopBar(onMenuClick: () -> Unit) {
 
              */
         }
+        Tabs(tabs = tabs)
 
         Box(
             modifier = Modifier
@@ -54,6 +62,6 @@ fun TopBar(onMenuClick: () -> Unit) {
 @Composable
 private fun TopBar_Preview() {
     MaterialTheme {
-        TopBar { }
+        TopBar(tabs = listOf()) { }
     }
 }

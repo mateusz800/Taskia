@@ -26,7 +26,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.mabn.taskia.domain.model.MessageType
 import com.mabn.taskia.ui.common.TopBar
 import com.mabn.taskia.ui.common.drawer.Drawer
-import com.mabn.taskia.ui.common.drawer.DrawerItem
 import com.mabn.taskia.ui.taskForm.TaskFormViewModel
 import com.mabn.taskia.ui.taskForm.view.TaskForm
 import com.mabn.taskia.ui.taskList.view.TaskEntireList
@@ -83,7 +82,7 @@ fun MainView(viewModel: MainViewModel) {
         }
     }
 
-    LaunchedEffect(currentList.value){
+    LaunchedEffect(currentList.value) {
         taskFormViewModel.setCurrentList(currentList.value)
     }
 
@@ -138,7 +137,13 @@ fun MainView(viewModel: MainViewModel) {
                 Scaffold(
                     scaffoldState = scaffoldState,
                     topBar = {
-                        TopBar {
+                        TopBar(
+                            tabs = viewModel.availableListSet.map {
+                                Pair(stringResource(id = it.textId)) {
+                                    viewModel.showList(it)
+                                }
+                            }
+                        ) {
                             coroutineScope.launch(Dispatchers.Main) {
                                 scaffoldState.drawerState.open()
                             }
@@ -146,20 +151,7 @@ fun MainView(viewModel: MainViewModel) {
                     },
                     drawerContent = {
                         Drawer {
-                            viewModel.availableListSet.forEach {
-                                DrawerItem(
-                                    text = stringResource(id = it.textId),
-                                    active = (currentList.value == it),
-                                    onClick = {
-                                        viewModel.showList(it)
-                                        coroutineScope.launch(Dispatchers.Main) {
-                                            scaffoldState.drawerState.close()
-                                        }
-                                    }
-                                )
-
-
-                            }
+                            // TODO
                         }
                     },
                     floatingActionButton = {

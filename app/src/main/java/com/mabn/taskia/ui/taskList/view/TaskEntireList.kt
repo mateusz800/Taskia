@@ -4,17 +4,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.mabn.taskia.R
 import com.mabn.taskia.domain.model.Task
+import com.mabn.taskia.domain.util.LocalDateTimeConverter
 import com.mabn.taskia.ui.taskList.ListType
 import com.mabn.taskia.ui.taskList.TaskListViewModel
 
@@ -25,12 +24,9 @@ fun TaskEntireList(
     showTaskForm: (Task) -> Unit,
 ) {
     viewModel.setListType(listType)
-
+    val context = LocalContext.current
     val overdueTasks = viewModel.overdueTasks.observeAsState()
     val tasks = viewModel.tasks.observeAsState()
-
-
-
 
     Column(Modifier.padding(vertical = 10.dp)) {
         if (
@@ -49,23 +45,36 @@ fun TaskEntireList(
                 onItemClick = showTaskForm
             )
         }
-        Text(
-            stringResource(id = listType.textId),
-            style = MaterialTheme.typography.h2,
-            modifier = Modifier.padding(15.dp)
-        )
         if (!tasks.value.isNullOrEmpty()) {
-            TaskListSection(
-                text = "",
-                items = tasks.value!!,
-                onTaskRemove = { task ->
-                    viewModel.removeTask(task)
-                },
-                toggleStatusFun = { task ->
-                    viewModel.toggleTaskStatus(task)
-                },
-                onItemClick = showTaskForm
-            )
+
+            val grouped = tasks.value!!.groupBy { it.first.endDate }
+            grouped.keys.forEach {
+                if (it != null) {
+                    TaskListSection(
+                        text = LocalDateTimeConverter.dateToString(it, context),
+                        items = grouped[it]!!,
+                        onTaskRemove = { task ->
+                            viewModel.removeTask(task)
+                        },
+                        toggleStatusFun = { task ->
+                            viewModel.toggleTaskStatus(task)
+                        },
+                        onItemClick = showTaskForm
+                    )
+                } else {
+                    TaskListSection(
+                        text = stringResource(id = R.string.unscheduled_tasks),
+                        items = tasks.value!!,
+                        onTaskRemove = { task ->
+                            viewModel.removeTask(task)
+                        },
+                        toggleStatusFun = { task ->
+                            viewModel.toggleTaskStatus(task)
+                        },
+                        onItemClick = showTaskForm
+                    )
+                }
+            }
         }
         if (
             (listType == ListType.Today && overdueTasks.value?.isEmpty() == true && tasks.value?.isEmpty() == true) ||
@@ -82,7 +91,6 @@ fun TaskEntireList(
         }
     }
 }
-
 
 /*
 @Preview

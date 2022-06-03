@@ -11,7 +11,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.mabn.taskia.domain.model.Task
@@ -19,7 +18,7 @@ import com.mabn.taskia.domain.model.Task
 @Composable
 fun TaskListSection(
     text: String,
-    items: SnapshotStateList<Pair<Task, List<Task>>>,
+    items: List<Pair<Task, List<Task>>>,
     onTaskRemove: (task: Task) -> Unit,
     toggleStatusFun: (task: Task) -> Unit,
     onItemClick: (task: Task) -> Unit
@@ -29,7 +28,9 @@ fun TaskListSection(
             Text(
                 text,
                 style = MaterialTheme.typography.h2,
-                modifier = Modifier.padding(15.dp)
+                modifier = Modifier
+                    .padding(horizontal = 15.dp)
+                    .padding(top = 15.dp)
             )
         }
         TaskList(

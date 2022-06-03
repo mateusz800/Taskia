@@ -27,8 +27,8 @@ class MainViewModel @Inject constructor(
 
     val availableListSet = setOf(
         ListType.Today,
-        ListType.Unscheduled,
         ListType.Upcoming,
+        ListType.Unscheduled,
         ListType.Completed
     )
     private val _currentList = MutableStateFlow<ListType>(ListType.Today)
