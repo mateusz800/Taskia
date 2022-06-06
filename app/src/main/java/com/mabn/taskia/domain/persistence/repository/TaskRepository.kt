@@ -20,26 +20,10 @@ class TaskRepository(
         }
     }
 
-    suspend fun getAllOverdue(): Flow<List<TaskAndSubtasks>> {
-        return withContext(Dispatchers.IO) {
-            taskDao.getUncompletedByTime(
-                LocalDate.now()
-                    .atStartOfDay()
-                    .toInstant(ZoneOffset.UTC)
-                    .toEpochMilli()
-            )
-        }
-    }
 
     suspend fun getAllUpcoming(): Flow<List<TaskAndSubtasks>> {
         return withContext(Dispatchers.IO) {
-            taskDao.getUpcoming(
-                LocalDate.now()
-                    .plusDays(1)
-                    .atStartOfDay()
-                    .toInstant(ZoneOffset.UTC)
-                    .toEpochMilli()
-            )
+            taskDao.getAllScheduled()
         }
     }
 
@@ -57,14 +41,10 @@ class TaskRepository(
 
     suspend fun getTodayTasks(): Flow<List<TaskAndSubtasks>> {
         return withContext(Dispatchers.IO) {
-            taskDao.getAll(
+            taskDao.getUncompletedByTime(
                 LocalDate.now()
                     .atStartOfDay()
-                    .toInstant(ZoneOffset.UTC)
-                    .toEpochMilli(),
-                LocalDate.now()
                     .plusDays(1)
-                    .atStartOfDay()
                     .minusNanos(1)
                     .toInstant(ZoneOffset.UTC)
                     .toEpochMilli()

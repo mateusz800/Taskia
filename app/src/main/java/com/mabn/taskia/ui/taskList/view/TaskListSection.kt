@@ -2,44 +2,26 @@ package com.mabn.taskia.ui.taskList.view
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.mabn.taskia.domain.model.Task
 
 @Composable
 fun TaskListSection(
-    text: String,
     items: List<Pair<Task, List<Task>>>,
     onTaskRemove: (task: Task) -> Unit,
     toggleStatusFun: (task: Task) -> Unit,
     onItemClick: (task: Task) -> Unit
 ) {
-    Column {
-        if (text.isNotBlank()) {
-            Text(
-                text,
-                style = MaterialTheme.typography.h2,
-                modifier = Modifier
-                    .padding(horizontal = 15.dp)
-                    .padding(top = 15.dp)
-            )
-        }
-        TaskList(
-            taskList = items,
-            onTaskRemove = onTaskRemove,
-            toggleStatusFun = toggleStatusFun,
-            onItemClick = onItemClick
-        )
-    }
+    TaskList(
+        taskList = items,
+        onTaskRemove = onTaskRemove,
+        toggleStatusFun = toggleStatusFun,
+        onItemClick = onItemClick
+    )
 }
 
 
@@ -54,14 +36,14 @@ private fun TaskList(
     val listState: LazyListState = rememberLazyListState()
 
     if (taskList.isNotEmpty()) {
-        LazyColumn(
-            state = listState,
+        Column(
+
         ) {
-            items(taskList.toList()) {
+            taskList.toList().forEach {
                 val task = it.first
                 val subtasks = it.second
                 key(task.id) {
-                    Column(modifier = Modifier.animateItemPlacement()) {
+                    Column(modifier = Modifier/* Modifier.animateItemPlacement()*/) {
                         TaskItem(
                             task = task,
                             subtasks = subtasks,

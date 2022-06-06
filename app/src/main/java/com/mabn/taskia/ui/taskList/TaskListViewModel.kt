@@ -7,12 +7,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mabn.taskia.R
-import com.mabn.taskia.domain.util.ContextProvider
 import com.mabn.taskia.domain.model.Message
 import com.mabn.taskia.domain.model.MessageType
 import com.mabn.taskia.domain.model.Task
 import com.mabn.taskia.domain.persistence.repository.MessageRepository
 import com.mabn.taskia.domain.persistence.repository.TaskRepository
+import com.mabn.taskia.domain.util.ContextProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -59,10 +59,7 @@ class TaskListViewModel @Inject constructor(
 
     private fun collectTasks() {
         when (_listType.value) {
-            is ListType.Today -> {
-                collectOverdueTasks()
-                collectTodayTasks()
-            }
+            is ListType.Today -> collectTodayTasks()
             is ListType.Unscheduled -> collectUnscheduledTasks()
             is ListType.Completed -> collectCompletedTasks()
             is ListType.Upcoming -> collectUpcomingTasks()
@@ -87,17 +84,6 @@ class TaskListViewModel @Inject constructor(
         })
     }
 
-    private fun collectOverdueTasks() {
-        _jobs.add(viewModelScope.launch(Dispatchers.IO) {
-            taskRepository.getAllOverdue().collect { result ->
-                val overdueTaskList = SnapshotStateList<Pair<Task, List<Task>>>()
-                result.forEach {
-                    overdueTaskList.add(Pair(it.task, it.subtasks))
-                }
-                _overdueTasks.postValue(overdueTaskList)
-            }
-        })
-    }
 
     private fun collectTodayTasks() {
         _jobs.add(viewModelScope.launch(Dispatchers.IO) {
@@ -106,7 +92,16 @@ class TaskListViewModel @Inject constructor(
                 result.forEach {
                     todayTaskList.add(Pair(it.task, it.subtasks))
                 }
+                val prevValue = _todayTasks.value
                 _todayTasks.postValue(todayTaskList)
+                if (prevValue == null) {
+                    messageRepository.insertMessage(
+                        Message(
+                            text = "Tasks loaded",
+                            type = MessageType.LOADED_EVENT
+                        )
+                    )
+                }
             }
         })
     }
@@ -118,7 +113,17 @@ class TaskListViewModel @Inject constructor(
                 result.forEach {
                     unscheduledTaskList.add(Pair(it.task, it.subtasks))
                 }
+                val prevValue = _unscheduledTasks.value
                 _unscheduledTasks.postValue(unscheduledTaskList)
+                if (prevValue == null) {
+                    messageRepository.insertMessage(
+                        Message(
+                            text = "Tasks loaded",
+                            type = MessageType.LOADED_EVENT
+                        )
+                    )
+                }
+
             }
         })
     }
@@ -130,7 +135,16 @@ class TaskListViewModel @Inject constructor(
                 result.forEach {
                     completedTaskList.add(Pair(it.task, it.subtasks))
                 }
+                val prevValue = _completedTasks.value
                 _completedTasks.postValue(completedTaskList)
+                if (prevValue == null) {
+                    messageRepository.insertMessage(
+                        Message(
+                            text = "Tasks loaded",
+                            type = MessageType.LOADED_EVENT
+                        )
+                    )
+                }
             }
         })
     }
@@ -142,7 +156,16 @@ class TaskListViewModel @Inject constructor(
                 result.forEach {
                     upcomingTaskList.add(Pair(it.task, it.subtasks))
                 }
+                val prevValue = _upcomingTasks.value
                 _upcomingTasks.postValue(upcomingTaskList)
+                if (prevValue == null) {
+                    messageRepository.insertMessage(
+                        Message(
+                            text = "Tasks loaded",
+                            type = MessageType.LOADED_EVENT
+                        )
+                    )
+                }
             }
         })
     }

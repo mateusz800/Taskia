@@ -21,6 +21,10 @@ interface TaskDao {
     fun getAll(): Flow<List<TaskAndSubtasks>>
 
     @Transaction
+    @Query("SELECT * FROM Task WHERE parentId is null and endDate is not null ")
+    fun getAllScheduled(): Flow<List<TaskAndSubtasks>>
+
+    @Transaction
     @Query(
         "SELECT * FROM Task Where parentId is null AND " +
                 "endDate BETWEEN :startTime AND :endTime AND status = 0"

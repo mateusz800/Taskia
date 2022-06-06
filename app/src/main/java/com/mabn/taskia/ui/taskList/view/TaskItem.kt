@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mabn.taskia.R
 import com.mabn.taskia.domain.model.Task
+import java.time.LocalDate
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -46,14 +47,14 @@ fun TaskItem(
     Column(
         modifier = Modifier
             .background(MaterialTheme.colors.background)
-            .padding(top = if (!isSubtask) 10.dp else 0.dp)
+            .padding(top =  0.dp)
     ) {
         SwipeToDismiss(
             state = dismissState,
             background = {
                 Box(
                     modifier = Modifier
-                        .fillMaxSize(0.95f)
+                        .fillMaxWidth(0.95f)
                         .clip(RectangleShape)
                         .background(Color.Red),
                     contentAlignment = Alignment.CenterStart
@@ -71,7 +72,11 @@ fun TaskItem(
             TaskGeneralInfo(
                 task.status,
                 task.title,
-                dueDay = task.getEndDay(context = LocalContext.current),
+                dueDay = if (task.endDate != null && task.endDate!!.isBefore(
+                        LocalDate.now().atStartOfDay()
+                    )
+                )
+                    task.getEndDay(context = LocalContext.current) else null,
                 onCheck = {
                     toggleStatusFun(task)
                 },
@@ -128,7 +133,7 @@ fun TaskGeneralInfo(
         if (dueDay?.isNotEmpty() == true) {
             Row(
                 modifier = Modifier
-                    .padding(vertical = 5.dp)
+                    .padding(top = 5.dp)
                     .padding(horizontal = 50.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -138,9 +143,10 @@ fun TaskGeneralInfo(
                     contentDescription = stringResource(id = R.string.deadline),
                     modifier = Modifier
                         .height(16.dp)
-                        .padding(end = 10.dp)
+                        .padding(end = 10.dp),
+                    tint = MaterialTheme.colors.error
                 )
-                Text(dueDay, fontSize = 12.sp)
+                Text(dueDay, fontSize = 12.sp, color = MaterialTheme.colors.error)
             }
         }
     }

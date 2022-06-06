@@ -43,7 +43,7 @@ fun TaskForm(viewModel: TaskFormViewModel, closeFunc: () -> Unit) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Box(
             modifier = Modifier
-                .padding(top = 10.dp, bottom = 20.dp)
+                .padding(top = 10.dp, bottom = 10.dp)
                 .width(50.dp)
                 .height(5.dp)
                 .background(
@@ -192,7 +192,7 @@ private fun SaveButton(enabled: Boolean = true, saveFun: () -> Unit) {
         Icon(
             Icons.Default.Save,
             contentDescription = stringResource(id = R.string.save),
-            tint = MaterialTheme.colors.secondary
+            tint = MaterialTheme.colors.onBackground
         )
     }
 }
