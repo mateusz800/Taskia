@@ -20,6 +20,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -198,7 +199,8 @@ class TaskListViewModel @Inject constructor(
 
     fun toggleTaskStatus(task: Task): Boolean {
         val subtasksList = _tasks.value?.get(task)
-        val allSubtasksCompleted =if(subtasksList.isNullOrEmpty()) true else subtasksList.stream().allMatch {  it.status }
+        val allSubtasksCompleted =
+            if (subtasksList.isNullOrEmpty()) true else subtasksList.stream().allMatch { it.status }
         viewModelScope.launch(Dispatchers.IO) {
             var newStatus = task.status
             if (subtasksList.isNullOrEmpty()) {
@@ -215,6 +217,9 @@ class TaskListViewModel @Inject constructor(
 
             if (newStatus != task.status) {
                 task.status = newStatus
+                if (newStatus) {
+                    task.completionTime = LocalDateTime.now()
+                }
                 delay(500)
                 taskRepository.update(task)
                 if (task.parentId != null) {

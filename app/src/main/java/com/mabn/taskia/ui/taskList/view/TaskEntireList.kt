@@ -45,7 +45,9 @@ fun TaskEntireList(
     ) {
         if (!tasks.value.isNullOrEmpty()) {
             val grouped = tasks.value!!.groupBy {
-                if (it.first.endDate != null && it.first.endDate!!.isBefore(
+                if (listType == ListType.Completed) {
+                    LocalDate.now().atStartOfDay()
+                } else if (it.first.endDate != null && it.first.endDate!!.isBefore(
                         LocalDate.now().atStartOfDay()
                     )
                 ) LocalDate.now().minusDays(1).atStartOfDay()
@@ -56,7 +58,6 @@ fun TaskEntireList(
                 modifier = Modifier
             ) {
                 grouped.keys.forEachIndexed { index, it ->
-
                     stickyHeader(index) {
                         Row(
                             Modifier
@@ -72,7 +73,9 @@ fun TaskEntireList(
                                 }
                         ) {
                             Text(
-                                if (it != null && it.isBefore(
+                                if (listType == ListType.Completed) {
+                                    stringResource(id = R.string.completed_tasks)
+                                } else if (it != null && it.isBefore(
                                         LocalDate.now().atStartOfDay()
                                     )
                                 ) {

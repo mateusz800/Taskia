@@ -15,7 +15,8 @@ data class Task(
     var description: String? = null,
     var parentId: Long? = null,
     var order: Int? = id.toInt(),
-    var endDate: LocalDateTime? = null
+    var endDate: LocalDateTime? = null,
+    var completionTime: LocalDateTime? = null
 ) {
     fun getEndDay(context: Context): String {
         if (endDate != null) {

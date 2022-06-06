@@ -21,7 +21,7 @@ interface TaskDao {
     fun getAll(): Flow<List<TaskAndSubtasks>>
 
     @Transaction
-    @Query("SELECT * FROM Task WHERE parentId is null and endDate is not null ")
+    @Query("SELECT * FROM Task WHERE parentId is null and endDate is not null and status = 0 ")
     fun getAllScheduled(): Flow<List<TaskAndSubtasks>>
 
     @Transaction
@@ -50,7 +50,7 @@ interface TaskDao {
     fun getAllUnscheduled(): Flow<List<TaskAndSubtasks>>
 
     @Transaction
-    @Query("SELECT * FROM Task WHERE parentId is null AND status = 1")
+    @Query("SELECT * FROM Task WHERE parentId is null AND status = 1 ORDER BY completionTime DESC")
     fun getAllCompleted(): Flow<List<TaskAndSubtasks>>
 
     @Query("SELECT * FROM TASK WHERE id=:id")

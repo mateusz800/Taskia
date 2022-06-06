@@ -60,6 +60,7 @@ fun TaskItem(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth(0.95f)
+                        .fillMaxHeight()
                         .clip(RectangleShape)
                         .background(Color.Red),
                     contentAlignment = Alignment.CenterStart
