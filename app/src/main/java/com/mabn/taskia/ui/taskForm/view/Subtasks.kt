@@ -71,7 +71,7 @@ private fun SubtaskInput(
 
     Row(verticalAlignment = Alignment.CenterVertically) {
         CustomCheckbox(status = task.status, enabled = false) {
-            // TODO
+            true
         }
         Spacer(modifier = Modifier.width(10.dp))
         CustomTextField(

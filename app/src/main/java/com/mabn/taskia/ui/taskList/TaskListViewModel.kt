@@ -16,6 +16,7 @@ import com.mabn.taskia.domain.util.ContextProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -195,14 +196,14 @@ class TaskListViewModel @Inject constructor(
         }
     }
 
-    fun toggleTaskStatus(task: Task) {
+    fun toggleTaskStatus(task: Task): Boolean {
+        val subtasksList = _tasks.value?.get(task)
+        val allSubtasksCompleted =if(subtasksList.isNullOrEmpty()) true else subtasksList.stream().allMatch {  it.status }
         viewModelScope.launch(Dispatchers.IO) {
-            val subtasksList = _tasks.value?.get(task)
             var newStatus = task.status
             if (subtasksList.isNullOrEmpty()) {
                 newStatus = !task.status
             } else {
-                val allSubtasksCompleted = subtasksList.stream().allMatch { task -> task.status }
                 if (allSubtasksCompleted || task.status) {
                     newStatus = !task.status
                 } else {
@@ -214,6 +215,7 @@ class TaskListViewModel @Inject constructor(
 
             if (newStatus != task.status) {
                 task.status = newStatus
+                delay(500)
                 taskRepository.update(task)
                 if (task.parentId != null) {
                     val parentTask =
@@ -237,6 +239,10 @@ class TaskListViewModel @Inject constructor(
                 }
             }
         }
+        if (!(allSubtasksCompleted || task.status)) {
+            return false
+        }
+        return true
     }
 
     private fun undoToggleStatus() {

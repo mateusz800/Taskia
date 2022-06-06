@@ -13,7 +13,7 @@ import com.mabn.taskia.domain.model.Task
 fun TaskListSection(
     items: List<Pair<Task, List<Task>>>,
     onTaskRemove: (task: Task) -> Unit,
-    toggleStatusFun: (task: Task) -> Unit,
+    toggleStatusFun: (task: Task) -> Boolean,
     onItemClick: (task: Task) -> Unit
 ) {
     TaskList(
@@ -30,7 +30,7 @@ fun TaskListSection(
 private fun TaskList(
     taskList: List<Pair<Task, List<Task>>>,
     onTaskRemove: (task: Task) -> Unit,
-    toggleStatusFun: (task: Task) -> Unit,
+    toggleStatusFun: (task: Task) -> Boolean,
     onItemClick: (task: Task) -> Unit
 ) {
     val listState: LazyListState = rememberLazyListState()

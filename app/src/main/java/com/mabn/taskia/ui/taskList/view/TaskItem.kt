@@ -1,18 +1,18 @@
 package com.mabn.taskia.ui.taskList.view
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,7 +35,7 @@ fun TaskItem(
     task: Task,
     subtasks: List<Task>?,
     removeItemFunc: (task: Task) -> Unit,
-    toggleStatusFun: (task: Task) -> Unit,
+    toggleStatusFun: (task: Task) -> Boolean,
     isSubtask: Boolean = false,
     onClick: ((task: Task) -> Unit)?
 ) {
@@ -115,7 +115,7 @@ fun TaskGeneralInfo(
     status: Boolean,
     title: String,
     dueDay: String? = null,
-    onCheck: () -> Unit,
+    onCheck: () -> Boolean,
     onClick: (() -> Unit)?,
     expandStatus: Boolean = false,
     expandFun: (() -> Unit)? = null
@@ -131,7 +131,7 @@ fun TaskGeneralInfo(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Row {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 CustomCheckbox(status) {
                     onCheck()
                 }
@@ -180,7 +180,7 @@ fun TaskGeneralInfo(
 private fun SubtasksList(
     subtasks: List<Task>,
     removeItemFunc: (Task) -> Unit,
-    toggleStatusFun: (Task) -> Unit
+    toggleStatusFun: (Task) -> Boolean
 ) {
     Column {
         subtasks.forEach { subtask ->
@@ -199,14 +199,31 @@ private fun SubtasksList(
 }
 
 @Composable
-fun CustomCheckbox(status: Boolean, enabled: Boolean = true, onCheck: () -> Unit) {
-    Checkbox(
-        checked = status,
-        enabled = enabled,
-        onCheckedChange = {
-            onCheck()
+fun CustomCheckbox(status: Boolean, enabled: Boolean = true, onCheck: () -> Boolean) {
+    val checked = remember { mutableStateOf(status) }
+    val coroutineScope = rememberCoroutineScope()
+    Box(
+        modifier = Modifier
+            .height(40.dp)
+            .width(30.dp)
+            .padding(vertical = 10.dp)
+            .padding(end = 10.dp)
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colors.onBackground,
+                shape = RoundedCornerShape(6.dp)
+            )
+            .clickable(enabled = enabled) {
+                if(onCheck()){
+                    checked.value = !checked.value
+                }
+            }
+    ) {
+        if (checked.value) {
+            Icon(Icons.Default.Check, status.toString(),
+            tint = MaterialTheme.colors.primary)
         }
-    )
+    }
 }
 
 @Preview
@@ -219,7 +236,7 @@ private fun TaskItem_Preview() {
             task = task,
             subtasks = subtasks,
             removeItemFunc = {},
-            toggleStatusFun = {},
+            toggleStatusFun = {true},
             onClick = {}
         )
     }
