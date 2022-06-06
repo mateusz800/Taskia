@@ -5,10 +5,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,13 +45,14 @@ fun TaskItem(
         }
         false
     })
+    val isExpanded = remember { mutableStateOf(false) }
     val onClickFun: (() -> Unit)? = if (onClick != null) {
         { onClick.invoke(task) }
     } else null
     Column(
         modifier = Modifier
             .background(MaterialTheme.colors.background)
-            .padding(top =  0.dp)
+            .padding(top = 0.dp)
     ) {
         SwipeToDismiss(
             state = dismissState,
@@ -80,10 +85,16 @@ fun TaskItem(
                 onCheck = {
                     toggleStatusFun(task)
                 },
-                onClick = onClickFun
+                onClick = onClickFun,
+                expandStatus = isExpanded.value,
+                expandFun = if (subtasks.isNullOrEmpty()) {
+                    null
+                } else ({
+                    isExpanded.value = !isExpanded.value
+                })
             )
         }
-        if (!subtasks.isNullOrEmpty()) {
+        if (isExpanded.value && !subtasks.isNullOrEmpty()) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -105,7 +116,9 @@ fun TaskGeneralInfo(
     title: String,
     dueDay: String? = null,
     onCheck: () -> Unit,
-    onClick: (() -> Unit)?
+    onClick: (() -> Unit)?,
+    expandStatus: Boolean = false,
+    expandFun: (() -> Unit)? = null
 ) {
     Column(
         modifier = Modifier
@@ -115,20 +128,31 @@ fun TaskGeneralInfo(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp),
-
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            CustomCheckbox(status) {
-                onCheck()
+            Row {
+                CustomCheckbox(status) {
+                    onCheck()
+                }
+                Spacer(modifier = Modifier.width(5.dp))
+                Text(
+                    text = title,
+                    modifier = if (onClick != null) Modifier.clickable { onClick() } else Modifier,
+                    style = MaterialTheme.typography.subtitle1,
+                    overflow = TextOverflow.Ellipsis,
+                    textDecoration = if (status) TextDecoration.LineThrough else TextDecoration.None
+                )
             }
-            Spacer(modifier = Modifier.width(5.dp))
-            Text(
-                text = title,
-                modifier = if (onClick != null) Modifier.clickable { onClick() } else Modifier,
-                style = MaterialTheme.typography.subtitle1,
-                overflow = TextOverflow.Ellipsis,
-                textDecoration = if (status) TextDecoration.LineThrough else TextDecoration.None
-            )
+            if (expandFun != null) {
+                IconButton(onClick = { expandFun.invoke() }) {
+                    Icon(
+                        if (expandStatus) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
+                        null
+                    )
+                }
+            }
+
         }
         if (dueDay?.isNotEmpty() == true) {
             Row(

@@ -119,7 +119,6 @@ fun TaskEntireList(
 
             }
         }
-
         if (tasks.value?.isEmpty() == true) {
             Box(
                 contentAlignment = Alignment.Center,
