@@ -1,18 +1,13 @@
 package com.mabn.taskia.ui
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -22,10 +17,13 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.mabn.taskia.R
 import com.mabn.taskia.domain.model.MessageType
 import com.mabn.taskia.ui.common.TopBar
 import com.mabn.taskia.ui.common.drawer.Drawer
+import com.mabn.taskia.ui.common.optionsDropdownMenu.AlertButton
 import com.mabn.taskia.ui.taskForm.TaskFormViewModel
 import com.mabn.taskia.ui.taskForm.view.TaskForm
 import com.mabn.taskia.ui.taskList.view.TaskEntireList
@@ -42,15 +40,23 @@ fun MainView(viewModel: MainViewModel) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val taskFormViewModel: TaskFormViewModel = hiltViewModel()
     val currentList = viewModel.currentList.collectAsState()
+    val formDataChanged = taskFormViewModel.dataChanged.collectAsState()
+    val showTaskChangedDialog = remember{ mutableStateOf(false)}
     val modalBottomSheetState =
         rememberModalBottomSheetState(
             initialValue = ModalBottomSheetValue.Hidden,
             confirmStateChange = {
                 if (it == ModalBottomSheetValue.Hidden) {
                     keyboardController?.hide()
+                    showTaskChangedDialog.value = false
                     taskFormViewModel.isVisible.value = false
+                    if (formDataChanged.value) {
+                        showTaskChangedDialog.value = true
+                    }
+                } else {
+                    showTaskChangedDialog.value = false
                 }
-                true
+                !formDataChanged.value
                 // it != ModalBottomSheetValue.HalfExpanded
             })
 
@@ -106,6 +112,7 @@ fun MainView(viewModel: MainViewModel) {
     }
     BackHandler(modalBottomSheetState.isVisible) {
         coroutineScope.launch(Dispatchers.Main) {
+
             hideBottomSheet()
         }
     }
@@ -186,6 +193,47 @@ fun MainView(viewModel: MainViewModel) {
 
         }
     }
+    if(showTaskChangedDialog.value) {
+        NotSavedAlert(saveFun = {
+            taskFormViewModel.saveTask()
+            hideBottomSheet()
+            showTaskChangedDialog.value = false
+        }) {
+            hideBottomSheet()
+            showTaskChangedDialog.value = false
+        }
+    }
+}
+
+@Composable
+private fun NotSavedAlert( saveFun: () -> Unit, dismissFun: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = {
+        },
+        properties = DialogProperties(),
+        title = {
+            Text(stringResource(id = R.string.unsaved_changes))
+        },
+        buttons = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                AlertButton(
+                    stringResource(id = R.string.discard),
+                    onClick = {
+                        dismissFun()
+                    }
+                )
+                AlertButton(
+                    stringResource(id = R.string.save),
+                    onClick = { saveFun() }
+                )
+
+            }
+
+        }
+    )
 }
 
 

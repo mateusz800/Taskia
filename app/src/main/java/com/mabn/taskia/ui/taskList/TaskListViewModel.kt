@@ -1,5 +1,6 @@
 package com.mabn.taskia.ui.taskList
 
+import android.content.Intent
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.lifecycle.LiveData
@@ -13,6 +14,7 @@ import com.mabn.taskia.domain.model.Task
 import com.mabn.taskia.domain.persistence.repository.MessageRepository
 import com.mabn.taskia.domain.persistence.repository.TaskRepository
 import com.mabn.taskia.domain.util.ContextProvider
+import com.mabn.taskia.domain.util.IntentAction
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -75,12 +77,8 @@ class TaskListViewModel @Inject constructor(
                 val prevValue = _tasks.value
                 _tasks.postValue(newTasksData)
                 if (prevValue == null) {
-                    messageRepository.insertMessage(
-                        Message(
-                            text = "Tasks loaded",
-                            type = MessageType.LOADED_EVENT
-                        )
-                    )
+                    contextProvider.getContext()
+                        .sendBroadcast(Intent(IntentAction.ACTION_APP_LOADED))
                 }
             }
         })
@@ -97,12 +95,8 @@ class TaskListViewModel @Inject constructor(
                 val prevValue = _todayTasks.value
                 _todayTasks.postValue(todayTaskList)
                 if (prevValue == null) {
-                    messageRepository.insertMessage(
-                        Message(
-                            text = "Tasks loaded",
-                            type = MessageType.LOADED_EVENT
-                        )
-                    )
+                    contextProvider.getContext()
+                        .sendBroadcast(Intent(IntentAction.ACTION_APP_LOADED))
                 }
             }
         })
@@ -118,12 +112,8 @@ class TaskListViewModel @Inject constructor(
                 val prevValue = _unscheduledTasks.value
                 _unscheduledTasks.postValue(unscheduledTaskList)
                 if (prevValue == null) {
-                    messageRepository.insertMessage(
-                        Message(
-                            text = "Tasks loaded",
-                            type = MessageType.LOADED_EVENT
-                        )
-                    )
+                    contextProvider.getContext()
+                        .sendBroadcast(Intent(IntentAction.ACTION_APP_LOADED))
                 }
 
             }
@@ -140,12 +130,8 @@ class TaskListViewModel @Inject constructor(
                 val prevValue = _completedTasks.value
                 _completedTasks.postValue(completedTaskList)
                 if (prevValue == null) {
-                    messageRepository.insertMessage(
-                        Message(
-                            text = "Tasks loaded",
-                            type = MessageType.LOADED_EVENT
-                        )
-                    )
+                    contextProvider.getContext()
+                        .sendBroadcast(Intent(IntentAction.ACTION_APP_LOADED))
                 }
             }
         })
@@ -161,12 +147,8 @@ class TaskListViewModel @Inject constructor(
                 val prevValue = _upcomingTasks.value
                 _upcomingTasks.postValue(upcomingTaskList)
                 if (prevValue == null) {
-                    messageRepository.insertMessage(
-                        Message(
-                            text = "Tasks loaded",
-                            type = MessageType.LOADED_EVENT
-                        )
-                    )
+                    contextProvider.getContext()
+                        .sendBroadcast(Intent(IntentAction.ACTION_APP_LOADED))
                 }
             }
         })

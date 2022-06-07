@@ -5,13 +5,17 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mabn.taskia.R
@@ -26,15 +30,31 @@ fun TopBar(tabs: List<Pair<String, () -> Unit>>, onMenuClick: () -> Unit) {
             .background(MaterialTheme.colors.primary)
     ) {
 
-        Row(modifier = Modifier.fillMaxWidth()) {
-            IconButton(onClick = onMenuClick) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            /*IconButton(onClick = onMenuClick) {
                 Icon(
                     Icons.Filled.Menu,
                     contentDescription = stringResource(id = R.string.menu),
                     tint = MaterialTheme.colors.onPrimary
                 )
+            }*/
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                    contentDescription = null,
+                    modifier = Modifier.height(50.dp)
+                )
+                Text(
+                    stringResource(id = R.string.app_name),
+                    fontWeight = FontWeight.Bold
+                )
             }
-            /*
+
             IconButton(onClick = { menuExpanded.value = !menuExpanded.value }) {
                 Icon(
                     Icons.Filled.MoreVert,
@@ -42,19 +62,24 @@ fun TopBar(tabs: List<Pair<String, () -> Unit>>, onMenuClick: () -> Unit) {
                 )
             }
 
-             */
         }
-        Tabs(tabs = tabs)
-
         Box(
             modifier = Modifier
                 .padding(end = 10.dp)
+                .fillMaxWidth(),
+            contentAlignment = Alignment.TopEnd
         ) {
-            OptionsDropdownMenu(
-                expanded = menuExpanded.value,
-                onDismissRequest = { menuExpanded.value = false })
+            Box {
+                OptionsDropdownMenu(
+                    expanded = menuExpanded.value,
+                    onDismissRequest = { menuExpanded.value = false })
+            }
         }
+
+        Tabs(tabs = tabs)
     }
+
+
 }
 
 

@@ -30,6 +30,9 @@ class TaskFormViewModel @Inject constructor(
     var isVisible = MutableStateFlow(false)
     private var _task: Task? = null
 
+    private val _dataChanged = MutableStateFlow(false)
+    val dataChanged:StateFlow<Boolean> = _dataChanged
+
     private var _currentList: ListType = ListType.Today
     private val _title = MutableStateFlow("")
     val title: StateFlow<String>
@@ -61,9 +64,11 @@ class TaskFormViewModel @Inject constructor(
 
     fun onTitleChanged(title: String) {
         _title.value = title
+        _dataChanged.value = true
     }
 
     fun updateDueToDate(value: String) {
+        _dataChanged.value = true
         viewModelScope.launch(Dispatchers.IO) {
             if (value.isBlank()) {
                 _dueTo.emit(null)
@@ -171,6 +176,7 @@ class TaskFormViewModel @Inject constructor(
         try {
             subtasks[subtasks.indexOf(subtask)] =
                 subtasks[subtasks.indexOf(subtask)].copy(title = newTitle)
+            _dataChanged.value = true
         } catch (e: IndexOutOfBoundsException) {
             e.printStackTrace()
         }
@@ -181,5 +187,6 @@ class TaskFormViewModel @Inject constructor(
         _title.value = ""
         initDueToDefaultValue()
         subtasks.clear()
+        _dataChanged.value = false
     }
 }

@@ -37,6 +37,8 @@
     <string name="drag">Drag</string>
     <string name="yesterday">Yesterday</string>
     <string name="day_end_is_coming">The end of the day is coming</string>
+    <string name="unsaved_changes">You have some unsaved changes. Do you want to save it?</string>
+    <string name="discard">Discard</string>
     <plurals name="uncompleted_tasks_with_count">
         <item quantity="one">You have still uncompleted %d task</item>
         <item quantity="other">You have still uncompleted %d tasks</item>

@@ -1,5 +1,6 @@
 package com.mabn.taskia.ui.common.optionsDropdownMenu
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -93,12 +94,14 @@ fun OptionsDropdownMenu(expanded: Boolean, onDismissRequest: () -> Unit) {
 
 
 @Composable
-private fun AlertButton(
+fun AlertButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Button(onClick = onClick, modifier = modifier.padding(10.dp)) {
+    Button(onClick = onClick, modifier = modifier
+        .background(MaterialTheme.colors.primary)
+        .padding(10.dp)) {
         Text(text)
     }
 }

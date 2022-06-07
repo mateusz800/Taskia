@@ -122,15 +122,19 @@ fun TaskEntireList(
 
             }
         }
-        if (tasks.value?.isEmpty() == true) {
+        if (tasks.value.isNullOrEmpty()) {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier.fillMaxSize()
             ) {
-                NoTasks(listType)
+                if(tasks.value == null){
+                    // loading
+                }
+                if(tasks.value?.isEmpty() == true){
+                    NoTasks(listType)
+                }
+
             }
-        } else {
-            // TODO : loading animation
         }
     }
 }

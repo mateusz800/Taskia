@@ -5,9 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.runtime.Composable
@@ -28,18 +26,24 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import com.mabn.taskia.R
 import com.mabn.taskia.domain.model.Task
 import com.mabn.taskia.ui.common.CustomTextField
+import com.mabn.taskia.ui.common.optionsDropdownMenu.AlertButton
 import com.mabn.taskia.ui.taskForm.TaskFormViewModel
 
 @Composable
-fun TaskForm(viewModel: TaskFormViewModel, closeFunc: () -> Unit) {
+fun TaskForm(
+    viewModel: TaskFormViewModel,
+    closeFunc: () -> Unit
+) {
     val title by viewModel.title.collectAsState()
     val dueToDayText by viewModel.dueDay.collectAsState()
     val isVisible = viewModel.isVisible.collectAsState()
     val subtasks = viewModel.subtasks
 
+    //val showAlert = remember { mutableStateOf(showNotSavedAlert) }
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Box(
             modifier = Modifier
@@ -68,8 +72,22 @@ fun TaskForm(viewModel: TaskFormViewModel, closeFunc: () -> Unit) {
             endDateText = dueToDayText,
             updateDueTo = { value -> viewModel.updateDueToDate(value) }
         )
+        /*
+        NotSavedAlert(show = showAlert.value, saveFun = {
+            if (viewModel.verifyData()) {
+                viewModel.saveTask()
+                viewModel.clear()
+                closeFunc()
+            }
+        }) {
+            showAlert.value = false
+            closeFunc()
+        }
+
+         */
     }
 }
+
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -125,10 +143,10 @@ private fun TaskForm(
             addNewFun = addNewSubtaskFun,
             onTitleChanged = updateSubtaskTitle
         )
-
-
     }
 }
+
+
 
 
 @OptIn(ExperimentalComposeUiApi::class)
