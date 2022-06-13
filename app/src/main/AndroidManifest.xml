@@ -32,6 +32,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.settings.SettingsActivity" />
+
         <receiver
             android:name=".domain.notification.NotificationBroadcastReceiver"
             android:exported="false">
