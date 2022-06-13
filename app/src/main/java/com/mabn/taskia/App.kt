@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.work.Configuration
 import com.mabn.taskia.domain.notification.NotificationBroadcastReceiver
 import com.mabn.taskia.domain.util.CustomWorkerFactory
@@ -25,6 +26,7 @@ class App : Application(),
 
     override fun onCreate() {
         super.onCreate()
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         scheduleEndDayAlarm()
     }
 
