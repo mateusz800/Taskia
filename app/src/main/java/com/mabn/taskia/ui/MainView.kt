@@ -23,7 +23,6 @@ import com.mabn.taskia.R
 import com.mabn.taskia.domain.model.MessageType
 import com.mabn.taskia.ui.common.AlertButton
 import com.mabn.taskia.ui.common.TopBar
-import com.mabn.taskia.ui.common.drawer.Drawer
 import com.mabn.taskia.ui.taskForm.TaskFormViewModel
 import com.mabn.taskia.ui.taskForm.view.TaskForm
 import com.mabn.taskia.ui.taskList.view.TaskEntireList
@@ -156,11 +155,13 @@ fun MainView(viewModel: MainViewModel) {
                             }
                         }
                     },
+                    /*
                     drawerContent = {
                         Drawer {
                             // TODO
                         }
                     },
+                     */
                     floatingActionButton = {
                         FloatingActionButton(
                             backgroundColor = MaterialTheme.colors.primary,

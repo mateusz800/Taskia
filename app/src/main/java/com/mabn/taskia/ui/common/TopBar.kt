@@ -3,8 +3,11 @@ package com.mabn.taskia.ui.common
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,7 +56,7 @@ fun TopBar(tabs: List<Pair<String, () -> Unit>>, onMenuClick: () -> Unit) {
                     color = MaterialTheme.colors.onPrimary
                 )
             }
-            /*
+
             IconButton(onClick = { menuExpanded.value = !menuExpanded.value }) {
                 Icon(
                     Icons.Filled.MoreVert,
@@ -61,7 +64,7 @@ fun TopBar(tabs: List<Pair<String, () -> Unit>>, onMenuClick: () -> Unit) {
                     tint = MaterialTheme.colors.onPrimary
                 )
             }
-             */
+
 
         }
         Box(

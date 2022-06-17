@@ -11,17 +11,18 @@ import androidx.compose.ui.Modifier
 import com.mabn.taskia.ui.theme.DoItTheme
 
 @Composable
-fun SettingsView() {
+fun SettingsView(googleCalendarSignIn: () -> Unit) {
     DoItTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colors.background
         ) {
             Column{
-                Button(onClick = { /*TODO*/ }) {
+                Button(onClick = { googleCalendarSignIn() }) {
                     Text("Google Calendar")
                 }
             }
         }
     }
 }
+
