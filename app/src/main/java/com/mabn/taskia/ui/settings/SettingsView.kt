@@ -8,18 +8,20 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.mabn.taskia.R
 import com.mabn.taskia.ui.theme.DoItTheme
 
 @Composable
-fun SettingsView(googleCalendarSignIn: () -> Unit) {
+fun SettingsView(startConnectedAccountsActivity: () -> Unit) {
     DoItTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colors.background
         ) {
-            Column{
-                Button(onClick = { googleCalendarSignIn() }) {
-                    Text("Google Calendar")
+            Column {
+                Button(onClick = { startConnectedAccountsActivity() }) {
+                    Text(stringResource(id = R.string.connected_accounts))
                 }
             }
         }

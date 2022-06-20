@@ -3,9 +3,8 @@ package com.mabn.taskia.ui.taskForm.view
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -13,7 +12,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
@@ -24,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mabn.taskia.R
 import com.mabn.taskia.domain.model.Task
+import com.mabn.taskia.ui.common.AddNewButton
 import com.mabn.taskia.ui.common.CustomTextField
 import com.mabn.taskia.ui.taskList.view.CustomCheckbox
 
@@ -47,7 +46,10 @@ fun Subtasks(
                     focus = (index == subtasks.size - 1 && task.title.isEmpty())
                 )
             }
-            AddNewButton(addNewFun)
+            AddNewButton(
+                text = stringResource(id = R.string.add_subtask),
+                onClick = addNewFun
+            )
         }
     }
 }
@@ -93,20 +95,6 @@ private fun SubtaskInput(
                     true
                 },
         )
-    }
-}
-
-@Composable
-private fun AddNewButton(onClick: () -> Unit) {
-    Button(
-        onClick = { onClick() },
-        elevation = null,
-        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent),
-        contentPadding = PaddingValues(0.dp)
-    ) {
-        Icon(Icons.Rounded.Add, contentDescription = null)
-        Spacer(Modifier.width(10.dp))
-        Text(stringResource(id = R.string.add_subtask))
     }
 }
 

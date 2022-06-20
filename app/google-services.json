@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "644001692240",
+    "project_id": "taskia-31ebb",
+    "storage_bucket": "taskia-31ebb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:644001692240:android:0c2241c1e4eb8463f6ef55",
+        "android_client_info": {
+          "package_name": "com.mabn.taskia"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "644001692240-p6sm433js75p6d0huq46a107vgg5iu8h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCv5FY2tASTIUUzw3d63tlVzQmQd1KduUo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "644001692240-p6sm433js75p6d0huq46a107vgg5iu8h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

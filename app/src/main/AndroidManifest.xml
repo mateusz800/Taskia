@@ -33,6 +33,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.settings.SettingsActivity" />
+        <activity android:name=".ui.settings.connectedAccounts.ConnectedAccountsActivity" />
 
         <receiver
             android:name=".domain.notification.NotificationBroadcastReceiver"

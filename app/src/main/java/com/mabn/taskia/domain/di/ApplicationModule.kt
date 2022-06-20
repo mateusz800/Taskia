@@ -3,7 +3,9 @@ package com.mabn.taskia.domain.di
 import android.content.Context
 import androidx.room.Room
 import com.mabn.taskia.domain.persistence.AppDatabase
+import com.mabn.taskia.domain.persistence.dao.ConnectedAccountDao
 import com.mabn.taskia.domain.persistence.dao.TaskDao
+import com.mabn.taskia.domain.persistence.repository.ConnectedAccountRepository
 import com.mabn.taskia.domain.persistence.repository.MessageRepository
 import com.mabn.taskia.domain.persistence.repository.TaskRepository
 import com.mabn.taskia.domain.util.ContextProvider
@@ -20,7 +22,7 @@ class ApplicationModule {
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): AppDatabase {
-        return Room.databaseBuilder(context, AppDatabase::class.java, "doit")
+        return Room.databaseBuilder(context, AppDatabase::class.java, "taskia")
             .build()
     }
 
@@ -28,6 +30,18 @@ class ApplicationModule {
     @Singleton
     fun provideTaskDao(db: AppDatabase): TaskDao {
         return db.taskDao
+    }
+
+    @Provides
+    @Singleton
+    fun provideConnectedAccountDao(db: AppDatabase): ConnectedAccountDao {
+        return db.connectedAccountDao
+    }
+
+    @Provides
+    @Singleton
+    fun provideConnectedAccountRepository(connectedAccountDao: ConnectedAccountDao): ConnectedAccountRepository {
+        return ConnectedAccountRepository(connectedAccountDao)
     }
 
     @Provides
