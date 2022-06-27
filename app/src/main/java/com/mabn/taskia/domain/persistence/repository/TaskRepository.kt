@@ -16,14 +16,13 @@ class TaskRepository(
     suspend fun getAll(): Flow<List<TaskAndSubtasks>> {
         return withContext(Dispatchers.IO) {
             taskDao.getAll()
-
         }
     }
 
 
     suspend fun getAllUpcoming(): Flow<List<TaskAndSubtasks>> {
         return withContext(Dispatchers.IO) {
-            taskDao.getAllScheduled()
+            taskDao.getAllUpcoming()
         }
     }
 
@@ -60,7 +59,6 @@ class TaskRepository(
         return taskDao.getSubtasks(task.id)
 
     }
-
 
     fun insertAll(vararg tasks: Task): List<Long> {
         return taskDao.insertAll(*tasks)

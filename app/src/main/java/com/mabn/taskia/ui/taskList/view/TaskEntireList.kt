@@ -19,7 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.mabn.taskia.R
 import com.mabn.taskia.domain.model.Task
-import com.mabn.taskia.domain.util.LocalDateTimeConverter
+import com.mabn.taskia.domain.util.dbConverter.LocalDateTimeConverter
 import com.mabn.taskia.ui.taskList.ListType
 import com.mabn.taskia.ui.taskList.TaskListViewModel
 import kotlinx.coroutines.Dispatchers

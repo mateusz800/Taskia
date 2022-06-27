@@ -17,6 +17,10 @@ class ConnectedAccountRepository(
         }
     }
 
+    fun update(account: ConnectedAccount) {
+        connectedAccountDao.update(account)
+    }
+
     fun insert(connectedAccount: ConnectedAccount): Long {
         return try {
             connectedAccountDao.insert(connectedAccount)

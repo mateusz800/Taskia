@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mabn.taskia.domain.model.Message
 import com.mabn.taskia.domain.model.MessageType
+import com.mabn.taskia.domain.network.TasksSynchronizer
 import com.mabn.taskia.domain.persistence.repository.MessageRepository
 import com.mabn.taskia.domain.util.ContextProvider
 import com.mabn.taskia.domain.util.IntentAction
@@ -25,7 +26,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val messageRepository: MessageRepository,
-    private val contextProvider: ContextProvider
+    private val contextProvider: ContextProvider,
+    private val tasksSynchronizer: TasksSynchronizer
 ) : ViewModel() {
     private val broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {

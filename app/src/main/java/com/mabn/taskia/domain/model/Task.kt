@@ -2,11 +2,17 @@ package com.mabn.taskia.domain.model
 
 import android.content.Context
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.mabn.taskia.domain.util.LocalDateTimeConverter
+import com.mabn.taskia.domain.util.dbConverter.LocalDateTimeConverter
 import java.time.LocalDateTime
 
-@Entity
+@Entity(
+    indices = [Index(
+        value = ["googleId"],
+        unique = true
+    )]
+)
 data class Task(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
@@ -16,7 +22,10 @@ data class Task(
     var parentId: Long? = null,
     var order: Int? = id.toInt(),
     var endDate: LocalDateTime? = null,
-    var completionTime: LocalDateTime? = null
+    var completionTime: LocalDateTime? = null,
+
+    // External providers ids
+    val googleId: String? = null
 ) {
     fun getEndDay(context: Context): String {
         if (endDate != null) {

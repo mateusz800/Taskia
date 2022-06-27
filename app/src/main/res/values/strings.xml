@@ -31,7 +31,7 @@
     <string name="pick_date">Pick a date</string>
     <string name="task_completed">Task completed</string>
     <string name="remove">Remove</string>
-    <string name="no_today_tasks">Nothing more todo today</string>
+    <string name="no_today_tasks">Nothing more to do today</string>
     <string name="relax_or_add">Relax or add a new task</string>
     <string name="complete_to_show">Complete some task to make it visible here</string>
     <string name="drag">Drag</string>
@@ -41,6 +41,8 @@
     <string name="discard">Discard</string>
      <string name="connected_accounts">Connected accounts</string>
     <string name="add_new_account">Add new account</string>
+    <string name="google_client_secret">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</string>
+    <string name="refresh">Refresh</string>
     <plurals name="uncompleted_tasks_with_count">
         <item quantity="one">You have still uncompleted %d task</item>
         <item quantity="other">You have still uncompleted %d tasks</item>

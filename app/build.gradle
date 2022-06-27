@@ -80,7 +80,14 @@ dependencies {
     implementation 'androidx.startup:startup-runtime:1.1.1'
     implementation 'com.google.android.material:material:1.6.1'
     implementation 'com.google.apis:google-api-services-calendar:v3-rev20211026-1.32.1'
+    implementation 'com.google.apis:google-api-services-tasks:v1-rev20210709-1.32.1'
     implementation 'com.google.android.gms:play-services-auth:20.2.0'
+    implementation "androidx.compose.material:material-icons-extended:$compose_version"
+
+    // retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.2.1'
 
 
     // room
@@ -100,7 +107,7 @@ dependencies {
     // androidTestAnnotationProcessor 'com.google.dagger:hilt-android-compiler:2.42'
     kaptAndroidTest 'com.google.dagger:hilt-android-compiler:2.42'
     implementation 'androidx.hilt:hilt-navigation-compose:1.0.0'
-    implementation "androidx.compose.material:material-icons-extended:$compose_version"
+
     implementation 'androidx.hilt:hilt-work:1.0.0'
     implementation 'androidx.hilt:hilt-common:1.0.0'
 
@@ -112,6 +119,7 @@ dependencies {
 
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
+
 
     // robolectric
     testImplementation 'org.robolectric:robolectric:4.8'

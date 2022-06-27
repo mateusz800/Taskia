@@ -1,9 +1,6 @@
 package com.mabn.taskia.domain.persistence.dao
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 import com.mabn.taskia.domain.model.ConnectedAccount
 import kotlinx.coroutines.flow.Flow
 
@@ -14,6 +11,9 @@ interface ConnectedAccountDao {
 
     @Delete
     fun delete(account: ConnectedAccount)
+
+    @Update
+    fun update(account:ConnectedAccount)
 
     @Query("SELECT * FROM ConnectedAccount")
     fun getAll(): Flow<List<ConnectedAccount>>

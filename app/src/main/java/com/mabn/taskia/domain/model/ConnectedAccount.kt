@@ -15,6 +15,11 @@ data class ConnectedAccount(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val type: AccountType,
-    val token: String,
-    val userIdentifier: String
+    val userIdentifier: String,
+    var token: String? = null,
+    var refreshToken: String? = null,
+    var data: String? = null
 )
+
+
+

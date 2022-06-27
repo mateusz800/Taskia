@@ -8,7 +8,7 @@ import com.mabn.taskia.R
 import com.mabn.taskia.domain.model.Task
 import com.mabn.taskia.domain.persistence.repository.TaskRepository
 import com.mabn.taskia.domain.util.ContextProvider
-import com.mabn.taskia.domain.util.LocalDateTimeConverter
+import com.mabn.taskia.domain.util.dbConverter.LocalDateTimeConverter
 import com.mabn.taskia.ui.taskList.ListType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

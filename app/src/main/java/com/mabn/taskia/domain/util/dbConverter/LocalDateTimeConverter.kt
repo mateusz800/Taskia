@@ -1,4 +1,4 @@
-package com.mabn.taskia.domain.util
+package com.mabn.taskia.domain.util.dbConverter
 
 import android.content.Context
 import androidx.room.TypeConverter

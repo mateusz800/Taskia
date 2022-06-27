@@ -4,6 +4,8 @@ import androidx.room.*
 import com.mabn.taskia.domain.model.Task
 import com.mabn.taskia.domain.model.TaskAndSubtasks
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Dao
 interface TaskDao {
@@ -21,8 +23,8 @@ interface TaskDao {
     fun getAll(): Flow<List<TaskAndSubtasks>>
 
     @Transaction
-    @Query("SELECT * FROM Task WHERE parentId is null and endDate is not null and status = 0 ")
-    fun getAllScheduled(): Flow<List<TaskAndSubtasks>>
+    @Query("SELECT * FROM Task WHERE parentId is null and endDate is not null and endDate >= :startDateTime and status = 0 ")
+    fun getAllUpcoming(startDateTime: LocalDateTime = LocalDate.now().atStartOfDay()): Flow<List<TaskAndSubtasks>>
 
     @Transaction
     @Query(

@@ -7,7 +7,7 @@ import com.mabn.taskia.domain.model.ConnectedAccount
 import com.mabn.taskia.domain.model.Task
 import com.mabn.taskia.domain.persistence.dao.ConnectedAccountDao
 import com.mabn.taskia.domain.persistence.dao.TaskDao
-import com.mabn.taskia.domain.util.LocalDateTimeConverter
+import com.mabn.taskia.domain.util.dbConverter.LocalDateTimeConverter
 
 @Database(
     entities = [Task::class, ConnectedAccount::class],
