@@ -12,6 +12,7 @@ import com.mabn.taskia.domain.model.AccountType
 import com.mabn.taskia.domain.model.ConnectedAccount
 import com.mabn.taskia.domain.model.GoogleAccountData
 import com.mabn.taskia.domain.model.Task
+import com.mabn.taskia.domain.network.google.tasks.GoogleTaskUpdateDto
 import com.mabn.taskia.domain.network.google.tasks.GoogleTasksApiClient
 import com.mabn.taskia.domain.persistence.repository.ConnectedAccountRepository
 import com.mabn.taskia.domain.persistence.repository.TaskRepository
@@ -24,6 +25,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.time.OffsetDateTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 
@@ -54,12 +57,53 @@ class TasksSynchronizer @Inject constructor(
 
     }
 
-
     private fun observeConnectedAccounts() {
         GlobalScope.launch(Dispatchers.IO) {
             connectedAccountRepository.getAll().collect {
                 _connectedAccount = it
             }
+        }
+    }
+
+    fun updateTaskStatus(task: Task) {
+        if (task.googleId != null && task.googleTaskList != null) {
+            val account = _connectedAccount.find { it.type == AccountType.GOOGLE }
+            if (account != null) {
+                GlobalScope.launch(Dispatchers.IO) {
+                    updateGoogleTaskStatus(
+                        account = account,
+                        listId = task.googleTaskList,
+                        taskId = task.googleId,
+                        task = task,
+                    )
+                }
+            }
+        }
+    }
+
+    private suspend fun updateGoogleTaskStatus(
+        account: ConnectedAccount,
+        listId: String,
+        taskId: String,
+        task: Task
+    ) {
+
+        val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm:ss.SSS'Z'")
+        val response = googleTasksApiClient.updateTask(
+            auth = "Bearer ${account.token ?: ""}",
+            taskListId = listId,
+            taskId = taskId,
+            body = GoogleTaskUpdateDto(
+                id = taskId,
+                status = if (task.status) "completed" else "needsAction",
+                title = task.title,
+                due = if(task.endDate != null) dateTimeFormatter.format(task.endDate?.atOffset(ZoneOffset.UTC)).toString() else  ""
+            ),
+        )
+        if (response.code() == 401) {
+            refreshGoogleToken(
+                account = account,
+                nextAction = { acc -> updateGoogleTaskStatus(acc, listId, taskId, task) })
         }
     }
 
@@ -136,7 +180,8 @@ class TasksSynchronizer @Inject constructor(
                             status = task.status.contentEquals("completed", true),
                             endDate = if (task.due != null) OffsetDateTime.parse(task.due)
                                 .toLocalDateTime() else null,
-                            googleId = task.id
+                            googleId = task.id,
+                            googleTaskList = it
                         )
                         try {
                             taskRepository.insertAll(newTask)

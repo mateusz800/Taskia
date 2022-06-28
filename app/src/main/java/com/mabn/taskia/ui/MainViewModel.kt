@@ -87,4 +87,10 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun refreshData() {
+        viewModelScope.launch(Dispatchers.IO) {
+            tasksSynchronizer.sync()
+        }
+    }
+
 }

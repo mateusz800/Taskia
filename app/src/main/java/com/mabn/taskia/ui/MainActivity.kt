@@ -22,5 +22,6 @@ class MainActivity : ComponentActivity() {
             AppKeyboardFocusManager()
             MainView(viewModel)
         }
+        viewModel.refreshData()
     }
 }

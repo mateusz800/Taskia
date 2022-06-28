@@ -11,6 +11,7 @@ import com.mabn.taskia.R
 import com.mabn.taskia.domain.model.Message
 import com.mabn.taskia.domain.model.MessageType
 import com.mabn.taskia.domain.model.Task
+import com.mabn.taskia.domain.network.TasksSynchronizer
 import com.mabn.taskia.domain.persistence.repository.MessageRepository
 import com.mabn.taskia.domain.persistence.repository.TaskRepository
 import com.mabn.taskia.domain.util.ContextProvider
@@ -29,7 +30,8 @@ import javax.inject.Inject
 class TaskListViewModel @Inject constructor(
     private val taskRepository: TaskRepository,
     private val messageRepository: MessageRepository,
-    private val contextProvider: ContextProvider
+    private val contextProvider: ContextProvider,
+    private val tasksSynchronizer: TasksSynchronizer
 ) : ViewModel() {
     private val _tasks = MutableLiveData<SnapshotStateMap<Task, List<Task>>>()
     val tasks: LiveData<SnapshotStateList<Pair<Task, List<Task>>>>
@@ -204,6 +206,7 @@ class TaskListViewModel @Inject constructor(
                 }
                 delay(500)
                 taskRepository.update(task)
+                tasksSynchronizer.updateTaskStatus(task)
                 if (task.parentId != null) {
                     val parentTask =
                         _tasks.value!!

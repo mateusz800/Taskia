@@ -25,7 +25,8 @@ data class Task(
     var completionTime: LocalDateTime? = null,
 
     // External providers ids
-    val googleId: String? = null
+    val googleId: String? = null,
+    val googleTaskList:String? = null
 ) {
     fun getEndDay(context: Context): String {
         if (endDate != null) {

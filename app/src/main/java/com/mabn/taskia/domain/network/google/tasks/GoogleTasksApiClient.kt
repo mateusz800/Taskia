@@ -1,10 +1,8 @@
 package com.mabn.taskia.domain.network.google.tasks
 
+import com.google.gson.JsonObject
 import retrofit2.Response
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.Path
-import retrofit2.http.Query
+import retrofit2.http.*
 
 interface GoogleTasksApiClient {
     @GET("users/@me/lists")
@@ -16,6 +14,14 @@ interface GoogleTasksApiClient {
     suspend fun getTasks(
         @Header("Authorization") auth: String,
         @Path("taskListId") taskListId: String,
-        @Query("showCompleted") showCompleted:Boolean = true
+        @Query("showCompleted") showCompleted: Boolean = true
     ): Response<GoogleTasksResponse>
+
+    @PUT("lists/{taskListId}/tasks/{taskId}")
+    suspend fun updateTask(
+        @Header("Authorization") auth: String,
+        @Path("taskListId") taskListId: String,
+        @Path("taskId") taskId: String,
+        @Body body: GoogleTaskUpdateDto
+    ): Response<JsonObject>
 }

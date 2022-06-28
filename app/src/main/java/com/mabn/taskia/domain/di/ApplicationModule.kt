@@ -2,6 +2,7 @@ package com.mabn.taskia.domain.di
 
 import android.content.Context
 import androidx.room.Room
+import com.mabn.taskia.domain.network.google.tasks.GoogleTasksApiClient
 import com.mabn.taskia.domain.persistence.AppDatabase
 import com.mabn.taskia.domain.persistence.dao.ConnectedAccountDao
 import com.mabn.taskia.domain.persistence.dao.TaskDao
@@ -53,8 +54,11 @@ class ApplicationModule {
 
     @Provides
     @Singleton
-    fun provideTaskRepository(taskDao: TaskDao): TaskRepository {
-        return TaskRepository(taskDao)
+    fun provideTaskRepository(
+        taskDao: TaskDao,
+        googleTasksApiClient: GoogleTasksApiClient
+    ): TaskRepository {
+        return TaskRepository(taskDao, googleTasksApiClient)
     }
 
     @Provides
