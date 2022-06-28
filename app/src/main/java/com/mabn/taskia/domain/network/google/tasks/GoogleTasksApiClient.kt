@@ -14,7 +14,7 @@ interface GoogleTasksApiClient {
     suspend fun getTasks(
         @Header("Authorization") auth: String,
         @Path("taskListId") taskListId: String,
-        @Query("showCompleted") showCompleted: Boolean = true
+        @Query("showCompleted") showCompleted: Boolean = false
     ): Response<GoogleTasksResponse>
 
     @PUT("lists/{taskListId}/tasks/{taskId}")
@@ -23,5 +23,12 @@ interface GoogleTasksApiClient {
         @Path("taskListId") taskListId: String,
         @Path("taskId") taskId: String,
         @Body body: GoogleTaskUpdateDto
+    ): Response<JsonObject>
+
+    @DELETE("lists/{taskListId}/tasks/{taskId}")
+    suspend fun deleteTask(
+        @Header("Authorization") auth: String,
+        @Path("taskListId") taskListId: String,
+        @Path("taskId") taskId: String,
     ): Response<JsonObject>
 }

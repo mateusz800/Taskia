@@ -169,6 +169,7 @@ class TaskListViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             recentlyRemovedTask = taskRepository.getById(task.id)
             if (taskRepository.delete(task)) {
+                tasksSynchronizer.delete(task)
                 messageRepository.insertMessage(
                     Message(
                         text = contextProvider.getString(R.string.task_removed),

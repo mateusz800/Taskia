@@ -7,6 +7,7 @@ import com.mabn.taskia.domain.model.ConnectedAccount
 import com.mabn.taskia.domain.model.Task
 import com.mabn.taskia.domain.persistence.dao.ConnectedAccountDao
 import com.mabn.taskia.domain.persistence.dao.TaskDao
+import com.mabn.taskia.domain.util.dbConverter.ConnectedAccountConverter
 import com.mabn.taskia.domain.util.dbConverter.LocalDateTimeConverter
 
 @Database(
@@ -15,7 +16,7 @@ import com.mabn.taskia.domain.util.dbConverter.LocalDateTimeConverter
     exportSchema = true,
     autoMigrations = []
 )
-@TypeConverters(LocalDateTimeConverter::class)
+@TypeConverters(LocalDateTimeConverter::class, ConnectedAccountConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract val taskDao: TaskDao
     abstract val connectedAccountDao: ConnectedAccountDao

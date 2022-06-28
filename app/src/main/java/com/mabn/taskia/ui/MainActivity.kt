@@ -22,6 +22,10 @@ class MainActivity : ComponentActivity() {
             AppKeyboardFocusManager()
             MainView(viewModel)
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
         viewModel.refreshData()
     }
 }

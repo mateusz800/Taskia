@@ -25,6 +25,7 @@ data class Task(
     var completionTime: LocalDateTime? = null,
 
     // External providers ids
+    val provider:ConnectedAccount? = null,
     val googleId: String? = null,
     val googleTaskList:String? = null
 ) {

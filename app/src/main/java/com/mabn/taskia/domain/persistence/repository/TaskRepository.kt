@@ -2,7 +2,6 @@ package com.mabn.taskia.domain.persistence.repository
 
 import com.mabn.taskia.domain.model.Task
 import com.mabn.taskia.domain.model.TaskAndSubtasks
-import com.mabn.taskia.domain.network.google.tasks.GoogleTasksApiClient
 import com.mabn.taskia.domain.persistence.dao.TaskDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -12,7 +11,6 @@ import java.time.ZoneOffset
 
 class TaskRepository(
     private val taskDao: TaskDao,
-    private val googleTasksApiClient: GoogleTasksApiClient
 ) {
 
     suspend fun getAll(): Flow<List<TaskAndSubtasks>> {

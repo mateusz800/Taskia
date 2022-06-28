@@ -2,7 +2,9 @@ package com.mabn.taskia.domain.di
 
 import android.content.Context
 import androidx.room.Room
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.mabn.taskia.domain.network.google.tasks.GoogleTasksApiClient
+import com.mabn.taskia.domain.network.google.tasks.GoogleTasksSynchronizer
 import com.mabn.taskia.domain.persistence.AppDatabase
 import com.mabn.taskia.domain.persistence.dao.ConnectedAccountDao
 import com.mabn.taskia.domain.persistence.dao.TaskDao
@@ -56,9 +58,8 @@ class ApplicationModule {
     @Singleton
     fun provideTaskRepository(
         taskDao: TaskDao,
-        googleTasksApiClient: GoogleTasksApiClient
     ): TaskRepository {
-        return TaskRepository(taskDao, googleTasksApiClient)
+        return TaskRepository(taskDao)
     }
 
     @Provides
@@ -93,6 +94,25 @@ class ApplicationModule {
         return Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
             .client(okHttpClient)
+
+    }
+
+    @Provides
+    @Singleton
+    fun provideGoogleTasksSynchronizer(
+        connectedAccountRepository: ConnectedAccountRepository,
+        googleSignInClient: GoogleSignInClient,
+        googleTasksApiClient: GoogleTasksApiClient,
+        contextProvider: ContextProvider,
+        taskRepository: TaskRepository
+    ): GoogleTasksSynchronizer {
+        return GoogleTasksSynchronizer(
+            connectedAccountRepository,
+            googleSignInClient,
+            googleTasksApiClient,
+            contextProvider,
+            taskRepository
+        )
 
     }
 
