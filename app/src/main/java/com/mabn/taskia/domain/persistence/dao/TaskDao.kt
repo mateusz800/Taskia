@@ -23,7 +23,7 @@ interface TaskDao {
     fun getAll(): Flow<List<TaskAndSubtasks>>
 
     @Transaction
-    @Query("SELECT * FROM Task WHERE parentId is null and endDate is not null and endDate >= :startDateTime and status = 0 ")
+    @Query("SELECT * FROM Task WHERE parentId is null and endDate is not null and endDate >= :startDateTime and status = 0 order by endDate asc")
     fun getAllUpcoming(
         startDateTime: LocalDateTime = LocalDate.now().atStartOfDay()
     ): Flow<List<TaskAndSubtasks>>

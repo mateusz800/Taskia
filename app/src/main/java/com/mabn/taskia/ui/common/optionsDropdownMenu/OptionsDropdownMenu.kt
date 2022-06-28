@@ -17,6 +17,7 @@ fun OptionsDropdownMenu(expanded: Boolean, onDismissRequest: () -> Unit) {
         DropdownMenuItem(
             onClick = {
                 viewModel.syncTasks()
+                onDismissRequest()
             }) {
             Text(stringResource(id = R.string.refresh))
         }
@@ -24,6 +25,7 @@ fun OptionsDropdownMenu(expanded: Boolean, onDismissRequest: () -> Unit) {
         DropdownMenuItem(
             onClick = {
                 viewModel.startSettingsActivity()
+                onDismissRequest()
             }) {
             Text(stringResource(id = R.string.settings))
         }

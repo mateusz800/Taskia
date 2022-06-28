@@ -28,4 +28,8 @@ class ConnectedAccountRepository(
             0
         }
     }
+
+    fun delete(acc: ConnectedAccount) {
+        connectedAccountDao.delete(acc)
+    }
 }

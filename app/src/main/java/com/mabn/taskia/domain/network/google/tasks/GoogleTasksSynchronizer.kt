@@ -139,10 +139,11 @@ class GoogleTasksSynchronizer @Inject constructor(
                 responseData?.items?.forEach { task ->
                     if (task.title.isNotBlank()) {
                         val existingTask = taskRepository.getByGoogleId(task.id)
-                        if(existingTask != null){
+                        if (existingTask != null) {
                             existingTask.title = task.title
-                            existingTask.endDate = if (task.due != null) OffsetDateTime.parse(task.due)
-                                .toLocalDateTime() else null
+                            existingTask.endDate =
+                                if (task.due != null) OffsetDateTime.parse(task.due)
+                                    .toLocalDateTime() else null
                             existingTask.status = task.status.contentEquals("completed", true)
                             taskRepository.update(existingTask)
                         } else {
@@ -179,7 +180,10 @@ class GoogleTasksSynchronizer @Inject constructor(
                     taskId = task.googleId!!
                 )
             if (response.code() == 401) {
-                refreshGoogleToken(account = account, nextAction = { acc -> syncGoogleTasks(acc) })
+                refreshGoogleToken(
+                    account = account,
+                    nextAction = { acc -> syncGoogleTasks(acc) })
+
             }
         }
     }
@@ -193,7 +197,7 @@ class GoogleTasksSynchronizer @Inject constructor(
                 body = GoogleTaskPostDto(
                     title = task.title,
                     status = if (task.status) "completed" else "needsAction",
-                    due = task.endDate.toString()+":00.000Z"
+                    due = task.endDate.toString() + ":00.000Z"
                 )
             )
             if (response.isSuccessful) {

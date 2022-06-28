@@ -11,13 +11,9 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
@@ -27,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mabn.taskia.R
 import com.mabn.taskia.domain.model.Task
+import com.mabn.taskia.ui.common.DeleteBackground
 import java.time.LocalDate
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -57,20 +54,7 @@ fun TaskItem(
         SwipeToDismiss(
             state = dismissState,
             background = {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(0.95f)
-                        .fillMaxHeight()
-                        .clip(RectangleShape)
-                        .background(Color.Red),
-                    contentAlignment = Alignment.CenterStart
-                ) {
-                    Icon(
-                        Icons.Outlined.Delete,
-                        contentDescription = stringResource(id = R.string.remove),
-                        modifier = Modifier.padding(horizontal = 20.dp)
-                    )
-                }
+               DeleteBackground()
             },
             directions = setOf(DismissDirection.StartToEnd)
         ) {

@@ -33,8 +33,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.settings.SettingsActivity" />
-        <activity android:name=".ui.settings.connectedAccounts.ConnectedAccountsActivity" />
+        <activity
+            android:name=".ui.settings.SettingsActivity"
+            android:theme="@style/Theme.Taskia.WithActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.settings.SettingsActivity" />
+        </activity>
+        <activity
+            android:name=".ui.settings.connectedAccounts.ConnectedAccountsActivity"
+            android:theme="@style/Theme.Taskia.WithActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.settings.SettingsActivity" />
+        </activity>
 
         <receiver
             android:name=".domain.notification.NotificationBroadcastReceiver"

@@ -40,7 +40,7 @@ class ConnectedAccountsViewModel @Inject constructor(
 
     fun addNewAccount(accountType: AccountType) {
         viewModelScope.launch(Dispatchers.IO) {
-            //googleSignInClient.signOut()
+            googleSignInClient.signOut()
             _connectNewAccount.emit(Pair(accountType, googleSignInClient.signInIntent))
         }
     }
@@ -75,9 +75,17 @@ class ConnectedAccountsViewModel @Inject constructor(
                 }
                 .addOnFailureListener(activity) {
                     //TODO
+                    println("Exception occurred")
                 }
         } else {
             _auth.currentUser!!.linkWithCredential(credential)
+            saveNewAccount(AccountType.GOOGLE, account.idToken!!, account.email!!)
+        }
+    }
+
+    fun disconnectAccount(acc: ConnectedAccount) {
+        viewModelScope.launch(Dispatchers.IO) {
+            connectedAccountRepository.delete(acc)
         }
     }
 }
