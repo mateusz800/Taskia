@@ -39,7 +39,7 @@ class GoogleTasksSynchronizer @Inject constructor(
         }
     }
 
-    suspend fun updateGoogleTaskStatus(
+    suspend fun updateGoogleTask(
         account: ConnectedAccount,
         listId: String,
         taskId: String,
@@ -65,7 +65,7 @@ class GoogleTasksSynchronizer @Inject constructor(
         if (response.code() == 401) {
             refreshGoogleToken(
                 account = account,
-                nextAction = { acc -> updateGoogleTaskStatus(acc, listId, taskId, task) })
+                nextAction = { acc -> updateGoogleTask(acc, listId, taskId, task) })
         }
     }
 
@@ -73,7 +73,7 @@ class GoogleTasksSynchronizer @Inject constructor(
         account: ConnectedAccount,
         nextAction: suspend (account: ConnectedAccount) -> Unit = {}
     ): ConnectedAccount {
-        var accountResult = MutableStateFlow<ConnectedAccount?>(null)
+        val accountResult = MutableStateFlow<ConnectedAccount?>(null)
         googleSignInClient.silentSignIn().addOnCompleteListener {
             runBlocking {
                 launch(Dispatchers.IO) {
@@ -138,19 +138,28 @@ class GoogleTasksSynchronizer @Inject constructor(
                 val responseData = response.body()
                 responseData?.items?.forEach { task ->
                     if (task.title.isNotBlank()) {
-                        val newTask = Task(
-                            title = task.title,
-                            status = task.status.contentEquals("completed", true),
-                            endDate = if (task.due != null) OffsetDateTime.parse(task.due)
-                                .toLocalDateTime() else null,
-                            googleId = task.id,
-                            googleTaskList = it,
-                            provider = account
-                        )
-                        try {
-                            taskRepository.insertAll(newTask)
-                        } catch (e: SQLiteConstraintException) {
-                            // do nothing
+                        val existingTask = taskRepository.getByGoogleId(task.id)
+                        if(existingTask != null){
+                            existingTask.title = task.title
+                            existingTask.endDate = if (task.due != null) OffsetDateTime.parse(task.due)
+                                .toLocalDateTime() else null
+                            existingTask.status = task.status.contentEquals("completed", true)
+                            taskRepository.update(existingTask)
+                        } else {
+                            val newTask = Task(
+                                title = task.title,
+                                status = task.status.contentEquals("completed", true),
+                                endDate = if (task.due != null) OffsetDateTime.parse(task.due)
+                                    .toLocalDateTime() else null,
+                                googleId = task.id,
+                                googleTaskList = it,
+                                provider = account
+                            )
+                            try {
+                                taskRepository.insertAll(newTask)
+                            } catch (e: SQLiteConstraintException) {
+                                // do nothing
+                            }
                         }
                     }
                 }
@@ -167,9 +176,30 @@ class GoogleTasksSynchronizer @Inject constructor(
                 googleTasksApiClient.deleteTask(
                     auth = "Bearer ${account.token}",
                     taskListId = task.googleTaskList,
-                    taskId = task.googleId
+                    taskId = task.googleId!!
                 )
             if (response.code() == 401) {
+                refreshGoogleToken(account = account, nextAction = { acc -> syncGoogleTasks(acc) })
+            }
+        }
+    }
+
+    suspend fun insertTask(task: Task) {
+        val account = task.provider
+        if (task.googleTaskList != null && task.googleId != null && account != null) {
+            val response = googleTasksApiClient.insertTask(
+                auth = "Bearer ${account.token}",
+                taskListId = task.googleTaskList,
+                body = GoogleTaskPostDto(
+                    title = task.title,
+                    status = if (task.status) "completed" else "needsAction",
+                    due = task.endDate.toString()+":00.000Z"
+                )
+            )
+            if (response.isSuccessful) {
+                task.googleId = response.body()?.id
+                taskRepository.update(task)
+            } else if (response.code() == 401) {
                 refreshGoogleToken(account = account, nextAction = { acc -> syncGoogleTasks(acc) })
             }
         }

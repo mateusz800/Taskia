@@ -17,7 +17,7 @@ class TasksSynchronizer @Inject constructor(
     private val connectedAccountRepository: ConnectedAccountRepository,
     private val googleTasksSynchronizer: GoogleTasksSynchronizer,
 
-) {
+    ) {
     private var _connectedAccount: List<ConnectedAccount> = listOf()
     private val _auth = FirebaseAuth.getInstance()
 
@@ -41,15 +41,15 @@ class TasksSynchronizer @Inject constructor(
         }
     }
 
-    fun updateTaskStatus(task: Task) {
+    fun updateTask(task: Task) {
         if (task.googleId != null && task.googleTaskList != null) {
             val account = _connectedAccount.find { it.type == AccountType.GOOGLE }
             if (account != null) {
                 GlobalScope.launch(Dispatchers.IO) {
-                   googleTasksSynchronizer.updateGoogleTaskStatus(
+                    googleTasksSynchronizer.updateGoogleTask(
                         account = account,
                         listId = task.googleTaskList,
-                        taskId = task.googleId,
+                        taskId = task.googleId!!,
                         task = task,
                     )
                 }
@@ -58,8 +58,15 @@ class TasksSynchronizer @Inject constructor(
     }
 
     suspend fun delete(task: Task) {
-        when(task.provider?.type){
+        when (task.provider?.type) {
             AccountType.GOOGLE -> googleTasksSynchronizer.deleteGoogleTask(task)
+            else -> {}
+        }
+    }
+
+    suspend fun insert(task: Task) {
+        when (task.provider?.type) {
+            AccountType.GOOGLE -> googleTasksSynchronizer.insertTask(task)
             else -> {}
         }
     }

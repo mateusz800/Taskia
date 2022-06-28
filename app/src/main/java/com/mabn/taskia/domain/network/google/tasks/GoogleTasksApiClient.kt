@@ -31,4 +31,11 @@ interface GoogleTasksApiClient {
         @Path("taskListId") taskListId: String,
         @Path("taskId") taskId: String,
     ): Response<JsonObject>
+
+    @POST("lists/{taskListId}/tasks")
+    suspend fun insertTask(
+        @Header("Authorization") auth: String,
+        @Path("taskListId") taskListId: String,
+        @Body body: GoogleTaskPostDto
+    ): Response<GoogleTask>
 }

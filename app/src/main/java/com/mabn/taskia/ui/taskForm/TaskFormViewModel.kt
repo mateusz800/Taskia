@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mabn.taskia.R
 import com.mabn.taskia.domain.model.Task
+import com.mabn.taskia.domain.network.TasksSynchronizer
 import com.mabn.taskia.domain.persistence.repository.TaskRepository
 import com.mabn.taskia.domain.util.ContextProvider
 import com.mabn.taskia.domain.util.dbConverter.LocalDateTimeConverter
@@ -25,7 +26,8 @@ import kotlin.streams.toList
 @HiltViewModel
 class TaskFormViewModel @Inject constructor(
     private val taskRepository: TaskRepository,
-    private val contextProvider: ContextProvider
+    private val contextProvider: ContextProvider,
+    private val tasksSynchronizer: TasksSynchronizer
 ) : ViewModel() {
     var isVisible = MutableStateFlow(false)
     private var _task: Task? = null
@@ -118,9 +120,11 @@ class TaskFormViewModel @Inject constructor(
                     taskRepository.insertAll(subtask)
                 } else {
                     taskRepository.update(subtask)
+
                 }
             }
             taskRepository.update(task)
+            tasksSynchronizer.updateTask(task)
 
         }
         clear()

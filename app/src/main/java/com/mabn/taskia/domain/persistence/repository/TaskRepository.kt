@@ -26,6 +26,10 @@ class TaskRepository(
         }
     }
 
+    fun getByGoogleId(googleId:String):Task?{
+        return taskDao.getByGoogleId(googleId)
+    }
+
     suspend fun getAllUnscheduled(): Flow<List<TaskAndSubtasks>> {
         return withContext(Dispatchers.IO) {
             taskDao.getAllUnscheduled()

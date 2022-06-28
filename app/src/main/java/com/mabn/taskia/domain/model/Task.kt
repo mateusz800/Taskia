@@ -26,7 +26,7 @@ data class Task(
 
     // External providers ids
     val provider:ConnectedAccount? = null,
-    val googleId: String? = null,
+    var googleId: String? = null,
     val googleTaskList:String? = null
 ) {
     fun getEndDay(context: Context): String {

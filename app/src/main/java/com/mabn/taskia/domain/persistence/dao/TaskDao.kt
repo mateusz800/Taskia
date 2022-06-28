@@ -24,7 +24,9 @@ interface TaskDao {
 
     @Transaction
     @Query("SELECT * FROM Task WHERE parentId is null and endDate is not null and endDate >= :startDateTime and status = 0 ")
-    fun getAllUpcoming(startDateTime: LocalDateTime = LocalDate.now().atStartOfDay()): Flow<List<TaskAndSubtasks>>
+    fun getAllUpcoming(
+        startDateTime: LocalDateTime = LocalDate.now().atStartOfDay()
+    ): Flow<List<TaskAndSubtasks>>
 
     @Transaction
     @Query(
@@ -57,6 +59,9 @@ interface TaskDao {
 
     @Query("SELECT * FROM TASK WHERE id=:id")
     fun getById(id: Long): Task?
+
+    @Query("SELECT * FROM TASK WHERE googleId=:googleId")
+    fun getByGoogleId(googleId: String): Task?
 
     @Query("SELECT * FROM Task WHERE parentId=:parentId")
     fun getSubtasks(parentId: Long): List<Task>

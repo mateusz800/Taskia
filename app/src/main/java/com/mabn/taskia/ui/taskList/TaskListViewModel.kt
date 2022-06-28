@@ -207,7 +207,7 @@ class TaskListViewModel @Inject constructor(
                 }
                 delay(500)
                 taskRepository.update(task)
-                tasksSynchronizer.updateTaskStatus(task)
+                tasksSynchronizer.updateTask(task)
                 if (task.parentId != null) {
                     val parentTask =
                         _tasks.value!!
@@ -241,6 +241,7 @@ class TaskListViewModel @Inject constructor(
             viewModelScope.launch(Dispatchers.IO) {
                 recentlyChangedStatusTask!!.status = !recentlyChangedStatusTask!!.status
                 taskRepository.update(recentlyChangedStatusTask!!)
+                tasksSynchronizer.updateTask(recentlyChangedStatusTask!!)
             }
         }
     }
@@ -249,6 +250,7 @@ class TaskListViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             if (recentlyRemovedTask != null) {
                 taskRepository.insertAll(recentlyRemovedTask!!)
+                tasksSynchronizer.insert(recentlyRemovedTask!!)
             }
         }
     }
