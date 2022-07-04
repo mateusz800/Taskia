@@ -7,10 +7,10 @@ import com.mabn.taskia.domain.network.google.tasks.GoogleTasksApiClient
 import com.mabn.taskia.domain.network.google.tasks.GoogleTasksSynchronizer
 import com.mabn.taskia.domain.persistence.AppDatabase
 import com.mabn.taskia.domain.persistence.dao.ConnectedAccountDao
+import com.mabn.taskia.domain.persistence.dao.TagDao
 import com.mabn.taskia.domain.persistence.dao.TaskDao
-import com.mabn.taskia.domain.persistence.repository.ConnectedAccountRepository
-import com.mabn.taskia.domain.persistence.repository.MessageRepository
-import com.mabn.taskia.domain.persistence.repository.TaskRepository
+import com.mabn.taskia.domain.persistence.dao.TaskTagDao
+import com.mabn.taskia.domain.persistence.repository.*
 import com.mabn.taskia.domain.util.ContextProvider
 import dagger.Module
 import dagger.Provides
@@ -46,6 +46,30 @@ class ApplicationModule {
     @Singleton
     fun provideConnectedAccountDao(db: AppDatabase): ConnectedAccountDao {
         return db.connectedAccountDao
+    }
+
+    @Provides
+    @Singleton
+    fun provideTagDao(db: AppDatabase): TagDao {
+        return db.tagDao
+    }
+
+    @Provides
+    @Singleton
+    fun provideTaskTagDao(db: AppDatabase): TaskTagDao {
+        return db.taskTagDao
+    }
+
+    @Provides
+    @Singleton
+    fun provideTaskTagRepository(taskTagDao: TaskTagDao): TaskTagRepository {
+        return TaskTagRepository(taskTagDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTagRepository(tagDao: TagDao): TagRepository {
+        return TagRepository(tagDao)
     }
 
     @Provides

@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import com.mabn.taskia.R
 
 
@@ -40,7 +41,8 @@ fun CustomTextField(
     enabled: Boolean = true,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
-    underline: Boolean = false
+    underline: Boolean = false,
+    alignCenter: Boolean = false
 ) {
     var text by rememberSaveable { mutableStateOf(value) }
     BasicTextField(
@@ -58,7 +60,10 @@ fun CustomTextField(
             onValueChange(text)
         },
         cursorBrush = SolidColor(MaterialTheme.colors.primary),
-        textStyle = style.copy(color = MaterialTheme.colors.onBackground),
+        textStyle = style.copy(
+            color = MaterialTheme.colors.onBackground,
+            textAlign = if (alignCenter) TextAlign.Center else TextAlign.Start
+        ),
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
         decorationBox = { innerTextField ->
@@ -66,7 +71,7 @@ fun CustomTextField(
                 modifier.drawBehind {
                     if (underline) {
                         val strokeWidth = 1 * density
-                        val y = size.height  +5 * density + strokeWidth / 2
+                        val y = size.height + 5 * density + strokeWidth / 2
 
                         drawLine(
                             Color.LightGray,

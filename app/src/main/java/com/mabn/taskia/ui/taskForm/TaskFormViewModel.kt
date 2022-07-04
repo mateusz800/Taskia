@@ -5,9 +5,13 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mabn.taskia.R
+import com.mabn.taskia.domain.model.Tag
 import com.mabn.taskia.domain.model.Task
+import com.mabn.taskia.domain.model.TaskTag
 import com.mabn.taskia.domain.network.TasksSynchronizer
+import com.mabn.taskia.domain.persistence.repository.TagRepository
 import com.mabn.taskia.domain.persistence.repository.TaskRepository
+import com.mabn.taskia.domain.persistence.repository.TaskTagRepository
 import com.mabn.taskia.domain.util.ContextProvider
 import com.mabn.taskia.domain.util.dbConverter.LocalDateTimeConverter
 import com.mabn.taskia.ui.taskList.ListType
@@ -26,6 +30,8 @@ import kotlin.streams.toList
 @HiltViewModel
 class TaskFormViewModel @Inject constructor(
     private val taskRepository: TaskRepository,
+    private val tagRepository: TagRepository,
+    private val taskTagRepository: TaskTagRepository,
     private val contextProvider: ContextProvider,
     private val tasksSynchronizer: TasksSynchronizer
 ) : ViewModel() {
@@ -33,7 +39,7 @@ class TaskFormViewModel @Inject constructor(
     private var _task: Task? = null
 
     private val _dataChanged = MutableStateFlow(false)
-    val dataChanged:StateFlow<Boolean> = _dataChanged
+    val dataChanged: StateFlow<Boolean> = _dataChanged
 
     private var _currentList: ListType = ListType.Today
     private val _title = MutableStateFlow("")
@@ -45,7 +51,11 @@ class TaskFormViewModel @Inject constructor(
     val dueDay: StateFlow<String>
         get() = _dueDay
 
+    val subtasks = SnapshotStateList<Task>()
+    val tags = SnapshotStateList<Tag>()
+
     init {
+        tags.add(Tag(value = ""))
         viewModelScope.launch(Dispatchers.IO) {
             _dueTo.collect {
                 if (it != null) {
@@ -62,7 +72,6 @@ class TaskFormViewModel @Inject constructor(
         }
     }
 
-    val subtasks = SnapshotStateList<Task>()
 
     fun onTitleChanged(title: String) {
         _title.value = title
@@ -105,6 +114,11 @@ class TaskFormViewModel @Inject constructor(
         val subtaskList = subtasks.parallelStream()
             .filter { it.title.isNotEmpty() }
             .toList()
+        val insertedTags = mutableListOf<Tag>()
+        val tagsList = tags.parallelStream()
+            .filter { it.value.isNotBlank() }
+            .toList()
+        println(tags)
         viewModelScope.launch(Dispatchers.IO) {
             val parentId =
                 if (task.id == 0L) {
@@ -126,8 +140,16 @@ class TaskFormViewModel @Inject constructor(
             taskRepository.update(task)
             tasksSynchronizer.updateTask(task)
 
+            tagsList.forEach { tag ->
+                insertedTags.add(tag.copy(id = tagRepository.insert(tag)))
+            }
+
+            taskTagRepository.insert(
+                *insertedTags.stream().map { TaskTag(parentId, it.id) }.toList().toTypedArray()
+            )
+
+
         }
-        clear()
     }
 
     fun setCurrentList(currentList: ListType) {
@@ -166,6 +188,10 @@ class TaskFormViewModel @Inject constructor(
             subtasks.clear()
             val temp = taskRepository.getSubtasks(task)
             subtasks.addAll(temp)
+            tags.clear()
+            val downloadedTags = taskTagRepository.getTags(task)
+            tags.addAll(downloadedTags)
+            tags.add(Tag(value = " "))
         }
 
     }
@@ -173,6 +199,17 @@ class TaskFormViewModel @Inject constructor(
     fun addNewSubtask() {
         if (subtasks.isEmpty() || subtasks.last().title.isNotBlank()) {
             subtasks.add(Task(title = ""))
+        }
+    }
+
+    fun addNewTag(focusOnNew: Boolean) {
+        if (tags.isEmpty() || tags.last().value.isNotBlank()) {
+            if (focusOnNew) {
+                tags.add(Tag(value = ""))
+            } else {
+                tags.add(Tag(value = " "))
+            }
+
         }
     }
 
@@ -186,11 +223,26 @@ class TaskFormViewModel @Inject constructor(
         }
     }
 
+    fun updateTagValue(tag: Tag, newValue: String) {
+        try {
+            if (newValue.isBlank()) {
+                tags.remove(tag)
+            } else {
+                tags[tags.indexOf(tag)] = tag.copy(value = newValue)
+            }
+            _dataChanged.value = true
+        } catch (e: IndexOutOfBoundsException) {
+            e.printStackTrace()
+        }
+    }
+
     fun clear() {
         _task = null
         _title.value = ""
         initDueToDefaultValue()
         subtasks.clear()
+        tags.clear()
+        tags.add(Tag(value = ""))
         _dataChanged.value = false
     }
 }

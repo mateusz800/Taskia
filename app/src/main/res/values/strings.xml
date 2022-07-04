@@ -43,6 +43,8 @@
     <string name="add_new_account">Add new account</string>
     <string name="google_client_secret">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</string>
     <string name="refresh">Refresh</string>
+    <string name="tags">Tags</string>
+    <string name="add_tag">Add tag</string>
     <plurals name="uncompleted_tasks_with_count">
         <item quantity="one">You have still uncompleted %d task</item>
         <item quantity="other">You have still uncompleted %d tasks</item>

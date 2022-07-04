@@ -55,7 +55,8 @@ fun MainView(viewModel: MainViewModel) {
                 } else {
                     showTaskChangedDialog.value = false
                 }
-                !formDataChanged.value
+
+                !formDataChanged.value || it != ModalBottomSheetValue.Hidden
                 // it != ModalBottomSheetValue.HalfExpanded
             })
 
@@ -111,7 +112,9 @@ fun MainView(viewModel: MainViewModel) {
     }
     BackHandler(modalBottomSheetState.isVisible) {
         coroutineScope.launch(Dispatchers.Main) {
-
+            if (formDataChanged.value) {
+                showTaskChangedDialog.value = true
+            }
             hideBottomSheet()
         }
     }

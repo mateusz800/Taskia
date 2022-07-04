@@ -26,9 +26,9 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mabn.taskia.R
+import com.mabn.taskia.domain.model.Tag
 import com.mabn.taskia.domain.model.Task
 import com.mabn.taskia.ui.common.CustomTextField
 import com.mabn.taskia.ui.taskForm.TaskFormViewModel
@@ -42,6 +42,7 @@ fun TaskForm(
     val dueToDayText by viewModel.dueDay.collectAsState()
     val isVisible = viewModel.isVisible.collectAsState()
     val subtasks = viewModel.subtasks
+    val tags = viewModel.tags
 
     //val showAlert = remember { mutableStateOf(showNotSavedAlert) }
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -59,9 +60,12 @@ fun TaskForm(
             isVisible = isVisible.value,
             title = title,
             subtasks = subtasks,
+            tags = tags,
             onTitleChanged = viewModel::onTitleChanged,
             updateSubtaskTitle = viewModel::updateSubtaskTitle,
+            updateTagValue = viewModel::updateTagValue,
             addNewSubtaskFun = viewModel::addNewSubtask,
+            addNewTagFun = viewModel::addNewTag,
             saveFun = {
                 if (viewModel.verifyData()) {
                     viewModel.saveTask()
@@ -94,9 +98,12 @@ fun TaskForm(
 private fun TaskForm(
     title: String,
     subtasks: List<Task>,
+    tags: List<Tag>,
     onTitleChanged: (String) -> Unit,
     updateSubtaskTitle: (Task, String) -> Unit,
+    updateTagValue: (Tag, String) -> Unit,
     addNewSubtaskFun: () -> Unit,
+    addNewTagFun: (Boolean) -> Unit,
     saveFun: () -> Unit,
     isVisible: Boolean = false,
     endDateText: String,
@@ -137,16 +144,20 @@ private fun TaskForm(
                 updateDate = updateDueTo
             )
         }
+        Tags(
+            tags = tags,
+            addNewFun = addNewTagFun,
+            onTitleChanged = updateTagValue
+        )
 
         Subtasks(
             subtasks = subtasks,
             addNewFun = addNewSubtaskFun,
             onTitleChanged = updateSubtaskTitle
         )
+
     }
 }
-
-
 
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -215,19 +226,3 @@ private fun SaveButton(enabled: Boolean = true, saveFun: () -> Unit) {
     }
 }
 
-@Preview
-@Composable
-private fun TaskForm_Preview() {
-    MaterialTheme {
-        TaskForm(
-            title = "",
-            subtasks = listOf(),
-            addNewSubtaskFun = {},
-            onTitleChanged = {},
-            updateSubtaskTitle = { _, _ -> },
-            saveFun = {},
-            endDateText = "Today",
-            updateDueTo = { }
-        )
-    }
-}
