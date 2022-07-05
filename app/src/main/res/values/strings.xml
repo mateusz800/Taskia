@@ -45,6 +45,9 @@
     <string name="refresh">Refresh</string>
     <string name="tags">Tags</string>
     <string name="add_tag">Add tag</string>
+    <string name="clear_filters">clear</string>
+    <string name="filter">filter</string>
+    <string name="no_tags">No tags available</string>
     <plurals name="uncompleted_tasks_with_count">
         <item quantity="one">You have still uncompleted %d task</item>
         <item quantity="other">You have still uncompleted %d tasks</item>

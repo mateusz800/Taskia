@@ -144,6 +144,14 @@ class TaskFormViewModel @Inject constructor(
                 insertedTags.add(tag.copy(id = tagRepository.insert(tag)))
             }
 
+            val prevTags = taskTagRepository.getTags(task)
+            val tagsToRemove = prevTags.filterNot { insertedTags.contains(it) }
+
+            tagsToRemove.forEach {
+                taskTagRepository.deleteTagFromTask(tag = it, task = task)
+            }
+
+
             taskTagRepository.insert(
                 *insertedTags.stream().map { TaskTag(parentId, it.id) }.toList().toTypedArray()
             )

@@ -33,6 +33,8 @@ class ApplicationModule {
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): AppDatabase {
         return Room.databaseBuilder(context, AppDatabase::class.java, "taskia")
+            .fallbackToDestructiveMigration()
+            .fallbackToDestructiveMigrationFrom(1)
             .build()
     }
 
@@ -68,8 +70,8 @@ class ApplicationModule {
 
     @Provides
     @Singleton
-    fun provideTagRepository(tagDao: TagDao): TagRepository {
-        return TagRepository(tagDao)
+    fun provideTagRepository(tagDao: TagDao, taskTagDao: TaskTagDao): TagRepository {
+        return TagRepository(tagDao, taskTagDao)
     }
 
     @Provides

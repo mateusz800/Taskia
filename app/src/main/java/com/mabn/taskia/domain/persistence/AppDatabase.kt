@@ -1,6 +1,5 @@
 package com.mabn.taskia.domain.persistence
 
-import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
@@ -19,7 +18,7 @@ import com.mabn.taskia.domain.util.dbConverter.LocalDateTimeConverter
     entities = [Task::class, ConnectedAccount::class, Tag::class, TaskTag::class],
     version = 2,
     exportSchema = true,
-    autoMigrations = [AutoMigration(from = 1, to = 2)]
+    autoMigrations = []
 )
 @TypeConverters(LocalDateTimeConverter::class, ConnectedAccountConverter::class)
 abstract class AppDatabase : RoomDatabase() {

@@ -9,12 +9,12 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TagDao {
-    @Query("SELECT * FROM Tag ")
+    @Query("SELECT * FROM Tag WHERE id IN (SELECT tagId from TaskTag WHERE taskId IN (SELECT id FROM TASK))")
     fun getAll(): Flow<List<Tag>>
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
     fun insert(tag: Tag): Long
 
     @Query("SELECT * FROM Tag WHERE value=:value")
-    fun getByValue(value: String): Tag
+    fun getByValue(value: String): Tag?
 }

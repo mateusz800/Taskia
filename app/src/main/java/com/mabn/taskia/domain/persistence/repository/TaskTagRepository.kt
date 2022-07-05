@@ -12,7 +12,12 @@ class TaskTagRepository(
         return taskTagDao.insertAll(*items)
     }
 
+    fun deleteTagFromTask(tag:Tag, task:Task){
+        val item = taskTagDao.find(taskId = task.id, tagId = tag.id)
+        taskTagDao.delete(item)
+    }
+
     fun getTags(task: Task): List<Tag> {
-        return taskTagDao.findByTaskId(task.id)
+        return taskTagDao.findTagsByTaskId(task.id)
     }
 }

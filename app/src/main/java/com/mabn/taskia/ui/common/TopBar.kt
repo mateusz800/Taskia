@@ -2,11 +2,9 @@ package com.mabn.taskia.ui.common
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -18,12 +16,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.mabn.taskia.R
 import com.mabn.taskia.ui.common.optionsDropdownMenu.OptionsDropdownMenu
+import com.mabn.taskia.ui.taskList.TaskListViewModel
+import com.mabn.taskia.ui.taskList.view.filterDropdownMenu.FilterDropDown
 
 @Composable
 fun TopBar(tabs: List<Pair<String, () -> Unit>>, onMenuClick: () -> Unit) {
     val menuExpanded = remember { mutableStateOf(false) }
+    val filterExpanded = remember { mutableStateOf(false) }
+    val taskListViewModel: TaskListViewModel = hiltViewModel()
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -56,13 +59,38 @@ fun TopBar(tabs: List<Pair<String, () -> Unit>>, onMenuClick: () -> Unit) {
                     color = MaterialTheme.colors.onPrimary
                 )
             }
+            Row {
+                Column(horizontalAlignment = Alignment.End) {
+                    IconButton(onClick = { filterExpanded.value = !filterExpanded.value }) {
+                        Icon(
+                            Icons.Filled.FilterList, null,
+                            tint = MaterialTheme.colors.onPrimary
+                        )
+                    }
+                    BadgedBox(badge = {
+                        val count = taskListViewModel.filterTags.value?.size
+                        if (count != null && count > 0) {
+                            Badge(
+                                backgroundColor = MaterialTheme.colors.secondary,
+                                contentColor = MaterialTheme.colors.onSecondary
+                            ) {
+                                Text(count.toString())
+                            }
+                        }
+                    }, modifier = Modifier.offset(x = (-10).dp, y = (-10).dp)) {
 
-            IconButton(onClick = { menuExpanded.value = !menuExpanded.value }) {
-                Icon(
-                    Icons.Filled.MoreVert,
-                    contentDescription = stringResource(id = R.string.menu_more),
-                    tint = MaterialTheme.colors.onPrimary
-                )
+                    }
+                }
+
+
+
+                IconButton(onClick = { menuExpanded.value = !menuExpanded.value }) {
+                    Icon(
+                        Icons.Filled.MoreVert,
+                        contentDescription = stringResource(id = R.string.menu_more),
+                        tint = MaterialTheme.colors.onPrimary
+                    )
+                }
             }
 
 
@@ -77,6 +105,12 @@ fun TopBar(tabs: List<Pair<String, () -> Unit>>, onMenuClick: () -> Unit) {
                 OptionsDropdownMenu(
                     expanded = menuExpanded.value,
                     onDismissRequest = { menuExpanded.value = false })
+                FilterDropDown(
+                    taskListViewModel = taskListViewModel,
+                    expanded = filterExpanded.value
+                ) {
+                    filterExpanded.value = false
+                }
             }
         }
 
