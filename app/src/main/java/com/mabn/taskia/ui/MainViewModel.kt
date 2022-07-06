@@ -14,6 +14,7 @@ import com.mabn.taskia.domain.network.TasksSynchronizer
 import com.mabn.taskia.domain.persistence.repository.MessageRepository
 import com.mabn.taskia.domain.util.ContextProvider
 import com.mabn.taskia.domain.util.IntentAction
+import com.mabn.taskia.domain.util.KeyboardHeightProvider
 import com.mabn.taskia.ui.taskList.ListType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -28,7 +29,7 @@ class MainViewModel @Inject constructor(
     private val messageRepository: MessageRepository,
     private val contextProvider: ContextProvider,
     private val tasksSynchronizer: TasksSynchronizer
-) : ViewModel() {
+) : ViewModel(), KeyboardHeightProvider.KeyboardHeightListener {
     private val broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action) {
@@ -42,6 +43,12 @@ class MainViewModel @Inject constructor(
     private val _currentState = MutableStateFlow<MainViewState>(MainViewState.Loading)
     val currentState: StateFlow<MainViewState>
         get() = _currentState
+
+    private val _keyboardHeight = MutableLiveData<Int>()
+    val keyboardHeight: LiveData<Int> = _keyboardHeight
+
+    private val _isLandscape = MutableLiveData<Boolean>()
+    val isLandscape:LiveData<Boolean> = _isLandscape
 
     init {
         val filter = IntentFilter().apply {
@@ -91,6 +98,10 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             tasksSynchronizer.sync()
         }
+    }
+
+    override fun onKeyboardHeightChanged(height: Int, isLandscape: Boolean) {
+        _keyboardHeight.postValue(height)
     }
 
 }

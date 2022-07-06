@@ -1,6 +1,8 @@
 package com.mabn.taskia.ui
 
+import android.app.Activity
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -21,6 +23,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mabn.taskia.R
 import com.mabn.taskia.domain.model.MessageType
+import com.mabn.taskia.domain.util.toDp
 import com.mabn.taskia.ui.common.AlertButton
 import com.mabn.taskia.ui.common.TopBar
 import com.mabn.taskia.ui.taskForm.TaskFormViewModel
@@ -41,6 +44,10 @@ fun MainView(viewModel: MainViewModel) {
     val currentList = viewModel.currentList.collectAsState()
     val formDataChanged = taskFormViewModel.dataChanged.collectAsState()
     val showTaskChangedDialog = remember { mutableStateOf(false) }
+    val configuration = LocalConfiguration.current
+    val keyboardHeight = viewModel.keyboardHeight.observeAsState()
+    val isLandscape = viewModel.isLandscape.observeAsState()
+
     val modalBottomSheetState =
         rememberModalBottomSheetState(
             initialValue = ModalBottomSheetValue.Hidden,
@@ -55,11 +62,21 @@ fun MainView(viewModel: MainViewModel) {
                 } else {
                     showTaskChangedDialog.value = false
                 }
-
                 !formDataChanged.value || it != ModalBottomSheetValue.Hidden
                 // it != ModalBottomSheetValue.HalfExpanded
             })
-
+    val offsetState =
+        animateIntAsState(
+            targetValue = if (
+                modalBottomSheetState.progress.to == ModalBottomSheetValue.HalfExpanded &&
+                keyboardHeight.value != null &&
+                keyboardHeight.value != 0
+            ) {
+                val value =
+                    keyboardHeight.value!!.toDp + 350.toDp - (configuration.screenHeightDp / 2)
+                if (value > 0) value else 0
+            } else 0
+        )
     // Handle displaying snackbar if any message
     val messageState = viewModel.message.observeAsState()
 
@@ -93,8 +110,6 @@ fun MainView(viewModel: MainViewModel) {
     }
 
 
-    val configuration = LocalConfiguration.current
-
     val hideBottomSheet = {
         coroutineScope.launch(Dispatchers.Main) {
             modalBottomSheetState.hide()
@@ -118,14 +133,16 @@ fun MainView(viewModel: MainViewModel) {
             hideBottomSheet()
         }
     }
+    BackHandler(!modalBottomSheetState.isVisible) {
+        (context as? Activity)?.finish()
+    }
     DoItTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colors.background
         ) {
-
             ModalBottomSheetLayout(
-                modifier = Modifier,
+                modifier = Modifier.offset(y = (-offsetState.value).dp),
                 sheetContent = {
                     Column(
                         modifier = Modifier
@@ -146,15 +163,19 @@ fun MainView(viewModel: MainViewModel) {
                 Scaffold(
                     scaffoldState = scaffoldState,
                     topBar = {
-                        TopBar(
-                            tabs = viewModel.availableListSet.map {
-                                Pair(stringResource(id = it.textId)) {
-                                    viewModel.showList(it)
-                                }
-                            }
+                        Box(
+                            modifier = Modifier.offset(y = offsetState.value.dp),
                         ) {
-                            coroutineScope.launch(Dispatchers.Main) {
-                                scaffoldState.drawerState.open()
+                            TopBar(
+                                tabs = viewModel.availableListSet.map {
+                                    Pair(stringResource(id = it.textId)) {
+                                        viewModel.showList(it)
+                                    }
+                                }
+                            ) {
+                                coroutineScope.launch(Dispatchers.Main) {
+                                    scaffoldState.drawerState.open()
+                                }
                             }
                         }
                     },
@@ -168,7 +189,9 @@ fun MainView(viewModel: MainViewModel) {
                     floatingActionButton = {
                         FloatingActionButton(
                             backgroundColor = MaterialTheme.colors.primary,
-                            modifier = Modifier.testTag("add_task_button"),
+                            modifier = Modifier
+                                .testTag("add_task_button")
+                                .offset(y = offsetState.value.dp),
                             onClick = {
                                 coroutineScope.launch(Dispatchers.Main) {
                                     taskFormViewModel.clear()
@@ -181,17 +204,20 @@ fun MainView(viewModel: MainViewModel) {
                     }, snackbarHost = {
                         SnackbarHost(hostState = scaffoldState.snackbarHostState)
                     }) {
-                    TaskEntireList(
-                        viewModel = hiltViewModel(),
-                        listType = currentList.value,
-                        showTaskForm = { task ->
-                            coroutineScope.launch(Dispatchers.Main) {
-                                taskFormViewModel.setTask(task, context = context)
-                                taskFormViewModel.isVisible.value = true
-                                modalBottomSheetState.show()
+                    Box(modifier = Modifier.offset(y = offsetState.value.dp)) {
+                        TaskEntireList(
+                            viewModel = hiltViewModel(),
+                            listType = currentList.value,
+                            showTaskForm = { task ->
+                                coroutineScope.launch(Dispatchers.Main) {
+                                    taskFormViewModel.setTask(task, context = context)
+                                    taskFormViewModel.isVisible.value = true
+                                    //modalBottomSheetState.show()
+                                    modalBottomSheetState.animateTo(ModalBottomSheetValue.Expanded)
+                                }
                             }
-                        }
-                    )
+                        )
+                    }
                 }
             }
 

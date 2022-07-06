@@ -6,12 +6,20 @@ import androidx.activity.compose.setContent
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.ViewModelProvider
+import com.mabn.taskia.domain.util.KeyboardHeightProvider
 import com.mabn.taskia.ui.common.keyboard.AppKeyboardFocusManager
 import dagger.hilt.android.AndroidEntryPoint
+
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val viewModel: MainViewModel by lazy { ViewModelProvider(this).get(MainViewModel::class.java) }
+    private val keyboardHeightProvider by lazy {
+        KeyboardHeightProvider(
+            this,
+            windowManager, window.decorView, viewModel
+        )
+    }
 
     @OptIn(ExperimentalMaterialApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,4 +36,15 @@ class MainActivity : ComponentActivity() {
         super.onStart()
         viewModel.refreshData()
     }
+
+    override fun onResume() {
+        super.onResume()
+        keyboardHeightProvider.start();
+    }
+
+    override fun onPause() {
+        super.onPause()
+        keyboardHeightProvider.dismiss();
+    }
+
 }
