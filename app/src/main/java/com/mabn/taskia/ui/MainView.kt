@@ -62,8 +62,12 @@ fun MainView(viewModel: MainViewModel) {
                 } else {
                     showTaskChangedDialog.value = false
                 }
-                !formDataChanged.value || it != ModalBottomSheetValue.Hidden
-                // it != ModalBottomSheetValue.HalfExpanded
+                if (isLandscape.value == true && it == ModalBottomSheetValue.HalfExpanded) {
+                    false
+                } else {
+                    !formDataChanged.value
+                            || it != ModalBottomSheetValue.Hidden
+                }
             })
     val offsetState =
         animateIntAsState(
@@ -73,7 +77,8 @@ fun MainView(viewModel: MainViewModel) {
                 keyboardHeight.value != 0
             ) {
                 val value =
-                    keyboardHeight.value!!.toDp + 350.toDp - (configuration.screenHeightDp / 2)
+                    if (isLandscape.value != true)
+                        keyboardHeight.value!!.toDp + 350.toDp - (configuration.screenHeightDp / 2) else 0
                 if (value > 0) value else 0
             } else 0
         )
@@ -146,7 +151,10 @@ fun MainView(viewModel: MainViewModel) {
                 sheetContent = {
                     Column(
                         modifier = Modifier
-                            .requiredHeight((configuration.screenHeightDp - 50).dp)
+                            .requiredHeight(
+                                if (isLandscape.value == true) configuration.screenHeightDp.dp
+                                else (configuration.screenHeightDp - 50).dp
+                            )
                     ) {
                         TaskForm(taskFormViewModel) {
                             coroutineScope.launch(Dispatchers.Main) {
@@ -222,18 +230,20 @@ fun MainView(viewModel: MainViewModel) {
             }
 
         }
-    }
-    if (showTaskChangedDialog.value) {
-        NotSavedAlert(saveFun = {
-            taskFormViewModel.saveTask()
-            hideBottomSheet()
-            showTaskChangedDialog.value = false
-        }, discardFun = {
-            hideBottomSheet()
-            showTaskChangedDialog.value = false
-        }, dismissFun = {
-            showTaskChangedDialog.value = false
-        })
+
+        if (showTaskChangedDialog.value) {
+
+            NotSavedAlert(saveFun = {
+                taskFormViewModel.saveTask()
+                hideBottomSheet()
+                showTaskChangedDialog.value = false
+            }, discardFun = {
+                hideBottomSheet()
+                showTaskChangedDialog.value = false
+            }, dismissFun = {
+                showTaskChangedDialog.value = false
+            })
+        }
     }
 }
 

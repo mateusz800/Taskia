@@ -48,7 +48,7 @@ class MainViewModel @Inject constructor(
     val keyboardHeight: LiveData<Int> = _keyboardHeight
 
     private val _isLandscape = MutableLiveData<Boolean>()
-    val isLandscape:LiveData<Boolean> = _isLandscape
+    val isLandscape: LiveData<Boolean> = _isLandscape
 
     init {
         val filter = IntentFilter().apply {
@@ -102,6 +102,7 @@ class MainViewModel @Inject constructor(
 
     override fun onKeyboardHeightChanged(height: Int, isLandscape: Boolean) {
         _keyboardHeight.postValue(height)
+        _isLandscape.postValue(isLandscape)
     }
 
 }
