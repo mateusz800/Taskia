@@ -1,5 +1,8 @@
 package com.mabn.taskia.ui.taskList.view
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -39,11 +42,17 @@ fun TaskEntireList(
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     val configuration = LocalConfiguration.current
+
+
     Column(
         Modifier
             .padding(vertical = 10.dp)
     ) {
-        if (!tasks.value.isNullOrEmpty()) {
+        AnimatedVisibility(
+            visible = !tasks.value.isNullOrEmpty(),
+            enter = fadeIn(animationSpec = tween(durationMillis = 500))
+        ) {
+
             val grouped = tasks.value!!.groupBy {
                 if (listType == ListType.Completed) {
                     LocalDate.now().atStartOfDay()
@@ -122,19 +131,19 @@ fun TaskEntireList(
 
             }
         }
-        if (tasks.value.isNullOrEmpty()) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                if(tasks.value == null){
-                    // loading
-                }
-                if(tasks.value?.isEmpty() == true){
-                    NoTasks(listType)
-                }
-
+    }
+    if (tasks.value.isNullOrEmpty()) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            if (tasks.value == null) {
+                // loading
             }
+            if (tasks.value?.isEmpty() == true) {
+                NoTasks(listType)
+            }
+
         }
     }
 }

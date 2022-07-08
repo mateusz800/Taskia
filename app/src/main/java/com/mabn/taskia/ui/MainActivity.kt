@@ -6,8 +6,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.ViewModelProvider
-import com.mabn.taskia.domain.util.KeyboardHeightProvider
-import com.mabn.taskia.ui.common.keyboard.AppKeyboardFocusManager
+import com.mabn.taskia.domain.util.keyboard.KeyboardHeightProvider
+import com.mabn.taskia.domain.util.keyboard.AppKeyboardFocusManager
 import dagger.hilt.android.AndroidEntryPoint
 
 

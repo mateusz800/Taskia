@@ -41,10 +41,11 @@ class TaskListViewModel @Inject constructor(
     val tasks: LiveData<SnapshotStateList<Pair<Task, List<Task>>>>
         get() {
             return when (_listType.value) {
-                is ListType.Today -> _filteredTodayTasks
+                ListType.Today -> _filteredTodayTasks
                 ListType.Completed -> _filteredCompletedTasks
                 ListType.Unscheduled -> _filteredUnscheduledTasks
                 ListType.Upcoming -> _filteredUpcomingTasks
+                else -> MutableLiveData()
             }
         }
 

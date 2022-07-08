@@ -1,22 +1,20 @@
 package com.mabn.taskia.ui.common
 
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ScrollableTabRow
 import androidx.compose.material.Tab
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.mabn.taskia.ui.common.topBar.TopBarViewModel
 
 @Composable
-fun Tabs(tabs: List<Pair<String, () -> Unit>>) {
-    val selectedTabIndex = remember { mutableStateOf(0) }
+fun Tabs(tabs: List<Pair<String, () -> Unit>>, viewModel: TopBarViewModel) {
+    val selectedTabIndex = viewModel.tabIndex.observeAsState(0)
     ScrollableTabRow(
         selectedTabIndex = selectedTabIndex.value,
         backgroundColor = MaterialTheme.colors.primary,
@@ -30,7 +28,7 @@ fun Tabs(tabs: List<Pair<String, () -> Unit>>) {
                 unselectedContentColor = MaterialTheme.colors.onPrimary,
                 onClick = {
                     tab.second.invoke()
-                    selectedTabIndex.value = index
+                    viewModel.changeTab(index)
                 }, modifier = Modifier.padding(horizontal = 10.dp)
             ) {
                 Text(
@@ -41,13 +39,5 @@ fun Tabs(tabs: List<Pair<String, () -> Unit>>) {
                 )
             }
         }
-    }
-}
-
-@Preview(uiMode = UI_MODE_NIGHT_YES)
-@Composable
-private fun Tabs_Preview() {
-    MaterialTheme {
-        Tabs(tabs = listOf(Pair("today", {}), Pair("Upcoming", {})))
     }
 }

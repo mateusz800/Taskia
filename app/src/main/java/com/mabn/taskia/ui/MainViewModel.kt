@@ -14,10 +14,11 @@ import com.mabn.taskia.domain.network.TasksSynchronizer
 import com.mabn.taskia.domain.persistence.repository.MessageRepository
 import com.mabn.taskia.domain.util.ContextProvider
 import com.mabn.taskia.domain.util.IntentAction
-import com.mabn.taskia.domain.util.KeyboardHeightProvider
+import com.mabn.taskia.domain.util.keyboard.KeyboardHeightProvider
 import com.mabn.taskia.ui.taskList.ListType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
@@ -50,6 +51,7 @@ class MainViewModel @Inject constructor(
     private val _isLandscape = MutableLiveData<Boolean>()
     val isLandscape: LiveData<Boolean> = _isLandscape
 
+
     init {
         val filter = IntentFilter().apply {
             addAction(IntentAction.ACTION_APP_LOADED)
@@ -80,7 +82,11 @@ class MainViewModel @Inject constructor(
     }
 
     fun showList(listType: ListType) {
-        _currentList.value = listType
+        viewModelScope.launch{
+            _currentList.value = ListType.Loading
+            delay(100)
+            _currentList.value = listType
+        }
     }
 
     private fun collectData() {

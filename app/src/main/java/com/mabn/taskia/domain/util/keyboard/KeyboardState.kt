@@ -1,4 +1,4 @@
-package com.mabn.taskia.ui.common.keyboard
+package com.mabn.taskia.domain.util.keyboard
 
 import android.graphics.Rect
 import android.view.ViewTreeObserver

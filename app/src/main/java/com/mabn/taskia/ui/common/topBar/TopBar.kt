@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -19,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mabn.taskia.R
 import com.mabn.taskia.ui.common.optionsDropdownMenu.OptionsDropdownMenu
+import com.mabn.taskia.ui.common.topBar.TopBarViewModel
 import com.mabn.taskia.ui.taskList.TaskListViewModel
 import com.mabn.taskia.ui.taskList.view.filterDropdownMenu.FilterDropDown
 
@@ -27,6 +29,8 @@ fun TopBar(tabs: List<Pair<String, () -> Unit>>, onMenuClick: () -> Unit) {
     val menuExpanded = remember { mutableStateOf(false) }
     val filterExpanded = remember { mutableStateOf(false) }
     val taskListViewModel: TaskListViewModel = hiltViewModel()
+    val viewModel: TopBarViewModel = hiltViewModel()
+    val activeTabIndex = viewModel.tabIndex.observeAsState()
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -114,7 +118,7 @@ fun TopBar(tabs: List<Pair<String, () -> Unit>>, onMenuClick: () -> Unit) {
             }
         }
 
-        Tabs(tabs = tabs)
+        Tabs(tabs = tabs, viewModel = viewModel)
     }
 
 

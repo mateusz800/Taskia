@@ -7,4 +7,5 @@ sealed class ListType(val textId: Int) {
     object Upcoming : ListType(R.string.upcoming_tasks)
     object Unscheduled : ListType(R.string.unscheduled_tasks)
     object Completed : ListType(R.string.completed_tasks)
+    object Loading : ListType(R.string.loading)
 }

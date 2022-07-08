@@ -1,4 +1,4 @@
-package com.mabn.taskia.domain.util
+package com.mabn.taskia.domain.util.keyboard
 
 import android.content.Context
 import android.graphics.Rect
@@ -16,12 +16,11 @@ import androidx.core.view.WindowInsetsCompat
 class KeyboardHeightProvider(
     private val context: Context,
     windowManager: WindowManager,
-    decorView: View?,
+    private val decorView: View?,
     listener: KeyboardHeightListener?
 ) :
     PopupWindow(context), OnApplyWindowInsetsListener {
-    private val decorView: View?
-    private val metrics: DisplayMetrics
+    private val metrics: DisplayMetrics = DisplayMetrics()
     private val popupView: LinearLayout
     private val globalLayoutListener: ViewTreeObserver.OnGlobalLayoutListener
     private var insets: Rect = Rect()
@@ -89,8 +88,6 @@ class KeyboardHeightProvider(
     }
 
     init {
-        this.decorView = decorView
-        metrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(metrics)
         popupView = LinearLayout(context)
         popupView.layoutParams =
