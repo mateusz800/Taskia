@@ -23,7 +23,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import javax.inject.Inject
@@ -240,17 +239,15 @@ class TaskListViewModel @Inject constructor(
     fun removeTask(task: Task) {
         viewModelScope.launch(Dispatchers.IO) {
             recentlyRemovedTask = taskRepository.getById(task.id)
-            if (taskRepository.delete(task)) {
-                tasksSynchronizer.delete(task)
-                messageRepository.insertMessage(
-                    Message(
-                        text = contextProvider.getString(R.string.task_removed),
-                        actionText = contextProvider.getString(R.string.undo),
-                        actionFun = { restoreRemovedTask() },
-                        type = MessageType.SNACKBAR
-                    )
+            tasksSynchronizer.delete(task)
+            messageRepository.insertMessage(
+                Message(
+                    text = contextProvider.getString(R.string.task_removed),
+                    actionText = contextProvider.getString(R.string.undo),
+                    actionFun = { restoreRemovedTask() },
+                    type = MessageType.SNACKBAR
                 )
-            }
+            )
         }
     }
 

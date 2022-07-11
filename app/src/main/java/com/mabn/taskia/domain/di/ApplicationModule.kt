@@ -6,10 +6,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.mabn.taskia.domain.network.google.tasks.GoogleTasksApiClient
 import com.mabn.taskia.domain.network.google.tasks.GoogleTasksSynchronizer
 import com.mabn.taskia.domain.persistence.AppDatabase
-import com.mabn.taskia.domain.persistence.dao.ConnectedAccountDao
-import com.mabn.taskia.domain.persistence.dao.TagDao
-import com.mabn.taskia.domain.persistence.dao.TaskDao
-import com.mabn.taskia.domain.persistence.dao.TaskTagDao
+import com.mabn.taskia.domain.persistence.dao.*
 import com.mabn.taskia.domain.persistence.repository.*
 import com.mabn.taskia.domain.util.ContextProvider
 import dagger.Module
@@ -46,6 +43,12 @@ class ApplicationModule {
 
     @Provides
     @Singleton
+    fun provideSyncDataDao(db: AppDatabase): SyncDataDao {
+        return db.syncDataDao
+    }
+
+    @Provides
+    @Singleton
     fun provideConnectedAccountDao(db: AppDatabase): ConnectedAccountDao {
         return db.connectedAccountDao
     }
@@ -60,6 +63,12 @@ class ApplicationModule {
     @Singleton
     fun provideTaskTagDao(db: AppDatabase): TaskTagDao {
         return db.taskTagDao
+    }
+
+    @Provides
+    @Singleton
+    fun provideSyncDataRepository(syncDataDao: SyncDataDao): SyncDataRepository {
+        return SyncDataRepository(syncDataDao)
     }
 
     @Provides

@@ -4,11 +4,16 @@ import android.content.Context
 import androidx.work.ListenableWorker
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
+import com.mabn.taskia.domain.network.SyncTasksWorker
+import com.mabn.taskia.domain.network.TasksSynchronizer
 import com.mabn.taskia.domain.notification.UncompletedTasksNotificationWorker
 import com.mabn.taskia.domain.persistence.repository.TaskRepository
 import javax.inject.Inject
 
-class CustomWorkerFactory @Inject constructor(private val taskRepository: TaskRepository) :
+class CustomWorkerFactory @Inject constructor(
+    private val taskRepository: TaskRepository,
+    private val tasksSynchronizer: TasksSynchronizer
+) :
     WorkerFactory() {
 
     override fun createWorker(
@@ -16,7 +21,18 @@ class CustomWorkerFactory @Inject constructor(private val taskRepository: TaskRe
         workerClassName: String,
         workerParameters: WorkerParameters
     ): ListenableWorker {
-        return UncompletedTasksNotificationWorker(appContext, workerParameters, taskRepository)
+        return when (workerClassName) {
+            SyncTasksWorker::class.java.name -> SyncTasksWorker(
+                appContext,
+                workerParameters,
+                tasksSynchronizer
+            )
+            else -> UncompletedTasksNotificationWorker(
+                appContext,
+                workerParameters,
+                taskRepository
+            )
+        }
 
     }
 }

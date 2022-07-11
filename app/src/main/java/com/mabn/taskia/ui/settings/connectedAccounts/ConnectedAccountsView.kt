@@ -50,16 +50,19 @@ fun ConnectedAccountsView(viewModel: ConnectedAccountsViewModel) {
                 sheetContent = {
                     Column(modifier = Modifier.defaultMinSize(minHeight = 300.dp)) {
                         AccountType.values().forEach {
-                            val sameAccountType =
-                                accountsList.value?.filter { connectedAccount -> connectedAccount.type == it }
-                            SettingsButton(text = it.title, onClick = {
-                                viewModel.addNewAccount(it)
-                                coroutineScope.launch {
-                                    modalBottomSheetState.hide()
-                                }
-                            }, icon = painterResource(id = R.drawable.google_logo),
-                            enabled = sameAccountType.isNullOrEmpty())
-
+                            if(it != AccountType.UNKNOWN) {
+                                val sameAccountType =
+                                    accountsList.value?.filter { connectedAccount -> connectedAccount.type == it }
+                                SettingsButton(
+                                    text = it.title, onClick = {
+                                        viewModel.addNewAccount(it)
+                                        coroutineScope.launch {
+                                            modalBottomSheetState.hide()
+                                        }
+                                    }, icon = painterResource(id = R.drawable.google_logo),
+                                    enabled = sameAccountType.isNullOrEmpty()
+                                )
+                            }
 
                         }
                     }
@@ -127,6 +130,7 @@ private fun AccountView(account: ConnectedAccount, removeItemFunc: (ConnectedAcc
                 painterResource(
                     id = when (account.type) {
                         AccountType.GOOGLE -> R.drawable.google_logo
+                        else -> 0
                     }
                 ), null,
                 modifier = Modifier

@@ -1,25 +1,25 @@
 package com.mabn.taskia.domain.network
 
 import com.google.firebase.auth.FirebaseAuth
-import com.mabn.taskia.domain.model.AccountType
-import com.mabn.taskia.domain.model.ConnectedAccount
-import com.mabn.taskia.domain.model.Task
+import com.mabn.taskia.domain.model.*
 import com.mabn.taskia.domain.network.google.tasks.GoogleTasksSynchronizer
 import com.mabn.taskia.domain.persistence.repository.ConnectedAccountRepository
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
+import com.mabn.taskia.domain.persistence.repository.SyncDataRepository
+import com.mabn.taskia.domain.persistence.repository.TaskRepository
+import kotlinx.coroutines.*
 import javax.inject.Inject
 
 
 class TasksSynchronizer @Inject constructor(
     private val connectedAccountRepository: ConnectedAccountRepository,
+    private val syncDataRepository: SyncDataRepository,
+    private val taskRepository: TaskRepository,
     private val googleTasksSynchronizer: GoogleTasksSynchronizer,
 
     ) {
     private var _connectedAccount: List<ConnectedAccount> = listOf()
     private val _auth = FirebaseAuth.getInstance()
+    private val _syncQueue = mutableListOf<suspend () -> Unit>()
 
     init {
         observeConnectedAccounts()
@@ -28,13 +28,47 @@ class TasksSynchronizer @Inject constructor(
     suspend fun sync() {
         _connectedAccount.forEach {
             when (it.type) {
-                AccountType.GOOGLE -> googleTasksSynchronizer.sync(it)
+                AccountType.GOOGLE -> googleTasksSynchronizer.sync(it) { task, operation ->
+                    syncDataRepository.insert(SyncData(taskId = task.id, operation = operation))
+                }
             }
         }
     }
 
+    suspend fun syncQueue() {
+        syncDataRepository.getAll().forEach {
+            val task = taskRepository.getById(it.taskId)
+            when (it.operation) {
+                SyncDataOperation.UPDATE -> when (task?.provider?.type) {
+                    AccountType.GOOGLE -> googleTasksSynchronizer.updateGoogleTask(
+                        task.provider,
+                        task
+                    )
+                    else -> {}
+                }
+                SyncDataOperation.DELETE -> when (task?.provider?.type) {
+                    AccountType.GOOGLE -> runBlocking {
+                        if (googleTasksSynchronizer.deleteGoogleTask(task)) {
+                            taskRepository.delete(task)
+                        } else {
+                            task.isRemoved = true
+                            taskRepository.update(task)
+                        }
+                    }
+                    else -> {
+                        if (task != null) {
+                            taskRepository.delete(task)
+                        }
+                    }
+                }
+            }
+
+        }
+
+    }
+
     private fun observeConnectedAccounts() {
-        GlobalScope.launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch {
             connectedAccountRepository.getAll().collect {
                 _connectedAccount = it
             }
@@ -60,8 +94,11 @@ class TasksSynchronizer @Inject constructor(
     suspend fun delete(task: Task) {
         when (task.provider?.type) {
             AccountType.GOOGLE -> googleTasksSynchronizer.deleteGoogleTask(task)
-            else -> {}
+            else -> {
+                taskRepository.delete(task)
+            }
         }
+
     }
 
     suspend fun insert(task: Task) {

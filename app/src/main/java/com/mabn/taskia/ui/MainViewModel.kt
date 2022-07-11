@@ -21,8 +21,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel
@@ -82,7 +82,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun showList(listType: ListType) {
-        viewModelScope.launch{
+        viewModelScope.launch {
             _currentList.value = ListType.Loading
             delay(100)
             _currentList.value = listType
@@ -102,7 +102,13 @@ class MainViewModel @Inject constructor(
 
     fun refreshData() {
         viewModelScope.launch(Dispatchers.IO) {
-            tasksSynchronizer.sync()
+            runBlocking {
+                tasksSynchronizer.syncQueue()
+                tasksSynchronizer.sync()
+            }
+
+
+
         }
     }
 

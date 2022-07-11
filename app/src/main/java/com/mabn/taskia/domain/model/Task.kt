@@ -1,6 +1,7 @@
 package com.mabn.taskia.domain.model
 
 import android.content.Context
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
@@ -24,10 +25,13 @@ data class Task(
     var endDate: LocalDateTime? = null,
     var completionTime: LocalDateTime? = null,
 
+    @ColumnInfo(name = "isRemoved", defaultValue = "0")
+    var isRemoved: Boolean = false,
+
     // External providers ids
-    val provider:ConnectedAccount? = null,
+    val provider: ConnectedAccount? = null,
     var googleId: String? = null,
-    val googleTaskList:String? = null
+    val googleTaskList: String? = null
 ) {
     fun getEndDay(context: Context): String {
         if (endDate != null) {
