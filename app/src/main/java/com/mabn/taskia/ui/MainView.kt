@@ -120,7 +120,6 @@ fun MainView(viewModel: MainViewModel) {
             modalBottomSheetState.hide()
             keyboardController?.hide()
         }
-        taskFormViewModel.clear()
         taskFormViewModel.isVisible.value = false
     }
 

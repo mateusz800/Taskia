@@ -19,7 +19,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -118,7 +117,6 @@ class TaskFormViewModel @Inject constructor(
         val tagsList = tags.parallelStream()
             .filter { it.value.isNotBlank() }
             .toList()
-        println(tags)
         viewModelScope.launch(Dispatchers.IO) {
             val parentId =
                 if (task.id == 0L) {
@@ -150,8 +148,6 @@ class TaskFormViewModel @Inject constructor(
             tagsToRemove.forEach {
                 taskTagRepository.deleteTagFromTask(tag = it, task = task)
             }
-
-
             taskTagRepository.insert(
                 *insertedTags.stream().map { TaskTag(parentId, it.id) }.toList().toTypedArray()
             )
@@ -189,6 +185,7 @@ class TaskFormViewModel @Inject constructor(
 
     fun setTask(task: Task, context: Context) {
         _task = task
+        _dataChanged.value = false
         _title.value = task.title
         _dueTo.value = task.endDate
         _dueDay.value = task.getEndDay(context)

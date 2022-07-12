@@ -12,10 +12,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Save
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -34,6 +31,7 @@ import com.mabn.taskia.domain.model.Tag
 import com.mabn.taskia.domain.model.Task
 import com.mabn.taskia.ui.common.CustomTextField
 import com.mabn.taskia.ui.taskForm.TaskFormViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun TaskForm(
@@ -71,7 +69,6 @@ fun TaskForm(
             saveFun = {
                 if (viewModel.verifyData()) {
                     viewModel.saveTask()
-                    viewModel.clear()
                     closeFunc()
                 }
             },
@@ -172,12 +169,13 @@ private fun TitleTextField(
     onDoneKeyClick: () -> Unit,
     isVisible: Boolean = true,
 ) {
-    val focusRequester = FocusRequester()
+    val focusRequester = remember{FocusRequester()}
     val keyboardController = LocalSoftwareKeyboardController.current
     LaunchedEffect(isVisible) {
         if (isVisible && value.isBlank()) {
-            focusRequester.requestFocus()
             keyboardController?.show()
+            delay(10)
+            focusRequester.requestFocus()
         }
 
     }

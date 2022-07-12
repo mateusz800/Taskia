@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.mabn.taskia.R
@@ -42,6 +43,7 @@ fun TaskEntireList(
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     val configuration = LocalConfiguration.current
+    val focusManager = LocalFocusManager.current
 
 
     Column(
@@ -112,7 +114,10 @@ fun TaskEntireList(
                                 toggleStatusFun = { task ->
                                     viewModel.toggleTaskStatus(task)
                                 },
-                                onItemClick = showTaskForm
+                                onItemClick = { task ->
+                                    showTaskForm(task)
+                                    focusManager.clearFocus(force = true)
+                                }
                             )
                         } else {
                             TaskListSection(
@@ -123,7 +128,10 @@ fun TaskEntireList(
                                 toggleStatusFun = { task ->
                                     viewModel.toggleTaskStatus(task)
                                 },
-                                onItemClick = showTaskForm
+                                onItemClick =  { task ->
+                                    showTaskForm(task)
+                                    focusManager.clearFocus(force = true)
+                                }
                             )
                         }
                     }

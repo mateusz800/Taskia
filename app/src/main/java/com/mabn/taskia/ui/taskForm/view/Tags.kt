@@ -1,5 +1,6 @@
 package com.mabn.taskia.ui.taskForm.view
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
@@ -41,6 +42,7 @@ fun Tags(
     onTitleChanged: (Tag, String) -> Unit
 ) {
     val scrollState = rememberScrollState()
+
     Column(modifier = Modifier.padding(vertical = 20.dp)) {
         Text(
             stringResource(id = R.string.tags),
@@ -82,6 +84,9 @@ fun TagInput(
         }
     }
     Spacer(modifier = Modifier.width(10.dp))
+    BackHandler(enabled = isCurrentlyFocused.value) {
+        focusRequester.freeFocus()
+    }
     Box(
         modifier = Modifier
             .border(
