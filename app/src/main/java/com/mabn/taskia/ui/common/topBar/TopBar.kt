@@ -25,7 +25,7 @@ import com.mabn.taskia.ui.taskList.TaskListViewModel
 import com.mabn.taskia.ui.taskList.view.filterDropdownMenu.FilterDropDown
 
 @Composable
-fun TopBar(tabs: List<Pair<String, () -> Unit>>, onMenuClick: () -> Unit) {
+fun TopBar(tabs: List<Pair<String, () -> Unit>>) {
     val menuExpanded = remember { mutableStateOf(false) }
     val filterExpanded = remember { mutableStateOf(false) }
     val taskListViewModel: TaskListViewModel = hiltViewModel()
@@ -129,6 +129,6 @@ fun TopBar(tabs: List<Pair<String, () -> Unit>>, onMenuClick: () -> Unit) {
 @Composable
 private fun TopBar_Preview() {
     MaterialTheme {
-        TopBar(tabs = listOf()) { }
+        TopBar(tabs = listOf())
     }
 }

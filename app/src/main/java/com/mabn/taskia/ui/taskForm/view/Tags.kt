@@ -1,6 +1,5 @@
 package com.mabn.taskia.ui.taskForm.view
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
@@ -84,9 +83,6 @@ fun TagInput(
         }
     }
     Spacer(modifier = Modifier.width(10.dp))
-    BackHandler(enabled = isCurrentlyFocused.value) {
-        focusRequester.freeFocus()
-    }
     Box(
         modifier = Modifier
             .border(

@@ -1,7 +1,6 @@
 package com.mabn.taskia.domain.di
 
 import android.content.Context
-import androidx.room.Room
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.mabn.taskia.domain.network.google.tasks.GoogleTasksApiClient
 import com.mabn.taskia.domain.network.google.tasks.GoogleTasksSynchronizer
@@ -26,14 +25,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class ApplicationModule {
-    @Provides
-    @Singleton
-    fun provideDatabase(@ApplicationContext context: Context): AppDatabase {
-        return Room.databaseBuilder(context, AppDatabase::class.java, "taskia")
-            .fallbackToDestructiveMigration()
-            .fallbackToDestructiveMigrationFrom(1)
-            .build()
-    }
 
     @Provides
     @Singleton

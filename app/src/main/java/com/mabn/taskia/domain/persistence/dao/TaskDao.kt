@@ -19,7 +19,7 @@ interface TaskDao {
     fun deleteAll(vararg task: Task): Int
 
     @Transaction
-    @Query("SELECT * FROM Task WHERE parentId is null AND isRemoved = 'false' ")
+    @Query("SELECT * FROM Task WHERE parentId is null AND isRemoved = 0 ")
     fun getAll(): Flow<List<TaskAndSubtasks>>
 
     @Transaction

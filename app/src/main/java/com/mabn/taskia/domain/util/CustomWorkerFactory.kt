@@ -20,18 +20,19 @@ class CustomWorkerFactory @Inject constructor(
         appContext: Context,
         workerClassName: String,
         workerParameters: WorkerParameters
-    ): ListenableWorker {
+    ): ListenableWorker? {
         return when (workerClassName) {
             SyncTasksWorker::class.java.name -> SyncTasksWorker(
                 appContext,
                 workerParameters,
                 tasksSynchronizer
             )
-            else -> UncompletedTasksNotificationWorker(
+            UncompletedTasksNotificationWorker::class.java.name -> UncompletedTasksNotificationWorker(
                 appContext,
                 workerParameters,
                 taskRepository
             )
+            else -> null
         }
 
     }

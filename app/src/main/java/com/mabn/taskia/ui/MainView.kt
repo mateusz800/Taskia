@@ -1,7 +1,9 @@
 package com.mabn.taskia.ui
 
 import android.app.Activity
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -114,7 +116,6 @@ fun MainView(viewModel: MainViewModel) {
         taskFormViewModel.setCurrentList(currentList.value)
     }
 
-
     val hideBottomSheet = {
         coroutineScope.launch(Dispatchers.Main) {
             modalBottomSheetState.hide()
@@ -124,22 +125,28 @@ fun MainView(viewModel: MainViewModel) {
     }
 
     val context = LocalContext.current
-    BackHandler(scaffoldState.drawerState.isOpen) {
-        coroutineScope.launch(Dispatchers.Main) {
-            scaffoldState.drawerState.close()
-        }
-    }
-    BackHandler(modalBottomSheetState.isVisible) {
-        coroutineScope.launch(Dispatchers.Main) {
-            if (formDataChanged.value) {
-                showTaskChangedDialog.value = true
+    val dispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+
+    val backCallback = remember {
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                (context as Activity).finish()
             }
-            hideBottomSheet()
         }
     }
-    BackHandler(!modalBottomSheetState.isVisible) {
-        (context as? Activity)?.finish()
+    BackHandler(enabled = true) {
+        if(modalBottomSheetState.isVisible) {
+            coroutineScope.launch(Dispatchers.Main) {
+                if (formDataChanged.value) {
+                    showTaskChangedDialog.value = true
+                }
+                hideBottomSheet()
+            }
+        } else {
+            (context as? Activity)?.finish()
+        }
     }
+
     DoItTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -179,11 +186,7 @@ fun MainView(viewModel: MainViewModel) {
                                         viewModel.showList(it)
                                     }
                                 }
-                            ) {
-                                coroutineScope.launch(Dispatchers.Main) {
-                                    scaffoldState.drawerState.open()
-                                }
-                            }
+                            )
                         }
                     },
                     /*
