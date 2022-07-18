@@ -41,7 +41,7 @@
     <string name="discard">Discard</string>
      <string name="connected_accounts">Connected accounts</string>
     <string name="add_new_account">Add new account</string>
-    <string name="google_client_secret">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</string>
+    <string name="google_client_secret" translatable="false">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</string>
     <string name="refresh">Refresh</string>
     <string name="tags">Tags</string>
     <string name="add_tag">Add tag</string>
