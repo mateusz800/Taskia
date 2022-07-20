@@ -50,4 +50,9 @@
     <string name="no_tags">Brak dostępnych etykiet</string>
     <string name="loading">Ładowanie</string>
     <string name="emptyString">" "</string>
+    <plurals name="uncompleted_tasks_with_count">
+        <item quantity="one">Masz ciągle nieukończone %d zadanie</item>
+        <item quantity="many">Masz ciągle nieukończone %d zadań</item>
+        <item quantity="few">Masz ciągle nieukończone %d zadań</item>
+    </plurals>
 </resources>

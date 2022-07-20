@@ -2,6 +2,7 @@ package com.mabn.taskia.ui.taskForm
 
 import android.content.Context
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mabn.taskia.R
@@ -34,7 +35,7 @@ class TaskFormViewModel @Inject constructor(
     private val contextProvider: ContextProvider,
     private val tasksSynchronizer: TasksSynchronizer
 ) : ViewModel() {
-    var isVisible = MutableStateFlow(false)
+    var isVisible = MutableLiveData(false)
     private var _task: Task? = null
 
     private val _dataChanged = MutableStateFlow(false)

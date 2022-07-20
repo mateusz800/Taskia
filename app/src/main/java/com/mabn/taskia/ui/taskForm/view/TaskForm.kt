@@ -1,5 +1,6 @@
 package com.mabn.taskia.ui.taskForm.view
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -13,6 +14,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -40,7 +42,7 @@ fun TaskForm(
 ) {
     val title by viewModel.title.collectAsState()
     val dueToDayText by viewModel.dueDay.collectAsState()
-    val isVisible = viewModel.isVisible.collectAsState()
+    val isVisible = viewModel.isVisible.observeAsState(false)
     val subtasks = viewModel.subtasks
     val tags = viewModel.tags
 
@@ -111,6 +113,14 @@ private fun TaskForm(
     val keyboardController = LocalSoftwareKeyboardController.current
     val scrollState = rememberScrollState()
 
+    LaunchedEffect(isVisible){
+        if(isVisible) {
+            Log.i("TaskForm", "Form is visible")
+        } else {
+            Log.i("TaskForm", "Form is hidden")
+        }
+    }
+
     Column(
         modifier = Modifier
             .padding(horizontal = 20.dp)
@@ -148,7 +158,8 @@ private fun TaskForm(
         Tags(
             tags = tags,
             addNewFun = addNewTagFun,
-            onTitleChanged = updateTagValue
+            onTitleChanged = updateTagValue,
+            isVisible = isVisible
         )
 
         Subtasks(
@@ -173,6 +184,7 @@ private fun TitleTextField(
     val keyboardController = LocalSoftwareKeyboardController.current
     LaunchedEffect(isVisible) {
         if (isVisible && value.isBlank()) {
+            Log.i("TitleTextField", "Focus requested")
             keyboardController?.show()
             delay(10)
             focusRequester.requestFocus()
