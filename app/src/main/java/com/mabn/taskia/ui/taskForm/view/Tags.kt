@@ -1,6 +1,5 @@
 package com.mabn.taskia.ui.taskForm.view
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
@@ -113,12 +112,10 @@ fun TagInput(
             modifier = Modifier
                 .focusRequester(focusRequester)
                 .onFocusChanged {
-                    Log.i("Tags", "Focus changed ($it)")
                     isCurrentlyFocused.value = it.isFocused
                     if (!it.isFocused) {
                         onEnter(false)
-                        Log.i("Tags", "onEnter")
-                    }
+                                           }
                 }
                 .defaultMinSize(minWidth = 70.dp)
                 .onKeyEvent {

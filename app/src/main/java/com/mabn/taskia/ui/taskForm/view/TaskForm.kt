@@ -1,6 +1,5 @@
 package com.mabn.taskia.ui.taskForm.view
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -113,13 +112,7 @@ private fun TaskForm(
     val keyboardController = LocalSoftwareKeyboardController.current
     val scrollState = rememberScrollState()
 
-    LaunchedEffect(isVisible){
-        if(isVisible) {
-            Log.i("TaskForm", "Form is visible")
-        } else {
-            Log.i("TaskForm", "Form is hidden")
-        }
-    }
+
 
     Column(
         modifier = Modifier
@@ -184,7 +177,6 @@ private fun TitleTextField(
     val keyboardController = LocalSoftwareKeyboardController.current
     LaunchedEffect(isVisible) {
         if (isVisible && value.isBlank()) {
-            Log.i("TitleTextField", "Focus requested")
             keyboardController?.show()
             delay(10)
             focusRequester.requestFocus()
