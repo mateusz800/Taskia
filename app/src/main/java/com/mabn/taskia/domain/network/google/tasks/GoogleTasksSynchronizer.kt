@@ -147,53 +147,50 @@ class GoogleTasksSynchronizer @Inject constructor(
         val data: GoogleAccountData =
             gson.fromJson(account.data, GoogleAccountData::class.java) ?: GoogleAccountData()
         data.taskListsIdList.forEach {
-            try {
-                val response = googleTasksApiClient.getTasks(
-                    auth = "Bearer ${account.token}",
-                    taskListId = it
-                )
-                if (response.isSuccessful) {
-                    val responseData = response.body()
-                    responseData?.items?.forEach { task ->
-                        if (task.title.isNotBlank()) {
-                            val existingTask = taskRepository.getByGoogleId(task.id)
-                            if (existingTask != null) {
-                                existingTask.title = task.title
-                                existingTask.endDate =
-                                    if (task.due != null) OffsetDateTime.parse(task.due)
-                                        .toLocalDateTime() else null
-                                existingTask.status = task.status.contentEquals("completed", true)
-                                taskRepository.update(existingTask)
-                            } else {
-                                val newTask = Task(
-                                    title = task.title,
-                                    status = task.status.contentEquals("completed", true),
-                                    endDate = if (task.due != null) OffsetDateTime.parse(task.due)
-                                        .toLocalDateTime() else null,
-                                    googleId = task.id,
-                                    googleTaskList = it,
-                                    provider = account
-                                )
-                                try {
-                                    taskRepository.insertAll(newTask)
-                                } catch (e: SQLiteConstraintException) {
-                                    // do nothing
-                                }
+
+            val response = googleTasksApiClient.getTasks(
+                auth = "Bearer ${account.token}",
+                taskListId = it
+            )
+            if (response.isSuccessful) {
+                val responseData = response.body()
+                responseData?.items?.forEach { task ->
+                    if (task.title.isNotBlank()) {
+                        val existingTask = taskRepository.getByGoogleId(task.id)
+                        if (existingTask != null) {
+                            existingTask.title = task.title
+                            existingTask.endDate =
+                                if (task.due != null) OffsetDateTime.parse(task.due)
+                                    .toLocalDateTime() else null
+                            existingTask.status = task.status.contentEquals("completed", true)
+                            taskRepository.update(existingTask)
+                        } else {
+                            val newTask = Task(
+                                title = task.title,
+                                status = task.status.contentEquals("completed", true),
+                                endDate = if (task.due != null) OffsetDateTime.parse(task.due)
+                                    .toLocalDateTime() else null,
+                                googleId = task.id,
+                                googleTaskList = it,
+                                provider = account
+                            )
+                            try {
+                                taskRepository.insertAll(newTask)
+                            } catch (e: SQLiteConstraintException) {
+                                // do nothing
                             }
                         }
                     }
-                } else if (response.code() == 401) {
-                    refreshGoogleToken(
-                        account = account,
-                        nextAction = { acc -> syncGoogleTasks(acc) })
                 }
-            } catch (exception: UnknownHostException) {
-
+            } else if (response.code() == 401) {
+                refreshGoogleToken(
+                    account = account,
+                    nextAction = { acc -> syncGoogleTasks(acc) })
             }
         }
     }
 
-    suspend fun deleteGoogleTask(task: Task):Boolean {
+    suspend fun deleteGoogleTask(task: Task): Boolean {
         val account = task.provider
         if (task.googleTaskList != null && task.googleId != null && account != null) {
             try {
@@ -207,7 +204,7 @@ class GoogleTasksSynchronizer @Inject constructor(
                     refreshGoogleToken(
                         account = account,
                         nextAction = { acc -> syncGoogleTasks(acc) })
-                }else if(response.isSuccessful){
+                } else if (response.isSuccessful) {
                     return true
                 }
             } catch (exception: UnknownHostException) {

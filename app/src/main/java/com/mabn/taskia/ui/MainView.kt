@@ -78,7 +78,7 @@ fun MainView(viewModel: MainViewModel) {
             ) {
                 val value =
                     if (isLandscape.value != true)
-                        keyboardHeight.value!!.toDp + 350.toDp - (configuration.screenHeightDp / 2) else 0
+                        keyboardHeight.value!!.toDp + 350.toDp - configuration.screenHeightDp / 2 else 0
                 if (value > 0) value else 0
             } else 0
         )
@@ -226,7 +226,6 @@ fun MainView(viewModel: MainViewModel) {
         }
 
         if (showTaskChangedDialog.value) {
-
             NotSavedAlert(saveFun = {
                 taskFormViewModel.saveTask()
                 hideBottomSheet()

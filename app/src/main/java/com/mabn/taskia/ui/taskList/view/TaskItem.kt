@@ -54,7 +54,7 @@ fun TaskItem(
         SwipeToDismiss(
             state = dismissState,
             background = {
-               DeleteBackground()
+                DeleteBackground()
             },
             directions = setOf(DismissDirection.StartToEnd)
         ) {
@@ -74,9 +74,11 @@ fun TaskItem(
                 expandStatus = isExpanded.value,
                 expandFun = if (subtasks.isNullOrEmpty()) {
                     null
-                } else ({
-                    isExpanded.value = !isExpanded.value
-                })
+                } else {
+                    {
+                        isExpanded.value = !isExpanded.value
+                    }
+                }
             )
         }
         if (isExpanded.value && !subtasks.isNullOrEmpty()) {
@@ -199,14 +201,16 @@ fun CustomCheckbox(status: Boolean, enabled: Boolean = true, onCheck: () -> Bool
                 shape = RoundedCornerShape(6.dp)
             )
             .clickable(enabled = enabled) {
-                if(onCheck()){
+                if (onCheck()) {
                     checked.value = !checked.value
                 }
             }
     ) {
         if (checked.value) {
-            Icon(Icons.Default.Check, status.toString(),
-            tint = MaterialTheme.colors.primary)
+            Icon(
+                Icons.Default.Check, status.toString(),
+                tint = MaterialTheme.colors.primary
+            )
         }
     }
 }
@@ -221,7 +225,7 @@ private fun TaskItem_Preview() {
             task = task,
             subtasks = subtasks,
             removeItemFunc = {},
-            toggleStatusFun = {true},
+            toggleStatusFun = { true },
             onClick = {}
         )
     }

@@ -40,13 +40,13 @@ class MainActivityTest {
 
     @Test
     fun noTasksViewVisibleIfNoTasks() {
-        composeTestRule.onNodeWithTag("noTasks")
+        composeTestRule.onNodeWithTag("noTasks", useUnmergedTree = true)
             .assertExists()
             .assertIsDisplayed()
     }
 
     @Test
-    fun backPress(){
+    fun backPress() {
         composeTestRule.onNodeWithText("Upcoming").performClick()
         pressBackUnconditionally()
         assertTrue(composeTestRule.activity.isDestroyed)
@@ -66,17 +66,18 @@ class MainActivityTest {
 
     @Test
     fun removeTaskOnSwipeRight() {
+        val title = "test task"
         runBlocking {
             taskRepository.insertAll(
                 Task(
-                    title = "test task",
+                    title = title,
                     completionTime = LocalDate.now().atStartOfDay()
                 )
             )
             delay(1000)
         }
-        composeTestRule.onNodeWithText("test task").performTouchInput { swipeRight() }
-        composeTestRule.onNodeWithText("test task").assertDoesNotExist()
+        composeTestRule.onNodeWithText(title).performTouchInput { swipeRight() }
+        composeTestRule.onNodeWithText(title).assertDoesNotExist()
         // Check if snackbar with message is displayed
         composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.task_removed))
             .assertIsDisplayed()

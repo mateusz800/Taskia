@@ -61,7 +61,7 @@ fun Tags(
                             tag = tag,
                             onTitleChanged = onTitleChanged,
                             onEnter = addNewFun,
-                            focus = (index == tags.size - 1 && tag.value.isEmpty())
+                            focus = index == tags.size - 1 && tag.value.isEmpty()
                         )
                     }
                 }

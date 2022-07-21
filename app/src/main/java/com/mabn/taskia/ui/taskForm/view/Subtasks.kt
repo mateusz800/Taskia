@@ -43,7 +43,7 @@ fun Subtasks(
                     task = task,
                     onTitleChanged = onTitleChanged,
                     onEnter = addNewFun,
-                    focus = (index == subtasks.size - 1 && task.title.isEmpty())
+                    focus = index == subtasks.size - 1 && task.title.isEmpty()
                 )
             }
             AddNewButton(
