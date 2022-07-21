@@ -31,7 +31,7 @@ interface TaskDao {
     @Transaction
     @Query(
         "SELECT * FROM Task Where parentId is null AND " +
-                "endDate BETWEEN :startTime AND :endTime AND status = 0"
+                "endDate BETWEEN :startTime AND :endTime AND status = 0 ORDER BY endDate , startTime"
     )
     fun getAll(startTime: Long, endTime: Long): Flow<List<TaskAndSubtasks>>
 

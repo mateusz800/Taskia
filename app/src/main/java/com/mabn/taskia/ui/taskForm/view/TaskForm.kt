@@ -31,7 +31,9 @@ import com.mabn.taskia.R
 import com.mabn.taskia.domain.model.Tag
 import com.mabn.taskia.domain.model.Task
 import com.mabn.taskia.ui.common.CustomTextField
+import com.mabn.taskia.ui.taskForm.dateTime.TaskDateVmInterface
 import com.mabn.taskia.ui.taskForm.TaskFormViewModel
+import com.mabn.taskia.ui.taskForm.dateTime.TaskDateTime
 import kotlinx.coroutines.delay
 
 @Composable
@@ -40,12 +42,10 @@ fun TaskForm(
     closeFunc: () -> Unit
 ) {
     val title by viewModel.title.collectAsState()
-    val dueToDayText by viewModel.dueDay.collectAsState()
     val isVisible = viewModel.isVisible.observeAsState(false)
     val subtasks = viewModel.subtasks
     val tags = viewModel.tags
 
-    //val showAlert = remember { mutableStateOf(showNotSavedAlert) }
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Box(
             modifier = Modifier
@@ -73,22 +73,8 @@ fun TaskForm(
                     closeFunc()
                 }
             },
-            endDateText = dueToDayText,
-            updateDueTo = { value -> viewModel.updateDueToDate(value) }
+            dateVmTimeViewModel = viewModel
         )
-        /*
-        NotSavedAlert(show = showAlert.value, saveFun = {
-            if (viewModel.verifyData()) {
-                viewModel.saveTask()
-                viewModel.clear()
-                closeFunc()
-            }
-        }) {
-            showAlert.value = false
-            closeFunc()
-        }
-
-         */
     }
 }
 
@@ -106,13 +92,10 @@ private fun TaskForm(
     addNewTagFun: (Boolean) -> Unit,
     saveFun: () -> Unit,
     isVisible: Boolean = false,
-    endDateText: String,
-    updateDueTo: (String) -> Unit
+    dateVmTimeViewModel: TaskDateVmInterface,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val scrollState = rememberScrollState()
-
-
 
     Column(
         modifier = Modifier
@@ -143,10 +126,7 @@ private fun TaskForm(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth()
         ) {
-            DueTo(
-                dayLabel = endDateText,
-                updateDate = updateDueTo
-            )
+            TaskDateTime(dateVmTimeViewModel)
         }
         Tags(
             tags = tags,
@@ -173,7 +153,7 @@ private fun TitleTextField(
     onDoneKeyClick: () -> Unit,
     isVisible: Boolean = true,
 ) {
-    val focusRequester = remember{FocusRequester()}
+    val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
     LaunchedEffect(isVisible) {
         if (isVisible && value.isBlank()) {

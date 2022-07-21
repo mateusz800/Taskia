@@ -24,6 +24,7 @@ data class Task(
     var parentId: Long? = null,
     var order: Int? = id.toInt(),
     var endDate: LocalDateTime? = null,
+    @ColumnInfo(defaultValue = "")
     var startTime: LocalTime? = null,
     var completionTime: LocalDateTime? = null,
 

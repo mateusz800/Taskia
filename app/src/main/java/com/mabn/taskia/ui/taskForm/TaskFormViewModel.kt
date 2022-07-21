@@ -15,14 +15,18 @@ import com.mabn.taskia.domain.persistence.repository.TaskRepository
 import com.mabn.taskia.domain.persistence.repository.TaskTagRepository
 import com.mabn.taskia.domain.util.ContextProvider
 import com.mabn.taskia.domain.util.dbConverter.LocalDateTimeConverter
+import com.mabn.taskia.ui.taskForm.dateTime.TaskDateVmInterface
 import com.mabn.taskia.ui.taskList.ListType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.format.DateTimeParseException
 import javax.inject.Inject
 import kotlin.streams.toList
@@ -34,7 +38,7 @@ class TaskFormViewModel @Inject constructor(
     private val taskTagRepository: TaskTagRepository,
     private val contextProvider: ContextProvider,
     private val tasksSynchronizer: TasksSynchronizer
-) : ViewModel() {
+) : ViewModel(), TaskDateVmInterface {
     var isVisible = MutableLiveData(false)
     private var _task: Task? = null
 
@@ -48,8 +52,17 @@ class TaskFormViewModel @Inject constructor(
 
     private val _dueTo = MutableStateFlow<LocalDateTime?>(null)
     private val _dueDay = MutableStateFlow(contextProvider.getString(R.string.no_deadline))
-    val dueDay: StateFlow<String>
+    override val dueDay: StateFlow<String>
         get() = _dueDay
+
+    private val _startTime = MutableStateFlow<LocalTime?>(null)
+    override val startTime: Flow<String>
+        get() = _startTime.map {
+            if (_startTime.value != null)
+                "%02d".format(_startTime.value?.hour) + ":" + "%02d".format(_startTime.value?.minute)
+            else contextProvider.getString(R.string.no_time)
+        }
+
 
     val subtasks = SnapshotStateList<Task>()
     val tags = SnapshotStateList<Tag>()
@@ -78,7 +91,7 @@ class TaskFormViewModel @Inject constructor(
         _dataChanged.value = true
     }
 
-    fun updateDueToDate(value: String) {
+    override fun updateDueToDate(value: String) {
         _dataChanged.value = true
         viewModelScope.launch(Dispatchers.IO) {
             if (value.isBlank()) {
@@ -91,6 +104,18 @@ class TaskFormViewModel @Inject constructor(
                 LocalDate.parse(value).atStartOfDay()
             }
             _dueTo.emit(processedValue)
+        }
+    }
+
+    override fun updateStartTime(value: String) {
+        _dataChanged.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            if (value.isBlank() || value == contextProvider.getString(R.string.no_time)) {
+                _startTime.emit(null)
+                return@launch
+            }
+            val processedValue: LocalTime = LocalTime.parse(value)
+            _startTime.emit(processedValue)
         }
     }
 
@@ -108,7 +133,8 @@ class TaskFormViewModel @Inject constructor(
         } else {
             _task!!.copy(
                 title = title.value,
-                endDate = _dueTo.value
+                endDate = _dueTo.value,
+                startTime = _startTime.value
             )
         }
         val subtaskList = subtasks.parallelStream()
@@ -190,6 +216,7 @@ class TaskFormViewModel @Inject constructor(
         _title.value = task.title
         _dueTo.value = task.endDate
         _dueDay.value = task.getEndDay(context)
+        _startTime.value = task.startTime
         viewModelScope.launch(Dispatchers.IO) {
             subtasks.clear()
             val temp = taskRepository.getSubtasks(task)

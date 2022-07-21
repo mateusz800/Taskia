@@ -62,6 +62,7 @@ fun TaskItem(
             TaskGeneralInfo(
                 task.status,
                 task.title,
+                startTime = if (task.startTime != null) task.startTime.toString() else null,
                 dueDay = if (task.endDate != null && task.endDate!!.isBefore(
                         LocalDate.now().atStartOfDay()
                     )
@@ -102,6 +103,7 @@ fun TaskGeneralInfo(
     status: Boolean,
     title: String,
     dueDay: String? = null,
+    startTime: String? = null,
     onCheck: () -> Boolean,
     onClick: (() -> Unit)?,
     expandStatus: Boolean = false,
@@ -131,12 +133,18 @@ fun TaskGeneralInfo(
                     textDecoration = if (status) TextDecoration.LineThrough else TextDecoration.None
                 )
             }
-            if (expandFun != null) {
-                IconButton(onClick = { expandFun.invoke() }) {
-                    Icon(
-                        if (expandStatus) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
-                        null
-                    )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (startTime != null) {
+                    Text(startTime)
+                }
+                if (expandFun != null) {
+                    Spacer(Modifier.width(10.dp))
+                    IconButton(onClick = { expandFun.invoke() }) {
+                        Icon(
+                            if (expandStatus) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
+                            null
+                        )
+                    }
                 }
             }
 
