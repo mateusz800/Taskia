@@ -50,7 +50,7 @@
     <string name="no_tags">No tags available</string>
     <string name="loading">Loading</string>
     <string name="emptyString" />
-    <string name="no_time">--:--</string>
+    <string name="no_time" translatable="false">--:--</string>
     <string name="pick_time">Pick a time</string>
     <string name="reset_time">No time</string>
     <plurals name="uncompleted_tasks_with_count">

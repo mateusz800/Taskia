@@ -55,4 +55,6 @@
         <item quantity="many">Masz ciągle nieukończone %d zadań</item>
         <item quantity="few">Masz ciągle nieukończone %d zadań</item>
     </plurals>
+    <string name="pick_time">Wybierz czas</string>
+    <string name="reset_time">Brak czasu</string>
 </resources>
