@@ -120,7 +120,7 @@ fun TaskGeneralInfo(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
                 CustomCheckbox(status) {
                     onCheck()
                 }
@@ -133,13 +133,21 @@ fun TaskGeneralInfo(
                     textDecoration = if (status) TextDecoration.LineThrough else TextDecoration.None
                 )
             }
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.End,
+            ) {
                 if (startTime != null) {
-                    Text(startTime)
+                    Text(
+                        startTime, color = MaterialTheme.colors.primary,
+                        modifier = Modifier.requiredWidth(50.dp)
+                    )
                 }
                 if (expandFun != null) {
                     Spacer(Modifier.width(10.dp))
-                    IconButton(onClick = { expandFun.invoke() }) {
+                    IconButton(
+                        modifier = Modifier.requiredWidth(20.dp),
+                        onClick = { expandFun.invoke() }) {
                         Icon(
                             if (expandStatus) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
                             null

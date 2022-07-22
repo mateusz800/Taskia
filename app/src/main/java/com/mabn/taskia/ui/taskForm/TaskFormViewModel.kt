@@ -129,7 +129,7 @@ class TaskFormViewModel @Inject constructor(
 
     fun saveTask() {
         val task: Task = if (_task == null) {
-            Task(title = title.value, endDate = _dueTo.value)
+            Task(title = title.value, endDate = _dueTo.value, startTime = _startTime.value)
         } else {
             _task!!.copy(
                 title = title.value,
@@ -272,6 +272,7 @@ class TaskFormViewModel @Inject constructor(
     fun clear() {
         _task = null
         _title.value = ""
+        _startTime.value = null
         initDueToDefaultValue()
         subtasks.clear()
         tags.clear()

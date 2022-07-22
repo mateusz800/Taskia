@@ -19,11 +19,11 @@ interface TaskDao {
     fun deleteAll(vararg task: Task): Int
 
     @Transaction
-    @Query("SELECT * FROM Task WHERE parentId is null AND isRemoved = 0 ")
+    @Query("SELECT * FROM Task WHERE parentId is null AND isRemoved = 0 ORDER BY endDate ASC, startTime ASC ")
     fun getAll(): Flow<List<TaskAndSubtasks>>
 
     @Transaction
-    @Query("SELECT * FROM Task WHERE parentId is null and endDate is not null and endDate >= :startDateTime and status = 0 order by endDate asc")
+    @Query("SELECT * FROM Task WHERE parentId is null and endDate is not null and endDate >= :startDateTime and status = 0 order by endDate asc, startTime asc")
     fun getAllUpcoming(
         startDateTime: LocalDateTime = LocalDate.now().atStartOfDay()
     ): Flow<List<TaskAndSubtasks>>
@@ -31,21 +31,21 @@ interface TaskDao {
     @Transaction
     @Query(
         "SELECT * FROM Task Where parentId is null AND " +
-                "endDate BETWEEN :startTime AND :endTime AND status = 0 ORDER BY endDate , startTime"
+                "endDate BETWEEN :startTime AND :endTime AND status = 0 ORDER BY endDate ASC , startTime ASC"
     )
     fun getAll(startTime: Long, endTime: Long): Flow<List<TaskAndSubtasks>>
 
     @Transaction
     @Query(
         "SELECT * FROM Task WHERE parentId is null  AND status = 0 AND " +
-                " endDate < :dateTime ORDER BY endDate ASC "
+                " endDate < :dateTime ORDER BY endDate ASC, startTime ASC "
     )
     fun getUncompletedByTime(dateTime: Long): Flow<List<TaskAndSubtasks>>
 
     @Transaction
     @Query(
         "SELECT * FROM Task WHERE parentId is null  AND status = 0 AND " +
-                " endDate >= :dateTime ORDER BY endDate ASC "
+                " endDate >= :dateTime ORDER BY endDate ASC, startTime ASC "
     )
     fun getUpcoming(dateTime: Long): Flow<List<TaskAndSubtasks>>
 
