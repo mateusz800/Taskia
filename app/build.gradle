@@ -12,6 +12,15 @@ plugins {
 android {
     compileSdk 32
 
+    signingConfigs {
+        release {
+            storeFile file("/Users/mateusz/Documents/android_keystore.jks")
+            storePassword "JC@mm201&*"
+            keyAlias "key"
+            keyPassword "JC@mm201&*"
+        }
+    }
+
     defaultConfig {
         applicationId "com.mabn.taskia"
         minSdk 26
@@ -39,11 +48,12 @@ android {
 
     buildTypes {
         debug {
-            testCoverageEnabled = true
+            //testCoverageEnabled = true
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     compileOptions {
@@ -127,6 +137,9 @@ dependencies {
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
 
+    implementation 'com.jraska:falcon:2.2.0'
+    androidTestImplementation 'tools.fastlane:screengrab:2.1.1'
+    
 
     // robolectric
     testImplementation 'org.robolectric:robolectric:4.8'
