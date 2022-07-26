@@ -1,6 +1,5 @@
 package com.mabn.taskia.ui.taskForm.view
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
@@ -39,7 +38,8 @@ import com.mabn.taskia.ui.common.CustomTextField
 fun Tags(
     tags: List<Tag>,
     addNewFun: (focusOnNew: Boolean) -> Unit,
-    onTitleChanged: (Tag, String) -> Unit
+    onTitleChanged: (Tag, String) -> Unit,
+    isVisible: Boolean
 ) {
     val scrollState = rememberScrollState()
 
@@ -55,13 +55,15 @@ fun Tags(
                     .horizontalScroll(scrollState)
             ) {
                 Spacer(Modifier.width(20.dp))
-                tags.forEachIndexed { index, tag ->
-                    TagInput(
-                        tag = tag,
-                        onTitleChanged = onTitleChanged,
-                        onEnter = addNewFun,
-                        focus = (index == tags.size - 1 && tag.value.isEmpty())
-                    )
+                if (isVisible) {
+                    tags.forEachIndexed { index, tag ->
+                        TagInput(
+                            tag = tag,
+                            onTitleChanged = onTitleChanged,
+                            onEnter = addNewFun,
+                            focus = index == tags.size - 1 && tag.value.isEmpty()
+                        )
+                    }
                 }
             }
         }
@@ -84,9 +86,6 @@ fun TagInput(
         }
     }
     Spacer(modifier = Modifier.width(10.dp))
-    BackHandler(enabled = isCurrentlyFocused.value) {
-        focusRequester.freeFocus()
-    }
     Box(
         modifier = Modifier
             .border(
@@ -116,7 +115,7 @@ fun TagInput(
                     isCurrentlyFocused.value = it.isFocused
                     if (!it.isFocused) {
                         onEnter(false)
-                    }
+                                           }
                 }
                 .defaultMinSize(minWidth = 70.dp)
                 .onKeyEvent {
@@ -139,7 +138,8 @@ private fun Tags_Preview() {
         Tags(
             tags = tags,
             addNewFun = {},
-            onTitleChanged = { _, _ -> }
+            onTitleChanged = { _, _ -> },
+            isVisible = true
         )
     }
 }

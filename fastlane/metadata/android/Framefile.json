@@ -1,0 +1,19 @@
+{
+  "device_frame_version": "latest",
+  "default": {
+    "background": "./background.jpg",
+    "use_platform": "ANDROID",
+    "stack_title" : true,
+    "show_complete_frame": false,
+    "title": {
+      "font": "../../fonts/Arialn.ttf",
+      "color": "#112A46"
+    },
+    "padding": 100
+  },
+  "data": [
+    {
+      "filter": "AddNewTask"
+    }
+  ]
+}

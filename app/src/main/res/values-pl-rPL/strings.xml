@@ -49,5 +49,14 @@
     <string name="filter">filtruj</string>
     <string name="no_tags">Brak dostępnych etykiet</string>
     <string name="loading">Ładowanie</string>
-    <string name="emptyString">" "</string>
+    <plurals name="uncompleted_tasks_with_count">
+        <item quantity="one">Masz ciągle nieukończone %d zadanie</item>
+        <item quantity="many">Masz ciągle nieukończone %d zadań</item>
+        <item quantity="few">Masz ciągle nieukończone %d zadań</item>
+    </plurals>
+    <string name="pick_time">Wybierz czas</string>
+    <string name="reset_time">Brak czasu</string>
+    <string name="finish_presentation_file">Zakończyć pracę nad plikiem prezentacji</string>
+    <string name="buy_present">Kupić prezent na urodziny Tomka</string>
+    <string name="call_alice">Zadzwonić do Ali</string>
 </resources>

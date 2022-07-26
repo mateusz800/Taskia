@@ -7,6 +7,7 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.mabn.taskia.domain.util.dbConverter.LocalDateTimeConverter
 import java.time.LocalDateTime
+import java.time.LocalTime
 
 @Entity(
     indices = [Index(
@@ -23,6 +24,8 @@ data class Task(
     var parentId: Long? = null,
     var order: Int? = id.toInt(),
     var endDate: LocalDateTime? = null,
+    @ColumnInfo(defaultValue = "")
+    var startTime: LocalTime? = null,
     var completionTime: LocalDateTime? = null,
 
     @ColumnInfo(name = "isRemoved", defaultValue = "0")

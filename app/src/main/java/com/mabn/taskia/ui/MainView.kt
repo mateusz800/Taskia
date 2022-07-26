@@ -78,7 +78,7 @@ fun MainView(viewModel: MainViewModel) {
             ) {
                 val value =
                     if (isLandscape.value != true)
-                        keyboardHeight.value!!.toDp + 350.toDp - (configuration.screenHeightDp / 2) else 0
+                        keyboardHeight.value!!.toDp + 350.toDp - configuration.screenHeightDp / 2 else 0
                 if (value > 0) value else 0
             } else 0
         )
@@ -115,6 +115,7 @@ fun MainView(viewModel: MainViewModel) {
     }
 
 
+
     val hideBottomSheet = {
         coroutineScope.launch(Dispatchers.Main) {
             modalBottomSheetState.hide()
@@ -124,22 +125,20 @@ fun MainView(viewModel: MainViewModel) {
     }
 
     val context = LocalContext.current
-    BackHandler(scaffoldState.drawerState.isOpen) {
-        coroutineScope.launch(Dispatchers.Main) {
-            scaffoldState.drawerState.close()
-        }
-    }
-    BackHandler(modalBottomSheetState.isVisible) {
-        coroutineScope.launch(Dispatchers.Main) {
-            if (formDataChanged.value) {
-                showTaskChangedDialog.value = true
+
+    BackHandler(enabled = true) {
+        if (modalBottomSheetState.isVisible) {
+            coroutineScope.launch(Dispatchers.Main) {
+                if (formDataChanged.value) {
+                    showTaskChangedDialog.value = true
+                }
+                hideBottomSheet()
             }
-            hideBottomSheet()
+        } else {
+            (context as? Activity)?.finish()
         }
     }
-    BackHandler(!modalBottomSheetState.isVisible) {
-        (context as? Activity)?.finish()
-    }
+
     DoItTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -179,11 +178,7 @@ fun MainView(viewModel: MainViewModel) {
                                         viewModel.showList(it)
                                     }
                                 }
-                            ) {
-                                coroutineScope.launch(Dispatchers.Main) {
-                                    scaffoldState.drawerState.open()
-                                }
-                            }
+                            )
                         }
                     },
                     /*
@@ -231,7 +226,6 @@ fun MainView(viewModel: MainViewModel) {
         }
 
         if (showTaskChangedDialog.value) {
-
             NotSavedAlert(saveFun = {
                 taskFormViewModel.saveTask()
                 hideBottomSheet()

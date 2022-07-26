@@ -6,10 +6,10 @@ import com.mabn.taskia.domain.persistence.AppDatabase
 import com.mabn.taskia.domain.persistence.dao.TaskDao
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import junit.framework.Assert.assertEquals
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
-import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

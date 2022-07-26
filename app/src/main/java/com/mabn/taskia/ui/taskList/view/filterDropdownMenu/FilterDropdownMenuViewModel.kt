@@ -27,7 +27,7 @@ class FilterDropdownMenuViewModel @Inject constructor() : ViewModel() {
         val tagPair = tagsList?.first { it.first == tag }
         if (tagsList != null && tagPair != null) {
             tagsList[tagsList.indexOf(tagPair)] = Pair(tagPair.first, !tagPair.second)
-            _tags.value= tagsList
+            _tags.value = tagsList
         }
     }
 
@@ -36,6 +36,8 @@ class FilterDropdownMenuViewModel @Inject constructor() : ViewModel() {
     }
 
     fun clearSelectedTags() {
-        _tags.value?.map { Pair(it.first, false) }
+        val list = SnapshotStateList<Pair<Tag, Boolean>>()
+        _tags.value?.map { Pair(it.first, false) }?.let { list.addAll(it) }
+        _tags.value = list
     }
 }

@@ -1,6 +1,5 @@
 package com.mabn.taskia.domain.network
 
-import com.google.firebase.auth.FirebaseAuth
 import com.mabn.taskia.domain.model.*
 import com.mabn.taskia.domain.network.google.tasks.GoogleTasksSynchronizer
 import com.mabn.taskia.domain.persistence.repository.ConnectedAccountRepository
@@ -18,8 +17,6 @@ class TasksSynchronizer @Inject constructor(
 
     ) {
     private var _connectedAccount: List<ConnectedAccount> = listOf()
-    private val _auth = FirebaseAuth.getInstance()
-    private val _syncQueue = mutableListOf<suspend () -> Unit>()
 
     init {
         observeConnectedAccounts()

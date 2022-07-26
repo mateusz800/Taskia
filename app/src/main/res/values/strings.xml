@@ -49,7 +49,13 @@
     <string name="filter">filter</string>
     <string name="no_tags">No tags available</string>
     <string name="loading">Loading</string>
-    <string name="emptyString" />
+    <string name="emptyString" translatable="false" />
+    <string name="no_time" translatable="false">--:--</string>
+    <string name="pick_time">Pick a time</string>
+    <string name="reset_time">No time</string>
+    <string name="finish_presentation_file">Finish the presentation file</string>
+    <string name="buy_present">Buy a present for Tom\'s birthday</string>
+    <string name="call_alice">Call Alice</string>
     <plurals name="uncompleted_tasks_with_count">
         <item quantity="one">You have still uncompleted %d task</item>
         <item quantity="other">You have still uncompleted %d tasks</item>

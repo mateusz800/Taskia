@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
 
+
     <application
         android:name="com.mabn.taskia.App"
         android:allowBackup="false"
@@ -31,6 +32,7 @@
         <activity
             android:name="com.mabn.taskia.ui.MainActivity"
             android:exported="true"
+            android:windowSoftInputMode="stateUnchanged"
             android:theme="@style/Theme.SplashScreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

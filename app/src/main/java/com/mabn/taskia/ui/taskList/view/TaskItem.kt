@@ -54,7 +54,7 @@ fun TaskItem(
         SwipeToDismiss(
             state = dismissState,
             background = {
-               DeleteBackground()
+                DeleteBackground()
             },
             directions = setOf(DismissDirection.StartToEnd)
         ) {
@@ -62,6 +62,7 @@ fun TaskItem(
             TaskGeneralInfo(
                 task.status,
                 task.title,
+                startTime = if (task.startTime != null) task.startTime.toString() else null,
                 dueDay = if (task.endDate != null && task.endDate!!.isBefore(
                         LocalDate.now().atStartOfDay()
                     )
@@ -74,9 +75,11 @@ fun TaskItem(
                 expandStatus = isExpanded.value,
                 expandFun = if (subtasks.isNullOrEmpty()) {
                     null
-                } else ({
-                    isExpanded.value = !isExpanded.value
-                })
+                } else {
+                    {
+                        isExpanded.value = !isExpanded.value
+                    }
+                }
             )
         }
         if (isExpanded.value && !subtasks.isNullOrEmpty()) {
@@ -100,6 +103,7 @@ fun TaskGeneralInfo(
     status: Boolean,
     title: String,
     dueDay: String? = null,
+    startTime: String? = null,
     onCheck: () -> Boolean,
     onClick: (() -> Unit)?,
     expandStatus: Boolean = false,
@@ -116,7 +120,7 @@ fun TaskGeneralInfo(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
                 CustomCheckbox(status) {
                     onCheck()
                 }
@@ -129,12 +133,26 @@ fun TaskGeneralInfo(
                     textDecoration = if (status) TextDecoration.LineThrough else TextDecoration.None
                 )
             }
-            if (expandFun != null) {
-                IconButton(onClick = { expandFun.invoke() }) {
-                    Icon(
-                        if (expandStatus) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
-                        null
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.End,
+            ) {
+                if (startTime != null) {
+                    Text(
+                        startTime, color = MaterialTheme.colors.primary,
+                        modifier = Modifier.requiredWidth(50.dp)
                     )
+                }
+                if (expandFun != null) {
+                    Spacer(Modifier.width(10.dp))
+                    IconButton(
+                        modifier = Modifier.requiredWidth(20.dp),
+                        onClick = { expandFun.invoke() }) {
+                        Icon(
+                            if (expandStatus) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
+                            null
+                        )
+                    }
                 }
             }
 
@@ -199,14 +217,16 @@ fun CustomCheckbox(status: Boolean, enabled: Boolean = true, onCheck: () -> Bool
                 shape = RoundedCornerShape(6.dp)
             )
             .clickable(enabled = enabled) {
-                if(onCheck()){
+                if (onCheck()) {
                     checked.value = !checked.value
                 }
             }
     ) {
         if (checked.value) {
-            Icon(Icons.Default.Check, status.toString(),
-            tint = MaterialTheme.colors.primary)
+            Icon(
+                Icons.Default.Check, status.toString(),
+                tint = MaterialTheme.colors.primary
+            )
         }
     }
 }
@@ -221,7 +241,7 @@ private fun TaskItem_Preview() {
             task = task,
             subtasks = subtasks,
             removeItemFunc = {},
-            toggleStatusFun = {true},
+            toggleStatusFun = { true },
             onClick = {}
         )
     }
