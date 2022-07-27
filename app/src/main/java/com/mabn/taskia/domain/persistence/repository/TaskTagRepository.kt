@@ -4,6 +4,8 @@ import com.mabn.taskia.domain.model.Tag
 import com.mabn.taskia.domain.model.Task
 import com.mabn.taskia.domain.model.TaskTag
 import com.mabn.taskia.domain.persistence.dao.TaskTagDao
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class TaskTagRepository(
     private val taskTagDao: TaskTagDao,
@@ -12,12 +14,14 @@ class TaskTagRepository(
         return taskTagDao.insertAll(*items)
     }
 
-    fun deleteTagFromTask(tag:Tag, task:Task){
+    fun deleteTagFromTask(tag: Tag, task: Task) {
         val item = taskTagDao.find(taskId = task.id, tagId = tag.id)
         taskTagDao.delete(item)
     }
 
-    fun getTags(task: Task): List<Tag> {
-        return taskTagDao.findTagsByTaskId(task.id)
+    suspend fun getTags(task: Task): List<Tag> {
+        return withContext(Dispatchers.IO) {
+            taskTagDao.findTagsByTaskId(task.id)
+        }
     }
 }

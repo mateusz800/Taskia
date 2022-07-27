@@ -26,8 +26,8 @@ import com.mabn.taskia.domain.model.MessageType
 import com.mabn.taskia.domain.util.toDp
 import com.mabn.taskia.ui.common.AlertButton
 import com.mabn.taskia.ui.common.TopBar
+import com.mabn.taskia.ui.taskForm.TaskForm
 import com.mabn.taskia.ui.taskForm.TaskFormViewModel
-import com.mabn.taskia.ui.taskForm.view.TaskForm
 import com.mabn.taskia.ui.taskList.view.TaskEntireList
 import com.mabn.taskia.ui.theme.DoItTheme
 import kotlinx.coroutines.Dispatchers

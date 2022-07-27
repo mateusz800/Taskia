@@ -59,8 +59,11 @@ class TaskRepository(
         return taskDao.getById(id)
     }
 
-    fun getSubtasks(task: Task): List<Task> {
-        return taskDao.getSubtasks(task.id)
+    suspend fun getSubtasks(task: Task): List<Task> {
+        return withContext(Dispatchers.IO){
+            taskDao.getSubtasks(task.id)
+        }
+
 
     }
 

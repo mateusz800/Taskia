@@ -13,4 +13,13 @@ object LocalTimeConverter {
     fun timeToLong(time: LocalTime?): Long? {
         return time?.toNanoOfDay()
     }
+
+    fun stringToLocalTime(value: String): LocalTime? {
+        val hourAndMinute = value.split(":")
+        return try {
+            LocalTime.of(hourAndMinute[0].toInt(), hourAndMinute[1].toInt())
+        } catch (e: NumberFormatException) {
+            null
+        }
+    }
 }

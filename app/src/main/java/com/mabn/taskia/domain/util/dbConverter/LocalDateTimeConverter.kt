@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.TypeConverter
 import com.mabn.taskia.R
 import java.time.Instant
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
@@ -33,6 +34,14 @@ object LocalDateTimeConverter {
                 "%02d".format(date.dayOfMonth) + " " + date.month.toString()
             }
         }
+    }
 
+    fun stringToDate(value: String, context: Context): LocalDateTime? {
+        return when (value) {
+            context.getString(R.string.yesterday) -> LocalDate.now().minusDays(1)
+            context.getString(R.string.today) -> LocalDate.now()
+            context.getString(R.string.tomorrow) -> LocalDate.now().plusDays(1)
+            else -> null
+        }?.atStartOfDay()
     }
 }

@@ -1,15 +1,12 @@
-package com.mabn.taskia.ui.taskForm.view
+package com.mabn.taskia.ui.taskForm.components.tags
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -26,49 +23,11 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mabn.taskia.R
 import com.mabn.taskia.domain.model.Tag
 import com.mabn.taskia.ui.common.CustomTextField
-
-@Composable
-fun Tags(
-    tags: List<Tag>,
-    addNewFun: (focusOnNew: Boolean) -> Unit,
-    onTitleChanged: (Tag, String) -> Unit,
-    isVisible: Boolean
-) {
-    val scrollState = rememberScrollState()
-
-    Column(modifier = Modifier.padding(vertical = 20.dp)) {
-        Text(
-            stringResource(id = R.string.tags),
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 20.dp)
-        )
-        Column(Modifier) {
-            Row(
-                modifier = Modifier
-                    .horizontalScroll(scrollState)
-            ) {
-                Spacer(Modifier.width(20.dp))
-                if (isVisible) {
-                    tags.forEachIndexed { index, tag ->
-                        TagInput(
-                            tag = tag,
-                            onTitleChanged = onTitleChanged,
-                            onEnter = addNewFun,
-                            focus = index == tags.size - 1 && tag.value.isEmpty()
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -91,7 +50,7 @@ fun TagInput(
             .border(
                 BorderStroke(
                     width = 1.dp,
-                    color = if (!isCurrentlyFocused.value && !tag.value.isNullOrBlank()) MaterialTheme.colors.onBackground else Color.Transparent
+                    color = if (!isCurrentlyFocused.value && tag.value.isNotBlank()) MaterialTheme.colors.onBackground else Color.Transparent
                 ),
                 shape = RoundedCornerShape(16.dp)
             )
@@ -115,7 +74,7 @@ fun TagInput(
                     isCurrentlyFocused.value = it.isFocused
                     if (!it.isFocused) {
                         onEnter(false)
-                                           }
+                    }
                 }
                 .defaultMinSize(minWidth = 70.dp)
                 .onKeyEvent {
@@ -124,22 +83,6 @@ fun TagInput(
                     }
                     true
                 },
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun Tags_Preview() {
-    val tags = listOf(
-        Tag(value = "work"),
-    )
-    MaterialTheme {
-        Tags(
-            tags = tags,
-            addNewFun = {},
-            onTitleChanged = { _, _ -> },
-            isVisible = true
         )
     }
 }

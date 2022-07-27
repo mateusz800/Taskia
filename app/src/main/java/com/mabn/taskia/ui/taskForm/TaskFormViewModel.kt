@@ -1,7 +1,8 @@
 package com.mabn.taskia.ui.taskForm
 
 import android.content.Context
-import androidx.compose.runtime.snapshots.SnapshotStateList
+import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,15 +16,15 @@ import com.mabn.taskia.domain.persistence.repository.TaskRepository
 import com.mabn.taskia.domain.persistence.repository.TaskTagRepository
 import com.mabn.taskia.domain.util.ContextProvider
 import com.mabn.taskia.domain.util.dbConverter.LocalDateTimeConverter
-import com.mabn.taskia.ui.taskForm.dateTime.TaskDateVmInterface
+import com.mabn.taskia.domain.util.dbConverter.LocalTimeConverter
+import com.mabn.taskia.domain.util.extension.toFormattedString
 import com.mabn.taskia.ui.taskList.ListType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -38,112 +39,101 @@ class TaskFormViewModel @Inject constructor(
     private val taskTagRepository: TaskTagRepository,
     private val contextProvider: ContextProvider,
     private val tasksSynchronizer: TasksSynchronizer
-) : ViewModel(), TaskDateVmInterface {
-    var isVisible = MutableLiveData(false)
-    private var _task: Task? = null
+) : ViewModel() {
+    private val _formState: MutableLiveData<FormState> = MutableLiveData(FormState())
+    val formState: LiveData<FormState> = _formState
 
     private val _dataChanged = MutableStateFlow(false)
     val dataChanged: StateFlow<Boolean> = _dataChanged
 
+    var isVisible = MutableLiveData(false)
+    private var _task: Task? = null
     private var _currentList: ListType = ListType.Today
-    private val _title = MutableStateFlow("")
-    val title: StateFlow<String>
-        get() = _title
-
-    private val _dueTo = MutableStateFlow<LocalDateTime?>(null)
-    private val _dueDay = MutableStateFlow(contextProvider.getString(R.string.no_deadline))
-    override val dueDay: StateFlow<String>
-        get() = _dueDay
-
-    private val _startTime = MutableStateFlow<LocalTime?>(null)
-    override val startTime: Flow<String>
-        get() = _startTime.map {
-            if (_startTime.value != null)
-                "%02d".format(_startTime.value?.hour) + ":" + "%02d".format(_startTime.value?.minute)
-            else contextProvider.getString(R.string.no_time)
-        }
-
-
-    val subtasks = SnapshotStateList<Task>()
-    val tags = SnapshotStateList<Tag>()
 
     init {
-        tags.add(Tag(value = ""))
-        viewModelScope.launch(Dispatchers.IO) {
-            _dueTo.collect {
-                if (it != null) {
-                    _dueDay.emit(
-                        LocalDateTimeConverter.dateToString(
-                            it,
-                            contextProvider.getContext()
-                        )
-                    )
-                } else {
-                    _dueDay.emit(contextProvider.getString(R.string.no_deadline))
-                }
-            }
+        clear()
+    }
+
+    fun onEvent(event: FormEvent) {
+        when (event) {
+            is FormEvent.TitleChanged -> updateTitle(event.newTitle)
+            is FormEvent.TaskDateChanged -> updateDueToDate(event.date)
+            is FormEvent.TaskTimeChanged -> updateStartTime(event.time)
+            is FormEvent.AddNewSubtask -> addNewSubtask()
+            is FormEvent.SubtaskTitleChanged -> updateSubtaskTitle(event.subtask, event.newTitle)
+            is FormEvent.AddNewTag -> addNewTag(event.forceFocus)
+            is FormEvent.TagValueChanged -> updateTagValue(event.tag, event.newValue)
+            is FormEvent.Submit -> saveTask()
         }
     }
-
-
-    fun onTitleChanged(title: String) {
-        _title.value = title
-        _dataChanged.value = true
-    }
-
-    override fun updateDueToDate(value: String) {
-        _dataChanged.value = true
-        viewModelScope.launch(Dispatchers.IO) {
-            if (value.isBlank()) {
-                _dueTo.emit(null)
-                return@launch
-            }
-            val processedValue: LocalDateTime = try {
-                LocalDateTime.parse(value)
-            } catch (e: DateTimeParseException) {
-                LocalDate.parse(value).atStartOfDay()
-            }
-            _dueTo.emit(processedValue)
-        }
-    }
-
-    override fun updateStartTime(value: String) {
-        _dataChanged.value = true
-        viewModelScope.launch(Dispatchers.IO) {
-            if (value.isBlank() || value == contextProvider.getString(R.string.no_time)) {
-                _startTime.emit(null)
-                return@launch
-            }
-            val processedValue: LocalTime = LocalTime.parse(value)
-            _startTime.emit(processedValue)
-        }
-    }
-
 
     fun verifyData(): Boolean {
-        if (_title.value.isEmpty()) {
-            return false
+        return _formState.value?.validateData() == true
+    }
+
+    fun setCurrentList(currentList: ListType) {
+        _currentList = currentList
+    }
+
+    fun setTask(task: Task, context: Context) {
+        _task = task
+        _dataChanged.value = false
+        viewModelScope.launch {
+            val subtask = taskRepository.getSubtasks(task)
+            val tags = taskTagRepository.getTags(task).toMutableList()
+            tags.add(Tag(value = " "))
+            _formState.postValue(
+                FormState(
+                    title = task.title,
+                    dayLabel = task.getEndDay(context),
+                    timeLabel = task.startTime.toFormattedString(context),
+                    subtasks = subtask,
+                    tags = tags
+                )
+            )
         }
-        return true
+    }
+
+    fun clear() {
+        _task = null
+        runBlocking {
+            _formState.postValue(
+                FormState(
+                    dayLabel = when (_currentList) {
+                        is ListType.Today ->
+                            LocalDateTimeConverter.dateToString(
+                                LocalDate.now().atStartOfDay(),
+                                contextProvider.getContext()
+                            )
+                        else -> contextProvider.getString(R.string.no_deadline)
+                    },
+                    timeLabel = contextProvider.getString(R.string.no_time)
+                )
+            )
+        }
+        _dataChanged.value = false
     }
 
     fun saveTask() {
-        val task: Task = if (_task == null) {
-            Task(title = title.value, endDate = _dueTo.value, startTime = _startTime.value)
-        } else {
-            _task!!.copy(
-                title = title.value,
-                endDate = _dueTo.value,
-                startTime = _startTime.value
-            )
+        var task = Task(
+            title = _formState.value!!.title,
+            endDate = LocalDateTimeConverter.stringToDate(
+                _formState.value!!.dayLabel,
+                context = contextProvider.getContext()
+            ),
+            startTime = LocalTimeConverter.stringToLocalTime(_formState.value?.timeLabel ?: "")
+        )
+        if (_task != null) {
+            task = task.copy(id = _task!!.id)
         }
-        val subtaskList = subtasks.parallelStream()
-            .filter { it.title.isNotEmpty() }
-            .toList()
+
+        val subtaskList = _formState.value?.subtasks?.parallelStream()
+            ?.filter { it.title.isNotEmpty() }
+            ?.toList()
         val insertedTags = mutableListOf<Tag>()
-        val tagsList = tags.parallelStream()
-            .filter { it.value.isNotBlank() }
-            .toList()
+        val tagsList = _formState.value?.tags?.parallelStream()
+            ?.filter { it.value.isNotBlank() }
+            ?.toList()
         viewModelScope.launch(Dispatchers.IO) {
             val parentId =
                 if (task.id == 0L) {
@@ -151,7 +141,7 @@ class TaskFormViewModel @Inject constructor(
                 } else {
                     task.id
                 }
-            subtaskList.forEach {
+            subtaskList?.forEach {
                 val subtask = it
                 subtask.parentId = parentId
                 if (subtask.id == 0L) {
@@ -165,7 +155,7 @@ class TaskFormViewModel @Inject constructor(
             taskRepository.update(task)
             tasksSynchronizer.updateTask(task)
 
-            tagsList.forEach { tag ->
+            tagsList?.forEach { tag ->
                 insertedTags.add(tag.copy(id = tagRepository.insert(tag)))
             }
 
@@ -178,105 +168,117 @@ class TaskFormViewModel @Inject constructor(
             taskTagRepository.insert(
                 *insertedTags.stream().map { TaskTag(parentId, it.id) }.toList().toTypedArray()
             )
-
-
         }
     }
 
-    fun setCurrentList(currentList: ListType) {
-        _currentList = currentList
-        initDueToDefaultValue()
+    private fun updateTitle(title: String) {
+        _formState.postValue(_formState.value?.copy(title = title))
+        _dataChanged.value = true
     }
 
-    private fun initDueToDefaultValue() {
+    private fun updateDueToDate(value: String) {
+        _dataChanged.value = true
         viewModelScope.launch(Dispatchers.IO) {
-            when (_currentList) {
-                is ListType.Today -> {
-                    val date = LocalDate.now().atStartOfDay()
-                    _dueTo.emit(date)
-                    _dueDay.emit(
-                        LocalDateTimeConverter.dateToString(
-                            date,
-                            contextProvider.getContext()
-                        )
+            if (value.isBlank()) {
+                _formState.postValue(
+                    _formState.value?.copy(dayLabel = contextProvider.getString(R.string.no_deadline))
+                )
+                return@launch
+            }
+            val processedValue: LocalDateTime = try {
+                LocalDateTime.parse(value)
+            } catch (e: DateTimeParseException) {
+                LocalDate.parse(value).atStartOfDay()
+            }
+            _formState.postValue(
+                _formState.value?.copy(
+                    dayLabel = LocalDateTimeConverter.dateToString(
+                        processedValue,
+                        contextProvider.getContext()
                     )
-
-                }
-                else -> {
-                    _dueTo.emit(null)
-                    _dueDay.emit(contextProvider.getString(R.string.no_deadline))
-                }
-            }
+                )
+            )
         }
     }
 
-    fun setTask(task: Task, context: Context) {
-        _task = task
-        _dataChanged.value = false
-        _title.value = task.title
-        _dueTo.value = task.endDate
-        _dueDay.value = task.getEndDay(context)
-        _startTime.value = task.startTime
+    private fun updateStartTime(value: String) {
+        _dataChanged.value = true
         viewModelScope.launch(Dispatchers.IO) {
-            subtasks.clear()
-            val temp = taskRepository.getSubtasks(task)
-            subtasks.addAll(temp)
-            tags.clear()
-            val downloadedTags = taskTagRepository.getTags(task)
-            tags.addAll(downloadedTags)
-            tags.add(Tag(value = " "))
-        }
-
-    }
-
-    fun addNewSubtask() {
-        if (subtasks.isEmpty() || subtasks.last().title.isNotBlank()) {
-            subtasks.add(Task(title = ""))
-        }
-    }
-
-    fun addNewTag(focusOnNew: Boolean) {
-        if (tags.isEmpty() || tags.last().value.isNotBlank()) {
-            if (focusOnNew) {
-                tags.add(Tag(value = ""))
-            } else {
-                tags.add(Tag(value = " "))
+            val processedValue: LocalTime? = try {
+                LocalTime.parse(value)
+            } catch (e: DateTimeParseException) {
+                null
             }
-
+            _formState.postValue(
+                _formState.value?.copy(
+                    timeLabel = processedValue.toFormattedString(
+                        contextProvider.getContext()
+                    )
+                )
+            )
         }
     }
 
-    fun updateSubtaskTitle(subtask: Task, newTitle: String) {
-        try {
-            subtasks[subtasks.indexOf(subtask)] =
-                subtasks[subtasks.indexOf(subtask)].copy(title = newTitle)
-            _dataChanged.value = true
-        } catch (e: IndexOutOfBoundsException) {
-            e.printStackTrace()
+    private fun addNewSubtask() {
+        if (_formState.value?.subtasks.isNullOrEmpty()) {
+            _formState.postValue(_formState.value?.copy(subtasks = listOf(Task(title = ""))))
+        } else if (_formState.value?.subtasks?.last()?.title?.isNotBlank() == true) {
+            _formState.postValue(
+                _formState.value?.copy(
+                    subtasks = listOf(
+                        *_formState.value?.subtasks!!.toTypedArray(),
+                        Task(title = "")
+                    )
+                )
+            )
         }
     }
 
-    fun updateTagValue(tag: Tag, newValue: String) {
-        try {
-            if (newValue.isBlank()) {
-                tags.remove(tag)
-            } else {
-                tags[tags.indexOf(tag)] = tag.copy(value = newValue)
+    private fun addNewTag(focusOnNew: Boolean) {
+        var value = " "
+        if (focusOnNew) {
+            value = ""
+        }
+        if (_formState.value?.tags.isNullOrEmpty()) {
+            _formState.postValue(_formState.value?.copy(tags = listOf(Tag(value = value))))
+        } else if (_formState.value?.tags?.last()?.value?.isNotBlank() == true) {
+            _formState.postValue(
+                _formState.value?.copy(
+                    tags = listOf(
+                        *_formState.value?.tags!!.toTypedArray(),
+                        Tag(value = value)
+                    )
+                )
+            )
+        }
+    }
+
+    private fun updateSubtaskTitle(subtask: Task, newTitle: String) {
+        val subtaskList = _formState.value?.subtasks?.toMutableList()
+        if (subtaskList != null) {
+            try {
+                subtaskList[subtaskList.indexOf(subtask)] =
+                    subtaskList[subtaskList.indexOf(subtask)].copy(title = newTitle)
+                _formState.postValue(_formState.value?.copy(subtasks = subtaskList))
+                _dataChanged.value = true
+            } catch (e: ArrayIndexOutOfBoundsException) {
+                e.localizedMessage?.let { Log.i("TaskFormViewModel", it) }
             }
-            _dataChanged.value = true
-        } catch (e: IndexOutOfBoundsException) {
-            e.printStackTrace()
         }
+
     }
 
-    fun clear() {
-        _task = null
-        _title.value = ""
-        _startTime.value = null
-        initDueToDefaultValue()
-        subtasks.clear()
-        tags.clear()
-        tags.add(Tag(value = ""))
-        _dataChanged.value = false
+    private fun updateTagValue(tag: Tag, newValue: String) {
+        val tagList = _formState.value?.tags?.toMutableList()
+        if (tagList != null) {
+            try {
+                val index = tagList.indexOf(tag)
+                tagList[index] = tagList[index].copy(value = newValue)
+                _formState.postValue(_formState.value?.copy(tags = tagList))
+                _dataChanged.value = true
+            } catch (e: ArrayIndexOutOfBoundsException) {
+                e.localizedMessage?.let { Log.i("TaskFormViewModel", it) }
+            }
+        }
     }
 }
