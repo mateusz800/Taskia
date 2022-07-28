@@ -28,6 +28,8 @@ class TasksSynchronizer @Inject constructor(
                 AccountType.GOOGLE -> googleTasksSynchronizer.sync(it) { task, operation ->
                     syncDataRepository.insert(SyncData(taskId = task.id, operation = operation))
                 }
+                AccountType.UNKNOWN -> {
+                }
             }
         }
     }
@@ -58,6 +60,7 @@ class TasksSynchronizer @Inject constructor(
                         }
                     }
                 }
+                SyncDataOperation.INSERT -> {}
             }
 
         }

@@ -115,6 +115,7 @@ class TaskListViewModel @Inject constructor(
             is ListType.Unscheduled -> collectUnscheduledTasks()
             is ListType.Completed -> collectCompletedTasks()
             is ListType.Upcoming -> collectUpcomingTasks()
+            ListType.Loading -> {}
         }
         _jobs.add(viewModelScope.launch(Dispatchers.IO) {
             taskRepository.getAll().collect { result ->

@@ -1,4 +1,4 @@
-package com.mabn.taskia.ui.taskForm.dateTime
+package com.mabn.taskia.ui.taskForm.components.dateTime
 
 import android.app.DatePickerDialog
 import android.widget.DatePicker
