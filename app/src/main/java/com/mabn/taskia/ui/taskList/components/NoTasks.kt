@@ -1,4 +1,4 @@
-package com.mabn.taskia.ui.taskList.view
+package com.mabn.taskia.ui.taskList.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,17 +31,23 @@ fun NoTasks(listType: ListType = ListType.Unscheduled) {
         delay(400)
         isLoaded.value = true
     }
+    NoTasks(listType = listType, isLoaded = isLoaded.value)
+}
+
+@Composable
+private fun NoTasks(listType: ListType = ListType.Unscheduled, isLoaded: Boolean) {
+
     AnimatedVisibility(
-        visible = isLoaded.value,
+        visible = isLoaded,
         enter = fadeIn(animationSpec = tween(durationMillis = 1000, delayMillis = 200))
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(horizontal = 30.dp)
+            modifier = Modifier
+                .padding(horizontal = 30.dp)
                 .testTag("noTasks")
         ) {
-
-            if (isLoaded.value) {
+            if (isLoaded) {
                 Text(
                     stringResource(
                         id = when (listType) {
@@ -72,6 +79,8 @@ fun NoTasks(listType: ListType = ListType.Unscheduled) {
 @Composable
 private fun NoTasks_Preview() {
     MaterialTheme {
-        NoTasks()
+        Surface {
+            NoTasks(isLoaded = true)
+        }
     }
 }

@@ -48,11 +48,6 @@ class TaskListViewModel @Inject constructor(
             }
         }
 
-    private val _overdueTasks =
-        MutableLiveData<SnapshotStateList<Pair<Task, Pair<List<Task>, List<Tag>>>>>()
-    val overdueTasks: LiveData<SnapshotStateList<Pair<Task, Pair<List<Task>, List<Tag>>>>> =
-        _overdueTasks
-
     private val _todayTasks =
         MutableLiveData<SnapshotStateList<Pair<Task, Pair<List<Task>, List<Tag>>>>>()
     private val _filteredTodayTasks = MutableLiveData<SnapshotStateList<Pair<Task, List<Task>>>>()
@@ -86,6 +81,27 @@ class TaskListViewModel @Inject constructor(
     init {
         collectTasks()
         collectTags()
+    }
+
+    fun onEvent(event: ListEvent): Boolean {
+        when (event) {
+            is ListEvent.TaskStatusChanged -> return toggleTaskStatus(event.task)
+            is ListEvent.TaskRemoved -> removeTask(event.task)
+            is ListEvent.FilterTagsChanged -> setFilterTags(event.tags)
+        }
+        return true
+    }
+
+    fun setListType(type: ListType) {
+        _listType.value = type
+        _jobs.forEach {
+            it.cancel()
+        }
+        collectTasks()
+    }
+
+    fun setFilterTags(tags: List<Tag>) {
+        _filterTags.postValue(tags)
     }
 
     private fun collectTags() {
@@ -131,10 +147,6 @@ class TaskListViewModel @Inject constructor(
                 }
             }
         })
-    }
-
-    fun setFilterTags(tags: List<Tag>) {
-        _filterTags.postValue(tags)
     }
 
     private fun filterByTags(list: SnapshotStateList<Pair<Task, Pair<List<Task>, List<Tag>>>>?): List<Pair<Task, List<Task>>> {
@@ -229,15 +241,7 @@ class TaskListViewModel @Inject constructor(
     }
 
 
-    fun setListType(type: ListType) {
-        _listType.value = type
-        _jobs.forEach {
-            it.cancel()
-        }
-        collectTasks()
-    }
-
-    fun removeTask(task: Task) {
+    private fun removeTask(task: Task) {
         viewModelScope.launch(Dispatchers.IO) {
             recentlyRemovedTask = taskRepository.getById(task.id)
             tasksSynchronizer.delete(task)
@@ -252,7 +256,7 @@ class TaskListViewModel @Inject constructor(
         }
     }
 
-    fun toggleTaskStatus(task: Task): Boolean {
+    private fun toggleTaskStatus(task: Task): Boolean {
         val subtasksList = _tasks.value?.get(task)
         val allSubtasksCompleted =
             if (subtasksList?.first.isNullOrEmpty()) true else subtasksList?.first?.stream()
@@ -325,6 +329,4 @@ class TaskListViewModel @Inject constructor(
             }
         }
     }
-
-
 }

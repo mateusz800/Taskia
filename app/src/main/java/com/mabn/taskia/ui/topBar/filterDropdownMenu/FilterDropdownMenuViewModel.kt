@@ -1,4 +1,4 @@
-package com.mabn.taskia.ui.taskList.view.filterDropdownMenu
+package com.mabn.taskia.ui.topBar.filterDropdownMenu
 
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.LiveData
@@ -19,6 +19,13 @@ class FilterDropdownMenuViewModel @Inject constructor() : ViewModel() {
             list.add(Pair(it, false))
         }
         _tags.postValue(list)
+    }
+
+    fun onEvent(event: FilterMenuEvent){
+        when(event){
+            is FilterMenuEvent.TagsCleared -> clearSelectedTags()
+            is FilterMenuEvent.TagSelected -> selectTag(event.tag)
+        }
     }
 
     fun selectTag(tag: Tag) {

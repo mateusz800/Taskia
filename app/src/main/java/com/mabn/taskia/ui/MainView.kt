@@ -25,11 +25,11 @@ import com.mabn.taskia.R
 import com.mabn.taskia.domain.model.MessageType
 import com.mabn.taskia.domain.util.toDp
 import com.mabn.taskia.ui.common.AlertButton
-import com.mabn.taskia.ui.common.TopBar
 import com.mabn.taskia.ui.taskForm.TaskForm
 import com.mabn.taskia.ui.taskForm.TaskFormViewModel
-import com.mabn.taskia.ui.taskList.view.TaskEntireList
+import com.mabn.taskia.ui.taskList.TaskList
 import com.mabn.taskia.ui.theme.DoItTheme
+import com.mabn.taskia.ui.topBar.TopBar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -113,7 +113,6 @@ fun MainView(viewModel: MainViewModel) {
     LaunchedEffect(currentList.value) {
         taskFormViewModel.setCurrentList(currentList.value)
     }
-
 
 
     val hideBottomSheet = {
@@ -205,9 +204,14 @@ fun MainView(viewModel: MainViewModel) {
                         }
                     }, snackbarHost = {
                         SnackbarHost(hostState = scaffoldState.snackbarHostState)
-                    }) {
-                    Box(modifier = Modifier.offset(y = offsetState.value.dp)) {
-                        TaskEntireList(
+                    }
+                ) { padding ->
+                    Box(
+                        modifier = Modifier
+                            .offset(y = offsetState.value.dp)
+                            .padding(padding)
+                    ) {
+                        TaskList(
                             viewModel = hiltViewModel(),
                             listType = currentList.value,
                             showTaskForm = { task ->

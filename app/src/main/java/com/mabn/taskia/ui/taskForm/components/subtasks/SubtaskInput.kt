@@ -20,7 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mabn.taskia.domain.model.Task
 import com.mabn.taskia.ui.common.CustomTextField
-import com.mabn.taskia.ui.taskList.view.CustomCheckbox
+import com.mabn.taskia.ui.taskList.components.taskItem.CustomCheckbox
 
 
 @OptIn(ExperimentalComposeUiApi::class)

@@ -10,7 +10,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.mabn.taskia.ui.common.topBar.TopBarViewModel
+import com.mabn.taskia.ui.topBar.TopBarViewModel
 
 @Composable
 fun Tabs(tabs: List<Pair<String, () -> Unit>>, viewModel: TopBarViewModel) {

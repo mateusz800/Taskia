@@ -1,4 +1,4 @@
-package com.mabn.taskia.ui.common.topBar
+package com.mabn.taskia.ui.topBar
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -8,10 +8,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TopBarViewModel @Inject constructor() : ViewModel() {
-    private val _tabIndex = MutableLiveData<Int>(0)
+    private val _tabIndex = MutableLiveData(0)
     val tabIndex: LiveData<Int> = _tabIndex
 
-    fun changeTab(index:Int){
+    fun changeTab(index: Int) {
         _tabIndex.postValue(index)
     }
 }

@@ -1,13 +1,16 @@
-package com.mabn.taskia.ui.taskList.view
+package com.mabn.taskia.ui.taskList.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import com.mabn.taskia.domain.model.Task
+import com.mabn.taskia.ui.taskList.components.taskItem.TaskItem
+import java.time.LocalDate
 
 @Composable
 fun TaskListSection(
@@ -33,12 +36,8 @@ private fun TaskList(
     toggleStatusFun: (task: Task) -> Boolean,
     onItemClick: (task: Task) -> Unit
 ) {
-    val listState: LazyListState = rememberLazyListState()
-
     if (taskList.isNotEmpty()) {
-        Column(
-
-        ) {
+        Column {
             taskList.toList().forEach {
                 val task = it.first
                 val subtasks = it.second
@@ -54,6 +53,29 @@ private fun TaskList(
                     }
                 }
             }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun TaskListSection_Preview() {
+    MaterialTheme {
+        Surface {
+            TaskListSection(
+                items = listOf(
+                    Pair(
+                        Task(
+                            title = "Some task",
+                            endDate = LocalDate.now().minusDays(1).atStartOfDay()
+                        ), listOf()
+                    ),
+                    Pair(Task(title = "Second task"), listOf())
+                ),
+                onTaskRemove = {},
+                toggleStatusFun = { true },
+                onItemClick = {}
+            )
         }
     }
 }

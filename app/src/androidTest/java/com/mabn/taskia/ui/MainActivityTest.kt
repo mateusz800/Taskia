@@ -9,9 +9,8 @@ import com.mabn.taskia.domain.model.Task
 import com.mabn.taskia.domain.persistence.repository.TaskRepository
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import junit.framework.Assert.assertTrue
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -35,7 +34,6 @@ class MainActivityTest {
     @Before
     fun setUp() {
         hiltRule.inject()
-        composeTestRule.waitForIdle()
     }
 
     @Test
@@ -74,8 +72,8 @@ class MainActivityTest {
                     completionTime = LocalDate.now().atStartOfDay()
                 )
             )
-            delay(1000)
         }
+        composeTestRule.waitForIdle()
         composeTestRule.onNodeWithText(title).performTouchInput { swipeRight() }
         composeTestRule.onNodeWithText(title).assertDoesNotExist()
         // Check if snackbar with message is displayed

@@ -1,4 +1,4 @@
-package com.mabn.taskia.ui.common
+package com.mabn.taskia.ui.topBar
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -7,7 +7,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -19,10 +18,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mabn.taskia.R
+import com.mabn.taskia.ui.common.Tabs
 import com.mabn.taskia.ui.common.optionsDropdownMenu.OptionsDropdownMenu
-import com.mabn.taskia.ui.common.topBar.TopBarViewModel
 import com.mabn.taskia.ui.taskList.TaskListViewModel
-import com.mabn.taskia.ui.taskList.view.filterDropdownMenu.FilterDropDown
+import com.mabn.taskia.ui.topBar.filterDropdownMenu.FilterDropDown
 
 @Composable
 fun TopBar(tabs: List<Pair<String, () -> Unit>>) {
@@ -30,7 +29,6 @@ fun TopBar(tabs: List<Pair<String, () -> Unit>>) {
     val filterExpanded = remember { mutableStateOf(false) }
     val taskListViewModel: TaskListViewModel = hiltViewModel()
     val viewModel: TopBarViewModel = hiltViewModel()
-    val activeTabIndex = viewModel.tabIndex.observeAsState()
     Column(
         modifier = Modifier
             .fillMaxWidth()
