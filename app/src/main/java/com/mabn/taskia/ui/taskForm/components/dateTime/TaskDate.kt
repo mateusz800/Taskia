@@ -22,7 +22,6 @@ import com.mabn.taskia.R
 import java.util.*
 
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun TaskDate(updateDate: (String) -> Unit, dayLabel: String) {
     val context = LocalContext.current

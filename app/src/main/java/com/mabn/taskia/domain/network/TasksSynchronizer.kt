@@ -22,7 +22,7 @@ class TasksSynchronizer @Inject constructor(
         observeConnectedAccounts()
     }
 
-    suspend fun sync() {
+    fun sync() {
         _connectedAccount.forEach {
             when (it.type) {
                 AccountType.GOOGLE -> googleTasksSynchronizer.sync(it) { task, operation ->

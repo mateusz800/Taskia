@@ -1,6 +1,7 @@
 package com.mabn.taskia.ui.taskList
 
 import android.content.Intent
+import android.os.Build
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.lifecycle.LiveData
@@ -155,13 +156,11 @@ class TaskListViewModel @Inject constructor(
                 Pair(it.first, it.second.first)
             } ?: listOf()
         }
-        return list?.stream()?.filter {
+        return list?.filter {
             it.second.second.intersect(_filterTags.value!!).size == _filterTags.value!!.size
-        }
-            ?.map {
-                Pair(it.first, it.second.first)
-            }
-            ?.toList() ?: listOf()
+        }?.map {
+            Pair(it.first, it.second.first)
+        }?.toList() ?: listOf()
     }
 
     private fun collectTodayTasks() {
@@ -259,8 +258,7 @@ class TaskListViewModel @Inject constructor(
     private fun toggleTaskStatus(task: Task): Boolean {
         val subtasksList = _tasks.value?.get(task)
         val allSubtasksCompleted =
-            if (subtasksList?.first.isNullOrEmpty()) true else subtasksList?.first?.stream()
-                ?.allMatch { it.status }
+            if (subtasksList?.first.isNullOrEmpty()) true else subtasksList?.first?.all { it.status }
         viewModelScope.launch(Dispatchers.IO) {
             var newStatus = task.status
             if (subtasksList?.first.isNullOrEmpty()) {
@@ -278,7 +276,9 @@ class TaskListViewModel @Inject constructor(
             if (newStatus != task.status) {
                 task.status = newStatus
                 if (newStatus) {
-                    task.completionTime = LocalDateTime.now()
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        task.completionTime = LocalDateTime.now()
+                    }
                 }
                 delay(500)
                 taskRepository.update(task)

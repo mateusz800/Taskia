@@ -32,7 +32,6 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TaskList(
     viewModel: TaskListViewModel,

@@ -45,6 +45,13 @@ platform :android do
     # You can also use other beta testing services here
   end
 
+  desc "Deploy a new version to internal testers"
+  lane :internal do
+    gradle(task: 'clean')
+    gradle(task: 'bundle', build_type: 'Release')
+    upload_to_play_store_internal_app_sharing
+  end
+
   desc "Deploy a new version to the Google Play"
   lane :deploy do
     gradle(task: "clean assembleRelease")

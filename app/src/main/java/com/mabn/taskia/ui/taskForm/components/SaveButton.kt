@@ -1,4 +1,4 @@
-package com.mabn.taskia.ui.taskForm
+package com.mabn.taskia.ui.taskForm.components
 
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton

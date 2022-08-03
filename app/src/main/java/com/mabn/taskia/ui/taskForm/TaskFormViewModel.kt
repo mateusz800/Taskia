@@ -127,12 +127,10 @@ class TaskFormViewModel @Inject constructor(
             task = task.copy(id = _task!!.id)
         }
 
-        val subtaskList = _formState.value?.subtasks?.parallelStream()
-            ?.filter { it.title.isNotEmpty() }
+        val subtaskList = _formState.value?.subtasks?.filter { it.title.isNotEmpty() }
             ?.toList()
         val insertedTags = mutableListOf<Tag>()
-        val tagsList = _formState.value?.tags?.parallelStream()
-            ?.filter { it.value.isNotBlank() }
+        val tagsList = _formState.value?.tags?.filter { it.value.isNotBlank() }
             ?.toList()
         viewModelScope.launch(Dispatchers.IO) {
             val parentId =

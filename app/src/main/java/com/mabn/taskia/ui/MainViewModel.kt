@@ -28,7 +28,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val messageRepository: MessageRepository,
-    private val contextProvider: ContextProvider,
+    contextProvider: ContextProvider,
     private val tasksSynchronizer: TasksSynchronizer
 ) : ViewModel(), KeyboardHeightProvider.KeyboardHeightListener {
     private val broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {

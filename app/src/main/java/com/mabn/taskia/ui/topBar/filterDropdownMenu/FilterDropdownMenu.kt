@@ -62,7 +62,7 @@ private fun FilterDropDown(
             horizontal = 10.dp
         )
     ) {
-        if (tags.isNullOrEmpty()) {
+        if (tags.isEmpty()) {
             Text(stringResource(id = R.string.no_tags))
         } else {
             Box(contentAlignment = Alignment.TopEnd, modifier = Modifier.fillMaxWidth()) {

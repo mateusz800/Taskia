@@ -1,4 +1,4 @@
-package com.mabn.taskia.ui.taskForm
+package com.mabn.taskia.ui.taskForm.components
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text

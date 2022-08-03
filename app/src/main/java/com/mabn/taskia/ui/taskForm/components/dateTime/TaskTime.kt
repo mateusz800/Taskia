@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import com.mabn.taskia.R
 import java.util.*
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun TaskTime(updateTime: (String) -> Unit, timeLabel: String) {
     val context = LocalContext.current

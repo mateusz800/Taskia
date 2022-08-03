@@ -1,4 +1,4 @@
-package com.mabn.taskia.domain.util
+package com.mabn.taskia.domain.util.extension
 
 import android.content.res.Resources.getSystem
 

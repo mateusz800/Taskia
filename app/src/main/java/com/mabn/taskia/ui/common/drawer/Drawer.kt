@@ -33,26 +33,6 @@ fun Drawer(content: @Composable () -> Unit) {
 }
 
 @Composable
-private fun ButtonsBar(viewModel: DrawerViewModel) {
-    Column {
-        Divider()
-        Row(
-            modifier = Modifier
-                .padding(vertical = 10.dp)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start
-        ) {
-            SettingsButton {
-
-            }
-            ShareAppButton {
-                viewModel.shareApp()
-            }
-        }
-    }
-}
-
-@Composable
 private fun BottomBarButton(
     onClick: () -> Unit,
     icon: ImageVector,

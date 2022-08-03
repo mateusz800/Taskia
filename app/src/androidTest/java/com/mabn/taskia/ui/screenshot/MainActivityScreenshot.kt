@@ -1,8 +1,8 @@
 package com.mabn.taskia.ui.screenshot
 
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.mabn.taskia.R
 import com.mabn.taskia.domain.model.Task
@@ -12,11 +12,12 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import org.junit.*
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
 import org.junit.runner.RunWith
 import tools.fastlane.screengrab.FalconScreenshotStrategy
 import tools.fastlane.screengrab.Screengrab
-import tools.fastlane.screengrab.cleanstatusbar.CleanStatusBar
 import tools.fastlane.screengrab.locale.LocaleTestRule
 import java.time.LocalDate
 import javax.inject.Inject

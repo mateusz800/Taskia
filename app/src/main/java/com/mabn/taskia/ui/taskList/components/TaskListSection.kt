@@ -28,7 +28,6 @@ fun TaskListSection(
 }
 
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun TaskList(
     taskList: List<Pair<Task, List<Task>>>,

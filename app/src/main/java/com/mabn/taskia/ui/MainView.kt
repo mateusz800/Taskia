@@ -23,7 +23,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mabn.taskia.R
 import com.mabn.taskia.domain.model.MessageType
-import com.mabn.taskia.domain.util.toDp
+import com.mabn.taskia.domain.util.extension.toDp
 import com.mabn.taskia.ui.common.AlertButton
 import com.mabn.taskia.ui.taskForm.TaskForm
 import com.mabn.taskia.ui.taskForm.TaskFormViewModel

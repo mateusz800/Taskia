@@ -28,7 +28,6 @@ import androidx.compose.ui.text.style.TextAlign
 import com.mabn.taskia.R
 
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun CustomTextField(
     value: String,

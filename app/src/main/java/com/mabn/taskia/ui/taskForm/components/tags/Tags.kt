@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.mabn.taskia.R
 import com.mabn.taskia.domain.model.Tag
 import com.mabn.taskia.ui.taskForm.FormEvent
-import com.mabn.taskia.ui.taskForm.Label
+import com.mabn.taskia.ui.taskForm.components.Label
 
 @Composable
 fun Tags(tags: List<Tag>, onEvent: (FormEvent) -> Unit, isVisible: Boolean) {

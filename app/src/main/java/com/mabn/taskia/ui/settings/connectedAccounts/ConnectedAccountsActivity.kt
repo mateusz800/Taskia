@@ -16,7 +16,6 @@ import com.mabn.taskia.R
 import com.mabn.taskia.ui.common.base.ActivityWithActionBar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint

@@ -39,6 +39,14 @@ Build debug, test APK for screenshots and grab screenshots
 
 Submit a new Beta Build to Crashlytics Beta
 
+### android internal
+
+```sh
+[bundle exec] fastlane android internal
+```
+
+Deploy a new version to internal testers
+
 ### android deploy
 
 ```sh

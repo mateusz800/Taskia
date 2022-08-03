@@ -13,7 +13,7 @@ import com.mabn.taskia.R
 import com.mabn.taskia.domain.model.Task
 import com.mabn.taskia.ui.common.AddNewButton
 import com.mabn.taskia.ui.taskForm.FormEvent
-import com.mabn.taskia.ui.taskForm.Label
+import com.mabn.taskia.ui.taskForm.components.Label
 
 
 @Composable

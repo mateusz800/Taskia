@@ -39,12 +39,12 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        keyboardHeightProvider.start();
+        keyboardHeightProvider.start()
     }
 
     override fun onPause() {
         super.onPause()
-        keyboardHeightProvider.dismiss();
+        keyboardHeightProvider.dismiss()
     }
 
 }
