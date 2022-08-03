@@ -13,22 +13,25 @@ import androidx.compose.ui.unit.dp
 import com.mabn.taskia.ui.topBar.TopBarViewModel
 
 @Composable
-fun Tabs(tabs: List<Pair<String, () -> Unit>>, viewModel: TopBarViewModel) {
-    val selectedTabIndex = viewModel.tabIndex.observeAsState(0)
+fun Tabs(
+    tabs: List<Pair<String, () -> Unit>>,
+    selectedTabIndex: Int = 0,
+    changeTab: (Int) -> Unit
+) {
     ScrollableTabRow(
-        selectedTabIndex = selectedTabIndex.value,
+        selectedTabIndex = selectedTabIndex,
         backgroundColor = MaterialTheme.colors.primary,
         contentColor = MaterialTheme.colors.onPrimary
     ) {
         tabs.forEachIndexed { index, tab ->
-            val isSelected = selectedTabIndex.value == index
+            val isSelected = selectedTabIndex == index
             Tab(
                 selected = isSelected,
                 selectedContentColor = MaterialTheme.colors.onPrimary,
                 unselectedContentColor = MaterialTheme.colors.onPrimary,
                 onClick = {
                     tab.second.invoke()
-                    viewModel.changeTab(index)
+                    changeTab(index)
                 }, modifier = Modifier.padding(horizontal = 10.dp)
             ) {
                 Text(
