@@ -23,10 +23,10 @@ import com.mabn.taskia.ui.taskList.TaskListViewModel
 
 @Composable
 fun FilterDropDown(
-    taskListViewModel: TaskListViewModel,
     expanded: Boolean,
     onDismissRequest: () -> Unit
 ) {
+    val taskListViewModel:TaskListViewModel = hiltViewModel()
     val viewModel: FilterDropdownMenuViewModel = hiltViewModel()
     val allTags = taskListViewModel.allTags.observeAsState()
     val tags = viewModel.tags.observeAsState()

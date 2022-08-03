@@ -7,8 +7,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -16,7 +16,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.mabn.taskia.R
 import com.mabn.taskia.ui.common.Tabs
 import com.mabn.taskia.ui.common.optionsDropdownMenu.OptionsDropdownMenu
@@ -24,11 +23,33 @@ import com.mabn.taskia.ui.taskList.TaskListViewModel
 import com.mabn.taskia.ui.topBar.filterDropdownMenu.FilterDropDown
 
 @Composable
-fun TopBar(tabs: List<Pair<String, () -> Unit>>) {
-    val menuExpanded = remember { mutableStateOf(false) }
-    val filterExpanded = remember { mutableStateOf(false) }
-    val taskListViewModel: TaskListViewModel = hiltViewModel()
-    val viewModel: TopBarViewModel = hiltViewModel()
+fun TopBar(
+    viewModel: TopBarViewModel,
+    taskListViewModel: TaskListViewModel,
+    tabs: List<Pair<String, () -> Unit>>
+) {
+    val state by viewModel.topBarState.observeAsState()
+
+    TopBar(
+        tabs = tabs,
+        menuExpanded = state?.menuExpanded ?: false,
+        filterExpanded = state?.filterMenuExpanded ?: false,
+        selectedTabIndex = state?.tabIndex ?: 0,
+        filterCount = taskListViewModel.filterTags.value?.size ?: 0,
+        onEvent = viewModel::onEvent
+    )
+
+}
+
+@Composable
+private fun TopBar(
+    tabs: List<Pair<String, () -> Unit>>,
+    menuExpanded: Boolean,
+    filterExpanded: Boolean,
+    filterCount: Int,
+    selectedTabIndex: Int,
+    onEvent: (TopBarEvent) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -40,14 +61,6 @@ fun TopBar(tabs: List<Pair<String, () -> Unit>>) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            /*IconButton(onClick = onMenuClick) {
-                Icon(
-                    Icons.Filled.Menu,
-                    contentDescription = stringResource(id = R.string.menu),
-                    tint = MaterialTheme.colors.onPrimary
-                )
-            }*/
-
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_launcher_foreground),
@@ -63,30 +76,26 @@ fun TopBar(tabs: List<Pair<String, () -> Unit>>) {
             }
             Row {
                 Column(horizontalAlignment = Alignment.End) {
-                    IconButton(onClick = { filterExpanded.value = !filterExpanded.value }) {
+                    IconButton(onClick = { onEvent(TopBarEvent.ToggleFilterMenu()) }) {
                         Icon(
                             Icons.Filled.FilterList, null,
                             tint = MaterialTheme.colors.onPrimary
                         )
                     }
                     BadgedBox(badge = {
-                        val count = taskListViewModel.filterTags.value?.size
-                        if (count != null && count > 0) {
+                        if (filterCount > 0) {
                             Badge(
                                 backgroundColor = MaterialTheme.colors.secondary,
                                 contentColor = MaterialTheme.colors.onSecondary
                             ) {
-                                Text(count.toString())
+                                Text(filterCount.toString())
                             }
                         }
                     }, modifier = Modifier.offset(x = (-10).dp, y = (-10).dp)) {
 
                     }
                 }
-
-
-
-                IconButton(onClick = { menuExpanded.value = !menuExpanded.value }) {
+                IconButton(onClick = { onEvent(TopBarEvent.ToggleMenu()) }) {
                     Icon(
                         Icons.Filled.MoreVert,
                         contentDescription = stringResource(id = R.string.menu_more),
@@ -94,8 +103,6 @@ fun TopBar(tabs: List<Pair<String, () -> Unit>>) {
                     )
                 }
             }
-
-
         }
         Box(
             modifier = Modifier
@@ -105,28 +112,34 @@ fun TopBar(tabs: List<Pair<String, () -> Unit>>) {
         ) {
             Box {
                 OptionsDropdownMenu(
-                    expanded = menuExpanded.value,
-                    onDismissRequest = { menuExpanded.value = false })
+                    expanded = menuExpanded,
+                    onDismissRequest = { onEvent(TopBarEvent.ToggleMenu(forceDismiss = true)) })
                 FilterDropDown(
-                    taskListViewModel = taskListViewModel,
-                    expanded = filterExpanded.value
+                    expanded = filterExpanded
                 ) {
-                    filterExpanded.value = false
+                    onEvent(TopBarEvent.ToggleFilterMenu(forceDismiss = true))
                 }
             }
         }
 
-        Tabs(tabs = tabs, viewModel = viewModel)
+        Tabs(
+            tabs = tabs,
+            selectedTabIndex = selectedTabIndex,
+            changeTab = { index -> onEvent(TopBarEvent.TabChanged(index)) })
     }
-
-
 }
-
 
 @Preview
 @Composable
 private fun TopBar_Preview() {
     MaterialTheme {
-        TopBar(tabs = listOf())
+        TopBar(
+            tabs = listOf(),
+            menuExpanded = false,
+            filterExpanded = false,
+            filterCount = 0,
+            selectedTabIndex = 0 ,
+            onEvent = {}
+        )
     }
 }

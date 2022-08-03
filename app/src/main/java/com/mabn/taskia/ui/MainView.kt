@@ -172,6 +172,8 @@ fun MainView(viewModel: MainViewModel) {
                             modifier = Modifier.offset(y = offsetState.value.dp),
                         ) {
                             TopBar(
+                                viewModel = hiltViewModel(),
+                                taskListViewModel = hiltViewModel(),
                                 tabs = viewModel.availableListSet.map {
                                     Pair(stringResource(id = it.textId)) {
                                         viewModel.showList(it)

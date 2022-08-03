@@ -8,10 +8,28 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TopBarViewModel @Inject constructor() : ViewModel() {
-    private val _tabIndex = MutableLiveData(0)
-    val tabIndex: LiveData<Int> = _tabIndex
+    private val _topBarState = MutableLiveData(TopBarState())
+    val topBarState: LiveData<TopBarState> = _topBarState
 
-    fun changeTab(index: Int) {
-        _tabIndex.postValue(index)
+    fun onEvent(event: TopBarEvent) {
+        when (event) {
+            is TopBarEvent.ToggleFilterMenu -> _topBarState.postValue(
+                _topBarState.value?.copy(
+                    filterMenuExpanded = if (event.forceDismiss) false
+                    else !(_topBarState.value?.filterMenuExpanded ?: true)
+                )
+            )
+            is TopBarEvent.ToggleMenu -> _topBarState.postValue(
+                _topBarState.value?.copy(
+                    menuExpanded = if (event.forceDismiss) false
+                    else !(_topBarState.value?.menuExpanded ?: true)
+                )
+            )
+            is TopBarEvent.TabChanged -> _topBarState.postValue(
+                _topBarState.value?.copy(
+                    tabIndex = event.index
+                )
+            )
+        }
     }
 }
