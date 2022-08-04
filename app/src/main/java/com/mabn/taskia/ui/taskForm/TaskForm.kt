@@ -93,6 +93,7 @@ private fun TaskForm(
             SaveButton(enabled = validate()) {
                 keyboardController?.hide()
                 onEvent(FormEvent.Submit)
+                close()
             }
         }
 
