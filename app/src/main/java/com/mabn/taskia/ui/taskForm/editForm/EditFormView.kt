@@ -5,6 +5,9 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Button
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -46,38 +49,51 @@ private fun EditFormView(
     close: () -> Unit
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
-    TitleTextField(
-        value = formState.title,
-        onValueChanged = { onEvent(FormEvent.TitleChanged(it)) },
-        isVisible = true,
-        onDoneKeyClick = {
-            if (validate()) {
+    Scaffold(floatingActionButton = {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .offset(x = 20.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            SaveButton(enabled = validate(), withText = true) {
+                keyboardController?.hide()
                 onEvent(FormEvent.Submit)
                 close()
-            } else {
-                keyboardController?.hide()
             }
-        },
-    )
-    TaskDateTime(
-        onEvent = onEvent,
-        dayLabel = formState.dayLabel,
-        timeLabel = formState.timeLabel
-    )
-    Tags(
-        tags = formState.tags,
-        onEvent = onEvent,
-    )
-    Subtasks(
-        onEvent = onEvent,
-        subtasks = formState.subtasks
-    )
-    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-        SaveButton(enabled = validate(), withText = true) {
-            keyboardController?.hide()
-            onEvent(FormEvent.Submit)
-            close()
+        }
+    }) {
+        Column(Modifier.padding(it)) {
+            TitleTextField(
+                value = formState.title,
+                onValueChanged = { onEvent(FormEvent.TitleChanged(it)) },
+                isVisible = true,
+                onDoneKeyClick = {
+                    if (validate()) {
+                        onEvent(FormEvent.Submit)
+                        close()
+                    } else {
+                        keyboardController?.hide()
+                    }
+                },
+            )
+            Spacer(Modifier.height(20.dp))
+            TaskDateTime(
+                onEvent = onEvent,
+                dayLabel = formState.dayLabel,
+                timeLabel = formState.timeLabel
+            )
+            Tags(
+                tags = formState.tags,
+                onEvent = onEvent,
+            )
+            Subtasks(
+                onEvent = onEvent,
+                subtasks = formState.subtasks
+            )
         }
     }
-
 }
+
+
+

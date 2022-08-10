@@ -20,7 +20,7 @@ fun ExpandButton(expand: Boolean, toggle: () -> Unit) {
         onClick = toggle
     ) {
         Icon(
-            if (expand) Icons.Default.ArrowDropDown else Icons.Default.ArrowDropUp,
+            if (!expand) Icons.Default.ArrowDropDown else Icons.Default.ArrowDropUp,
             null
         )
     }

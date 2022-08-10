@@ -33,22 +33,17 @@ fun SaveButton(enabled: Boolean = true, withText: Boolean = false, saveFun: () -
             if (withText) {
                 BigContent()
             } else {
-                SaveIcon()
+                Icon(
+                    Icons.Default.Save,
+                    contentDescription = stringResource(id = R.string.save),
+                    tint = MaterialTheme.colors.onBackground
+                )
             }
         }
 
     }
 }
 
-
-@Composable
-private fun SaveIcon() {
-    Icon(
-        Icons.Default.Save,
-        contentDescription = stringResource(id = R.string.save),
-        tint = MaterialTheme.colors.onBackground
-    )
-}
 
 @Composable
 private fun BigContent() {
@@ -58,10 +53,18 @@ private fun BigContent() {
                 color = MaterialTheme.colors.primary,
                 shape = RoundedCornerShape(10.dp)
             )
-            .padding(5.dp)
+            .padding(vertical = 10.dp, horizontal = 20.dp)
     ) {
-        SaveIcon()
-        Text(stringResource(id = R.string.save), modifier = Modifier.padding(start = 10.dp))
+        Icon(
+            Icons.Default.Save,
+            contentDescription = stringResource(id = R.string.save),
+            tint = MaterialTheme.colors.onPrimary
+        )
+        Text(
+            stringResource(id = R.string.save),
+            color = MaterialTheme.colors.onPrimary,
+            modifier = Modifier.padding(start = 10.dp)
+        )
     }
 
 }

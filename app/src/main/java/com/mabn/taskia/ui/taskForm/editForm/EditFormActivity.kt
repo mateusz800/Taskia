@@ -2,6 +2,10 @@ package com.mabn.taskia.ui.taskForm.editForm
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModelProvider
 import com.mabn.taskia.R
 import com.mabn.taskia.domain.model.Task
@@ -21,8 +25,13 @@ class EditFormActivity : ActivityWithActionBar() {
         actionBar?.title = getString(R.string.emptyString)
         setContent {
             TaskiaTheme {
-                EditFormView(viewModel = viewModel) {
-                    this.finish()
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colors.background
+                ) {
+                    EditFormView(viewModel = viewModel) {
+                        this.finish()
+                    }
                 }
             }
         }
