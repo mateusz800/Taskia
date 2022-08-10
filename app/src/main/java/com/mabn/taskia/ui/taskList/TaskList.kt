@@ -24,7 +24,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mabn.taskia.R
 import com.mabn.taskia.domain.model.Task
-import com.mabn.taskia.domain.util.dbConverter.LocalDateTimeConverter
 import com.mabn.taskia.ui.taskList.components.NoTasks
 import com.mabn.taskia.ui.taskList.components.TaskListSection
 import kotlinx.coroutines.Dispatchers
@@ -44,13 +43,17 @@ fun TaskList(
 
 
     val grouped = tasks.value?.groupBy {
-        if (listType == ListType.Completed) {
-            LocalDate.now().atStartOfDay()
-        } else if (it.first.endDate != null && it.first.endDate!!.isBefore(
+        if (it.first.endDate != null && it.first.endDate!!.isBefore(
                 LocalDate.now().atStartOfDay()
             )
-        ) LocalDate.now().minusDays(1).atStartOfDay()
-        else it.first.endDate
+        ) {
+            LocalDate.now().minusDays(1).atStartOfDay()
+        } else if (it.first.endDate != null && it.first.endDate!!.isBefore(
+                LocalDate.now().plusDays(1).atStartOfDay()
+            )
+        ) {
+            LocalDate.now().atStartOfDay()
+        } else LocalDate.now().plusDays(1).atStartOfDay()
     }
 
     Column(
@@ -99,7 +102,7 @@ private fun TaskList(
         state = listState,
         modifier = Modifier
     ) {
-        tasks.keys.forEachIndexed { index, it ->
+        tasks.keys.sortedBy { it }.forEachIndexed { index, it ->
             stickyHeader(index) {
                 Row(
                     Modifier
@@ -115,17 +118,15 @@ private fun TaskList(
                         }
                 ) {
                     Text(
-                        if (listType == ListType.Completed) {
-                            stringResource(id = R.string.completed_tasks)
+                        if (it != null && it.isBefore(LocalDate.now().atStartOfDay())) {
+                            stringResource(id = R.string.overdue_tasks)
                         } else if (it != null && it.isBefore(
-                                LocalDate.now().atStartOfDay()
+                                LocalDate.now().plusDays(1).atStartOfDay()
                             )
                         ) {
-                            stringResource(id = R.string.overdue_tasks)
-                        } else if (it != null) {
-                            LocalDateTimeConverter.dateToString(it, context)
+                            stringResource(id = R.string.today)
                         } else {
-                            stringResource(id = R.string.unscheduled_tasks)
+                            stringResource(id = R.string.future)
                         },
                         style = MaterialTheme.typography.h2,
                         modifier = Modifier
@@ -187,7 +188,7 @@ private fun TaskList_Preview() {
     MaterialTheme {
         TaskList(
             tasks = taskMap,
-            listType = ListType.Today,
+            listType = ListType.Tasks,
             onEvent = { true },
             showTaskForm = {}
         )

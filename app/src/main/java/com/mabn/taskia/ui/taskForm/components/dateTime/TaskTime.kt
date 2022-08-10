@@ -12,20 +12,22 @@ import androidx.compose.material.icons.filled.Timer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mabn.taskia.R
 import java.util.*
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun TaskTime(updateTime: (String) -> Unit, timeLabel: String) {
     val context = LocalContext.current
     val time = remember { mutableStateOf("") }
     val menuExpanded = remember { mutableStateOf(false) }
-
     val calendar = Calendar.getInstance()
     val hour = calendar[Calendar.HOUR_OF_DAY]
     val minute = calendar[Calendar.MINUTE]

@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'com.google.gms.google-services'
     id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.plugin.parcelize'
     id 'dagger.hilt.android.plugin'
     id 'kotlin-kapt'
     id 'com.google.firebase.crashlytics'
@@ -64,6 +65,7 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
     buildFeatures {
         compose true
     }
@@ -151,6 +153,12 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-perf-ktx'
 
+
+   // implementation 'com.github.shrikanth7698:Collapsible-Calendar-View-Android:v1.0.3'
+    implementation("com.himanshoe:kalendar:1.0.0")
+   // implementation 'com.github.mateusz800:Kalendar:master-SNAPSHOT'
+
+    //noinspection GradleDependency
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
 
     // social media

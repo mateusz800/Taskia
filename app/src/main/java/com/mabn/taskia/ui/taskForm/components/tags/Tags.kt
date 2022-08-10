@@ -16,12 +16,11 @@ import com.mabn.taskia.ui.taskForm.FormEvent
 import com.mabn.taskia.ui.taskForm.components.Label
 
 @Composable
-fun Tags(tags: List<Tag>, onEvent: (FormEvent) -> Unit, isVisible: Boolean) {
+fun Tags(tags: List<Tag>, onEvent: (FormEvent) -> Unit) {
     Tags(
         tags = tags,
         addNewFun = { forceFocus -> onEvent(FormEvent.AddNewTag(forceFocus)) },
         onTitleChanged = { tag, newValue -> onEvent(FormEvent.TagValueChanged(tag, newValue)) },
-        isVisible = isVisible
     )
 }
 
@@ -30,7 +29,6 @@ private fun Tags(
     tags: List<Tag>,
     addNewFun: (focusOnNew: Boolean) -> Unit,
     onTitleChanged: (Tag, String) -> Unit,
-    isVisible: Boolean
 ) {
     val scrollState = rememberScrollState()
 
@@ -42,15 +40,14 @@ private fun Tags(
                     .horizontalScroll(scrollState)
             ) {
                 Spacer(Modifier.width(20.dp))
-                if (isVisible) {
-                    tags.forEachIndexed { index, tag ->
-                        TagInput(
-                            tag = tag,
-                            onTitleChanged = onTitleChanged,
-                            onEnter = addNewFun,
-                            focus = index == tags.size - 1 && tag.value.isEmpty()
-                        )
-                    }
+                tags.forEachIndexed { index, tag ->
+                    TagInput(
+                        tag = tag,
+                        onTitleChanged = onTitleChanged,
+                        onEnter = addNewFun,
+                        focus = index == tags.size - 1 && tag.value.isEmpty() && tags.size > 1
+                    )
+
                 }
             }
         }
@@ -66,7 +63,6 @@ private fun Tags_Preview() {
                 tags = listOf(Tag(value = "work"), Tag(value = "ui")),
                 addNewFun = {},
                 onTitleChanged = { _, _ -> },
-                isVisible = true
             )
         }
     }

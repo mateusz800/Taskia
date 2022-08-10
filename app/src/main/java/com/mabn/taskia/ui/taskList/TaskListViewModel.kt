@@ -4,9 +4,7 @@ import android.content.Intent
 import android.os.Build
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mabn.taskia.R
 import com.mabn.taskia.domain.model.Message
@@ -19,6 +17,7 @@ import com.mabn.taskia.domain.persistence.repository.TagRepository
 import com.mabn.taskia.domain.persistence.repository.TaskRepository
 import com.mabn.taskia.domain.util.ContextProvider
 import com.mabn.taskia.domain.util.IntentAction
+import com.mabn.taskia.ui.common.base.WithFilter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -27,52 +26,19 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import javax.inject.Inject
-import kotlin.streams.toList
 
 @HiltViewModel
 class TaskListViewModel @Inject constructor(
     private val taskRepository: TaskRepository,
-    private val tagRepository: TagRepository,
+    tagRepository: TagRepository,
     private val messageRepository: MessageRepository,
     private val contextProvider: ContextProvider,
     private val tasksSynchronizer: TasksSynchronizer
-) : ViewModel() {
+) : WithFilter(tagRepository) {
     private val _tasks = MutableLiveData<SnapshotStateMap<Task, Pair<List<Task>, List<Tag>>>>()
-    val tasks: LiveData<SnapshotStateList<Pair<Task, List<Task>>>>
-        get() {
-            return when (_listType.value) {
-                ListType.Today -> _filteredTodayTasks
-                ListType.Completed -> _filteredCompletedTasks
-                ListType.Unscheduled -> _filteredUnscheduledTasks
-                ListType.Upcoming -> _filteredUpcomingTasks
-                else -> MutableLiveData()
-            }
-        }
-
-    private val _todayTasks =
-        MutableLiveData<SnapshotStateList<Pair<Task, Pair<List<Task>, List<Tag>>>>>()
-    private val _filteredTodayTasks = MutableLiveData<SnapshotStateList<Pair<Task, List<Task>>>>()
-    private val _unscheduledTasks =
-        MutableLiveData<SnapshotStateList<Pair<Task, Pair<List<Task>, List<Tag>>>>>()
-    private val _filteredUnscheduledTasks =
-        MutableLiveData<SnapshotStateList<Pair<Task, List<Task>>>>()
-    private val _completedTasks =
-        MutableLiveData<SnapshotStateList<Pair<Task, Pair<List<Task>, List<Tag>>>>>()
-    private val _filteredCompletedTasks =
-        MutableLiveData<SnapshotStateList<Pair<Task, List<Task>>>>()
-    private val _upcomingTasks =
-        MutableLiveData<SnapshotStateList<Pair<Task, Pair<List<Task>, List<Tag>>>>>()
-    private val _filteredUpcomingTasks =
-        MutableLiveData<SnapshotStateList<Pair<Task, List<Task>>>>()
 
 
-    private val _allTags = MutableLiveData<List<Tag>>()
-    val allTags: LiveData<List<Tag>> = _allTags
-
-    private val _filterTags = MutableLiveData<List<Tag>>()
-    val filterTags: LiveData<List<Tag>> = _filterTags
-
-    private val _listType = MutableStateFlow<ListType>(ListType.Today)
+    private val _listType = MutableStateFlow<ListType>(ListType.Tasks)
     private val _jobs = mutableListOf<Job>()
 
 
@@ -101,39 +67,8 @@ class TaskListViewModel @Inject constructor(
         collectTasks()
     }
 
-    fun setFilterTags(tags: List<Tag>) {
-        _filterTags.postValue(tags)
-    }
-
-    private fun collectTags() {
-        viewModelScope.launch(Dispatchers.IO) {
-            tagRepository.getAll().collect {
-                _allTags.postValue(it)
-                filter(_todayTasks.value, _filteredTodayTasks)
-                filter(_completedTasks.value, _filteredCompletedTasks)
-                filter(_upcomingTasks.value, _filteredUpcomingTasks)
-                filter(_unscheduledTasks.value, _filteredUnscheduledTasks)
-            }
-        }
-    }
-
-    private fun filter(
-        list: SnapshotStateList<Pair<Task, Pair<List<Task>, List<Tag>>>>?,
-        targetLiveData: MutableLiveData<SnapshotStateList<Pair<Task, List<Task>>>>
-    ) {
-        val snapshotList = SnapshotStateList<Pair<Task, List<Task>>>()
-        snapshotList.addAll(filterByTags(list))
-        targetLiveData.postValue(snapshotList)
-    }
 
     private fun collectTasks() {
-        when (_listType.value) {
-            is ListType.Today -> collectTodayTasks()
-            is ListType.Unscheduled -> collectUnscheduledTasks()
-            is ListType.Completed -> collectCompletedTasks()
-            is ListType.Upcoming -> collectUpcomingTasks()
-            ListType.Loading -> {}
-        }
         _jobs.add(viewModelScope.launch(Dispatchers.IO) {
             taskRepository.getAll().collect { result ->
                 val newTasksData = SnapshotStateMap<Task, Pair<List<Task>, List<Tag>>>()
@@ -146,95 +81,11 @@ class TaskListViewModel @Inject constructor(
                     contextProvider.getContext()
                         .sendBroadcast(Intent(IntentAction.ACTION_APP_LOADED))
                 }
-            }
-        })
-    }
-
-    private fun filterByTags(list: SnapshotStateList<Pair<Task, Pair<List<Task>, List<Tag>>>>?): List<Pair<Task, List<Task>>> {
-        if (_filterTags.value.isNullOrEmpty()) {
-            return list?.map {
-                Pair(it.first, it.second.first)
-            } ?: listOf()
-        }
-        return list?.filter {
-            it.second.second.intersect(_filterTags.value!!).size == _filterTags.value!!.size
-        }?.map {
-            Pair(it.first, it.second.first)
-        }?.toList() ?: listOf()
-    }
-
-    private fun collectTodayTasks() {
-        _jobs.add(viewModelScope.launch(Dispatchers.IO) {
-            taskRepository.getTodayTasks().collect { result ->
                 val todayTaskList = SnapshotStateList<Pair<Task, Pair<List<Task>, List<Tag>>>>()
                 result.forEach {
                     todayTaskList.add(Pair(it.task, Pair(it.subtasks, it.tags)))
                 }
-                val prevValue = _todayTasks.value
-                _todayTasks.postValue(todayTaskList)
-                filter(_todayTasks.value, _filteredTodayTasks)
-                if (prevValue == null) {
-                    contextProvider.getContext()
-                        .sendBroadcast(Intent(IntentAction.ACTION_APP_LOADED))
-                }
-            }
-        })
-    }
-
-    private fun collectUnscheduledTasks() {
-        _jobs.add(viewModelScope.launch(Dispatchers.IO) {
-            taskRepository.getAllUnscheduled().collect { result ->
-                val unscheduledTaskList =
-                    SnapshotStateList<Pair<Task, Pair<List<Task>, List<Tag>>>>()
-                result.forEach {
-                    unscheduledTaskList.add(Pair(it.task, Pair(it.subtasks, it.tags)))
-                }
-                val prevValue = _unscheduledTasks.value
-                _unscheduledTasks.postValue(unscheduledTaskList)
-                filter(_unscheduledTasks.value, _filteredUnscheduledTasks)
-                if (prevValue == null) {
-                    contextProvider.getContext()
-                        .sendBroadcast(Intent(IntentAction.ACTION_APP_LOADED))
-                }
-
-            }
-        })
-    }
-
-    private fun collectCompletedTasks() {
-        _jobs.add(viewModelScope.launch(Dispatchers.IO) {
-            taskRepository.getAllCompleted().collect { result ->
-                val completedTaskList =
-                    SnapshotStateList<Pair<Task, Pair<List<Task>, List<Tag>>>>()
-                result.forEach {
-                    completedTaskList.add(Pair(it.task, Pair(it.subtasks, it.tags)))
-                }
-                val prevValue = _completedTasks.value
-                _completedTasks.postValue(completedTaskList)
-                filter(_completedTasks.value, _filteredCompletedTasks)
-                if (prevValue == null) {
-                    contextProvider.getContext()
-                        .sendBroadcast(Intent(IntentAction.ACTION_APP_LOADED))
-                }
-            }
-        })
-    }
-
-    private fun collectUpcomingTasks() {
-        _jobs.add(viewModelScope.launch(Dispatchers.IO) {
-            taskRepository.getAllUpcoming().collect { result ->
-                val upcomingTaskList =
-                    SnapshotStateList<Pair<Task, Pair<List<Task>, List<Tag>>>>()
-                result.forEach {
-                    upcomingTaskList.add(Pair(it.task, Pair(it.subtasks, it.tags)))
-                }
-                val prevValue = _upcomingTasks.value
-                _upcomingTasks.postValue(upcomingTaskList)
-                filter(_upcomingTasks.value, _filteredUpcomingTasks)
-                if (prevValue == null) {
-                    contextProvider.getContext()
-                        .sendBroadcast(Intent(IntentAction.ACTION_APP_LOADED))
-                }
+                filter(todayTaskList, filteredTasks)
             }
         })
     }

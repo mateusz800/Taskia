@@ -3,6 +3,7 @@ package com.mabn.taskia.ui.topBar.filterDropdownMenu
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.mabn.taskia.domain.model.Tag
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,15 +22,14 @@ class FilterDropdownMenuViewModel @Inject constructor() : ViewModel() {
         _tags.postValue(list)
     }
 
-    fun onEvent(event: FilterMenuEvent){
-        when(event){
+    fun onEvent(event: FilterMenuEvent) {
+        when (event) {
             is FilterMenuEvent.TagsCleared -> clearSelectedTags()
             is FilterMenuEvent.TagSelected -> selectTag(event.tag)
         }
     }
 
-    fun selectTag(tag: Tag) {
-
+    private fun selectTag(tag: Tag) {
         val tagsList = _tags.value
         val tagPair = tagsList?.first { it.first == tag }
         if (tagsList != null && tagPair != null) {
@@ -38,11 +38,13 @@ class FilterDropdownMenuViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun getSelectedTags(): List<Tag> {
-        return _tags.value?.filter { it.second }?.map { it.first } ?: listOf()
+    fun getSelectedTags(): LiveData<List<Tag>> {
+        return Transformations.map(_tags) {
+            it.filter { pair -> pair.second }.map { pair -> pair.first }
+        }
     }
 
-    fun clearSelectedTags() {
+    private fun clearSelectedTags() {
         val list = SnapshotStateList<Pair<Tag, Boolean>>()
         _tags.value?.map { Pair(it.first, false) }?.let { list.addAll(it) }
         _tags.value = list

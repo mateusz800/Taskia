@@ -17,7 +17,7 @@ class KeyboardHeightProvider(
     private val context: Context,
     windowManager: WindowManager,
     private val decorView: View?,
-    listener: KeyboardHeightListener?
+    private val listener: KeyboardHeightListener?
 ) :
     PopupWindow(context), OnApplyWindowInsetsListener {
     private val metrics: DisplayMetrics = DisplayMetrics()

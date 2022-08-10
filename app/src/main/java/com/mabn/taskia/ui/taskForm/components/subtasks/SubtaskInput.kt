@@ -12,6 +12,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
@@ -29,7 +30,8 @@ fun SubtaskInput(
     task: Task,
     onTitleChanged: (Task, String) -> Unit,
     onEnter: () -> Unit,
-    focus: Boolean = false
+    focus: Boolean = false,
+    onFocusChange: () -> Unit
 ) {
     val focusRequester = FocusRequester()
     LaunchedEffect(focus) {
@@ -56,6 +58,7 @@ fun SubtaskInput(
                 .fillMaxWidth()
                 .height(30.dp)
                 .focusRequester(focusRequester)
+                .onFocusChanged { state -> if(!state.hasFocus) onFocusChange() }
                 .onKeyEvent {
                     if (it.key == Key.Enter) {
                         onEnter.invoke()
@@ -74,7 +77,9 @@ private fun SubtaskInput_Preview() {
             SubtaskInput(
                 task = Task(title = "Shopping"),
                 onTitleChanged = { _, _ -> },
-                onEnter = { })
+                onEnter = { },
+                onFocusChange = {}
+            )
         }
     }
 }
@@ -87,7 +92,9 @@ private fun SubtaskInput_Empty_Preview() {
             SubtaskInput(
                 task = Task(title = ""),
                 onTitleChanged = { _, _ -> },
-                onEnter = { })
+                onEnter = { },
+                onFocusChange = {}
+            )
         }
     }
 }

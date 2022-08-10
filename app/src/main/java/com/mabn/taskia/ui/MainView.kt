@@ -2,6 +2,7 @@ package com.mabn.taskia.ui
 
 import android.app.Activity
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,11 +25,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.mabn.taskia.R
 import com.mabn.taskia.domain.model.MessageType
 import com.mabn.taskia.domain.util.extension.toDp
+import com.mabn.taskia.ui.calendar.CalendarView
 import com.mabn.taskia.ui.common.AlertButton
-import com.mabn.taskia.ui.taskForm.TaskForm
+import com.mabn.taskia.ui.common.startEditFormActivity
+import com.mabn.taskia.ui.taskForm.TaskSimpleForm
 import com.mabn.taskia.ui.taskForm.TaskFormViewModel
+import com.mabn.taskia.ui.taskList.ListType
 import com.mabn.taskia.ui.taskList.TaskList
-import com.mabn.taskia.ui.theme.DoItTheme
+import com.mabn.taskia.ui.taskList.TaskListViewModel
+import com.mabn.taskia.ui.theme.TaskiaTheme
 import com.mabn.taskia.ui.topBar.TopBar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -41,11 +46,13 @@ fun MainView(viewModel: MainViewModel) {
     val scaffoldState = rememberScaffoldState()
     val keyboardController = LocalSoftwareKeyboardController.current
     val taskFormViewModel: TaskFormViewModel = hiltViewModel()
+    val taskListViewModel: TaskListViewModel = hiltViewModel()
     val currentList = viewModel.currentList.collectAsState()
     val formDataChanged = taskFormViewModel.dataChanged.collectAsState()
     val showTaskChangedDialog = remember { mutableStateOf(false) }
     val configuration = LocalConfiguration.current
     val keyboardHeight = viewModel.keyboardHeight.observeAsState()
+    val keyboardDismiss = viewModel.keyboardDismiss.observeAsState()
     val isLandscape = viewModel.isLandscape.observeAsState()
 
     val modalBottomSheetState =
@@ -54,21 +61,17 @@ fun MainView(viewModel: MainViewModel) {
             confirmStateChange = {
                 if (it == ModalBottomSheetValue.Hidden) {
                     keyboardController?.hide()
-                    showTaskChangedDialog.value = false
-                    taskFormViewModel.isVisible.value = false
                     if (formDataChanged.value) {
                         showTaskChangedDialog.value = true
                     }
-                } else {
-                    showTaskChangedDialog.value = false
                 }
-                if (isLandscape.value == true && it == ModalBottomSheetValue.HalfExpanded) {
-                    false
-                } else {
-                    !formDataChanged.value
-                            || it != ModalBottomSheetValue.Hidden
+                if (it == ModalBottomSheetValue.Expanded) {
+                    return@rememberModalBottomSheetState false
                 }
-            })
+                !formDataChanged.value
+                        || it != ModalBottomSheetValue.Hidden
+            }
+        )
     val offsetState =
         animateIntAsState(
             targetValue = if (
@@ -84,6 +87,20 @@ fun MainView(viewModel: MainViewModel) {
         )
     // Handle displaying snackbar if any message
     val messageState = viewModel.message.observeAsState()
+    val hideBottomSheet = {
+        coroutineScope.launch(Dispatchers.Main) {
+            modalBottomSheetState.hide()
+            keyboardController?.hide()
+            viewModel.onKeyboardHeightChanged(0, isLandscape.value ?: false)
+            if (formDataChanged.value) {
+                showTaskChangedDialog.value = true
+            }
+            taskFormViewModel.isVisible.value = false
+        }
+    }
+
+    val context = LocalContext.current
+
 
     LaunchedEffect(messageState.value) {
         if (messageState.value != null
@@ -114,16 +131,15 @@ fun MainView(viewModel: MainViewModel) {
         taskFormViewModel.setCurrentList(currentList.value)
     }
 
-
-    val hideBottomSheet = {
-        coroutineScope.launch(Dispatchers.Main) {
-            modalBottomSheetState.hide()
-            keyboardController?.hide()
+    LaunchedEffect(keyboardDismiss.value, modalBottomSheetState.currentValue) {
+        if (modalBottomSheetState.currentValue == ModalBottomSheetValue.HalfExpanded && keyboardDismiss.value == true) {
+            hideBottomSheet()
         }
-        taskFormViewModel.isVisible.value = false
     }
 
-    val context = LocalContext.current
+
+
+
 
     BackHandler(enabled = true) {
         if (modalBottomSheetState.isVisible) {
@@ -138,13 +154,13 @@ fun MainView(viewModel: MainViewModel) {
         }
     }
 
-    DoItTheme {
+    TaskiaTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colors.background
         ) {
             ModalBottomSheetLayout(
-                modifier = Modifier.offset(y = (-offsetState.value).dp),
+                modifier = Modifier,//.offset(y = (-offsetState.value).dp),
                 sheetContent = {
                     Column(
                         modifier = Modifier
@@ -153,7 +169,7 @@ fun MainView(viewModel: MainViewModel) {
                                 else (configuration.screenHeightDp - 50).dp
                             )
                     ) {
-                        TaskForm(taskFormViewModel) {
+                        TaskSimpleForm(taskFormViewModel, modalBottomSheetState) {
                             coroutineScope.launch(Dispatchers.Main) {
                                 taskFormViewModel.isVisible.value = false
                                 modalBottomSheetState.hide()
@@ -169,37 +185,35 @@ fun MainView(viewModel: MainViewModel) {
                     scaffoldState = scaffoldState,
                     topBar = {
                         Box(
-                            modifier = Modifier.offset(y = offsetState.value.dp),
+                            modifier = Modifier//.offset(y = offsetState.value.dp),
                         ) {
                             TopBar(
                                 viewModel = hiltViewModel(),
                                 taskListViewModel = hiltViewModel(),
                                 tabs = viewModel.availableListSet.map {
-                                    Pair(stringResource(id = it.textId)) {
+                                    Pair(Pair(stringResource(id = it.textId), it.icon)) {
                                         viewModel.showList(it)
                                     }
                                 }
                             )
                         }
                     },
-                    /*
-                    drawerContent = {
-                        Drawer {
-                            // TODO
-                        }
-                    },
-                     */
                     floatingActionButton = {
                         FloatingActionButton(
                             backgroundColor = MaterialTheme.colors.primary,
                             modifier = Modifier
-                                .testTag("add_task_button")
-                                .offset(y = offsetState.value.dp),
+                                .testTag("add_task_button"),
+                            //.offset(y = offsetState.value.dp),
                             onClick = {
                                 coroutineScope.launch(Dispatchers.Main) {
+                                    keyboardController?.show()
                                     taskFormViewModel.clear()
                                     taskFormViewModel.isVisible.value = true
-                                    modalBottomSheetState.show()
+                                    showTaskChangedDialog.value = false
+                                    modalBottomSheetState.animateTo(
+                                        ModalBottomSheetValue.HalfExpanded,
+                                        anim = TweenSpec(delay = 200)
+                                    )
                                 }
                             }) {
                             Icon(Icons.Filled.Add, "")
@@ -210,34 +224,38 @@ fun MainView(viewModel: MainViewModel) {
                 ) { padding ->
                     Box(
                         modifier = Modifier
-                            .offset(y = offsetState.value.dp)
+                            //.offset(y = offsetState.value.dp)
                             .padding(padding)
                     ) {
-                        TaskList(
-                            viewModel = hiltViewModel(),
-                            listType = currentList.value,
-                            showTaskForm = { task ->
-                                coroutineScope.launch(Dispatchers.Main) {
-                                    taskFormViewModel.setTask(task, context = context)
-                                    taskFormViewModel.isVisible.value = true
-                                    //modalBottomSheetState.show()
-                                    modalBottomSheetState.animateTo(ModalBottomSheetValue.Expanded)
+                        if (currentList.value == ListType.Calendar) {
+                            CalendarView(
+                                calendarViewModel = hiltViewModel(),
+                                taskListViewModel = taskListViewModel
+                            )
+                        } else {
+
+                            TaskList(
+                                viewModel = taskListViewModel,
+                                listType = currentList.value,
+                                showTaskForm = { task ->
+                                    startEditFormActivity(context, task)
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
                 }
             }
-
         }
 
         if (showTaskChangedDialog.value) {
             NotSavedAlert(saveFun = {
                 taskFormViewModel.saveTask()
+                taskFormViewModel.clear()
                 hideBottomSheet()
                 showTaskChangedDialog.value = false
             }, discardFun = {
                 hideBottomSheet()
+                taskFormViewModel.clear()
                 showTaskChangedDialog.value = false
             }, dismissFun = {
                 showTaskChangedDialog.value = false

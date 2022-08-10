@@ -5,13 +5,14 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
@@ -22,15 +23,18 @@ import com.mabn.taskia.ui.taskForm.components.dateTime.TaskDateTime
 import com.mabn.taskia.ui.taskForm.components.subtasks.Subtasks
 import com.mabn.taskia.ui.taskForm.components.tags.Tags
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun TaskForm(
+fun TaskSimpleForm(
     viewModel: TaskFormViewModel,
+    modalBottomSheetState: ModalBottomSheetState,
     closeFunc: () -> Unit
 ) {
-    val isVisible = viewModel.isVisible.observeAsState(false)
     val formState = viewModel.formState.observeAsState(FormState())
 
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
         Box(
             modifier = Modifier
                 .padding(top = 10.dp, bottom = 10.dp)
@@ -41,12 +45,12 @@ fun TaskForm(
                     RoundedCornerShape(20.dp),
                 )
         )
-        TaskForm(
-            isVisible = isVisible.value,
+        TaskSimpleForm(
+            isVisible = (modalBottomSheetState.isVisible),
             validate = viewModel::verifyData,
             close = closeFunc,
             onEvent = viewModel::onEvent,
-            formState = formState.value
+            formState = formState.value,
         )
     }
 }
@@ -54,12 +58,12 @@ fun TaskForm(
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-private fun TaskForm(
+private fun TaskSimpleForm(
     validate: () -> Boolean,
     close: () -> Unit,
     onEvent: (FormEvent) -> Unit,
     isVisible: Boolean = false,
-    formState: FormState
+    formState: FormState,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val scrollState = rememberScrollState()
@@ -107,26 +111,16 @@ private fun TaskForm(
                 timeLabel = formState.timeLabel
             )
         }
-        Tags(
-            tags = formState.tags,
-            onEvent = onEvent,
-            isVisible = isVisible
-        )
-
-        Subtasks(
-            onEvent = onEvent,
-            subtasks = formState.subtasks
-        )
-
     }
+
 }
 
 @Preview
 @Composable
-private fun TaskForm_Preview() {
+private fun TaskSimpleForm_Preview() {
     MaterialTheme {
         Surface {
-            TaskForm(
+            TaskSimpleForm(
                 validate = { true },
                 close = { },
                 onEvent = {},

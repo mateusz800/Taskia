@@ -1,8 +1,10 @@
 package com.mabn.taskia.domain.model
 
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import kotlinx.parcelize.Parcelize
 
 
 @Entity(
@@ -11,6 +13,7 @@ import androidx.room.PrimaryKey
         unique = true
     )]
 )
+@Parcelize
 data class ConnectedAccount(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
@@ -19,7 +22,7 @@ data class ConnectedAccount(
     var token: String? = null,
     var refreshToken: String? = null,
     var data: String? = null
-)
+):Parcelable
 
 
 

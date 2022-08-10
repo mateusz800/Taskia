@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -26,7 +27,7 @@ import com.mabn.taskia.ui.topBar.filterDropdownMenu.FilterDropDown
 fun TopBar(
     viewModel: TopBarViewModel,
     taskListViewModel: TaskListViewModel,
-    tabs: List<Pair<String, () -> Unit>>
+    tabs: List<Pair<Pair<String, ImageVector?>, () -> Unit>>
 ) {
     val state by viewModel.topBarState.observeAsState()
 
@@ -43,7 +44,7 @@ fun TopBar(
 
 @Composable
 private fun TopBar(
-    tabs: List<Pair<String, () -> Unit>>,
+    tabs: List<Pair<Pair<String, ImageVector?>, () -> Unit>>,
     menuExpanded: Boolean,
     filterExpanded: Boolean,
     filterCount: Int,
@@ -57,7 +58,9 @@ private fun TopBar(
     ) {
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 5.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -138,7 +141,7 @@ private fun TopBar_Preview() {
             menuExpanded = false,
             filterExpanded = false,
             filterCount = 0,
-            selectedTabIndex = 0 ,
+            selectedTabIndex = 0,
             onEvent = {}
         )
     }

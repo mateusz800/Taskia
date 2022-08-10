@@ -52,14 +52,17 @@ fun TitleTextField(
             .fillMaxWidth()
             .padding(end = 20.dp, start = 5.dp, top = 10.dp)
             .focusRequester(focusRequester)
-            .testTag("title_input")
-            .onKeyEvent {
-                if (it.key == Key.Enter && value.isNotBlank()) {
-                    onDoneKeyClick.invoke()
-                    keyboardController?.hide()
-                }
-                true
-            },
+            .testTag("title_input"),
+        /*
+    .onKeyEvent {
+        if (it.key == Key.Enter && value.isNotBlank()) {
+            onDoneKeyClick.invoke()
+            keyboardController?.hide()
+        }
+        true
+    },
+
+         */
 
         placeholderText = stringResource(id = R.string.task_name),
         underline = true,

@@ -45,8 +45,11 @@ class MainViewModel @Inject constructor(
     val currentState: StateFlow<MainViewState>
         get() = _currentState
 
-    private val _keyboardHeight = MutableLiveData<Int>()
+    private val _keyboardHeight = MutableLiveData<Int>(0)
     val keyboardHeight: LiveData<Int> = _keyboardHeight
+
+    private val _keyboardDismiss = MutableLiveData<Boolean>()
+    val keyboardDismiss: LiveData<Boolean> = _keyboardDismiss
 
     private val _isLandscape = MutableLiveData<Boolean>()
     val isLandscape: LiveData<Boolean> = _isLandscape
@@ -61,12 +64,10 @@ class MainViewModel @Inject constructor(
 
 
     val availableListSet = setOf(
-        ListType.Today,
-        ListType.Upcoming,
-        ListType.Unscheduled,
-        ListType.Completed
+        ListType.Tasks,
+        ListType.Calendar,
     )
-    private val _currentList = MutableStateFlow<ListType>(ListType.Today)
+    private val _currentList = MutableStateFlow<ListType>(ListType.Tasks)
     val currentList: StateFlow<ListType> = _currentList
 
     private val _message = MutableLiveData<Message?>(null)
@@ -108,13 +109,18 @@ class MainViewModel @Inject constructor(
             }
 
 
-
         }
     }
 
     override fun onKeyboardHeightChanged(height: Int, isLandscape: Boolean) {
+        if (_keyboardHeight.value!! > 0 && height == 0) {
+            _keyboardDismiss.postValue(true)
+        } else {
+            _keyboardDismiss.postValue(false)
+        }
         _keyboardHeight.postValue(height)
         _isLandscape.postValue(isLandscape)
+
     }
 
 }

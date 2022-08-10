@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.ZoneOffset
+import java.time.temporal.TemporalField
 
 class TaskRepository(
     private val taskDao: TaskDao,
@@ -26,7 +27,7 @@ class TaskRepository(
         }
     }
 
-    fun getByGoogleId(googleId:String):Task?{
+    fun getByGoogleId(googleId: String): Task? {
         return taskDao.getByGoogleId(googleId)
     }
 
@@ -40,6 +41,13 @@ class TaskRepository(
         return withContext(Dispatchers.IO) {
             taskDao.getAllCompleted()
         }
+    }
+
+    suspend fun getByDate(date: LocalDate): Flow<List<TaskAndSubtasks>> {
+        return withContext(Dispatchers.IO) {
+            taskDao.getByDate(date.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli())
+        }
+
     }
 
     suspend fun getTodayTasks(): Flow<List<TaskAndSubtasks>> {
@@ -60,7 +68,7 @@ class TaskRepository(
     }
 
     suspend fun getSubtasks(task: Task): List<Task> {
-        return withContext(Dispatchers.IO){
+        return withContext(Dispatchers.IO) {
             taskDao.getSubtasks(task.id)
         }
 
@@ -82,4 +90,6 @@ class TaskRepository(
     fun update(task: Task) {
         taskDao.update(task)
     }
+
+
 }

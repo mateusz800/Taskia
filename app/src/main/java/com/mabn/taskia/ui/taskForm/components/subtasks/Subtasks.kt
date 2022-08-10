@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,6 +40,7 @@ private fun Subtasks(
     addNewFun: () -> Unit,
     onTitleChanged: (Task, String) -> Unit
 ) {
+    val focusOnNew = remember { mutableStateOf(false) }
     Column(modifier = Modifier.padding(vertical = 20.dp)) {
         Label(stringResource(id = R.string.subtasks))
         Column(Modifier.padding(start = 20.dp)) {
@@ -46,16 +49,21 @@ private fun Subtasks(
                     task = task,
                     onTitleChanged = onTitleChanged,
                     onEnter = addNewFun,
-                    focus = index == subtasks.size - 1 && task.title.isEmpty()
+                    focus = index == subtasks.size - 1 && task.title.isEmpty() && focusOnNew.value,
+                    onFocusChange = { focusOnNew.value = false }
                 )
             }
             AddNewButton(
                 text = stringResource(id = R.string.add_subtask),
-                onClick = addNewFun
+                onClick = {
+                    addNewFun()
+                    focusOnNew.value = true
+                }
             )
         }
     }
 }
+
 
 @Preview
 @Composable

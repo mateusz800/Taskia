@@ -59,4 +59,10 @@
     <string name="finish_presentation_file">Zakończyć pracę nad plikiem prezentacji</string>
     <string name="buy_present">Kupić prezent na urodziny Tomka</string>
     <string name="call_alice">Zadzwonić do Ali</string>
+    <string name="about">O aplikacji</string>
+    <string name="version">Wersja</string>
+    <string name="customize">Dostosuj</string>
+    <string name="tasks">Zadania</string>
+    <string name="calendar">Kalendarz</string>
+    <string name="future">Na później</string>
 </resources>

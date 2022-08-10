@@ -21,7 +21,7 @@ import com.mabn.taskia.domain.model.ConnectedAccount
 import com.mabn.taskia.ui.common.AddNewButton
 import com.mabn.taskia.ui.common.DeleteBackground
 import com.mabn.taskia.ui.settings.SettingsButton
-import com.mabn.taskia.ui.theme.DoItTheme
+import com.mabn.taskia.ui.theme.TaskiaTheme
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -33,7 +33,7 @@ fun ConnectedAccountsView(viewModel: ConnectedAccountsViewModel) {
         )
     val accountsList = viewModel.connectedAccounts.observeAsState()
     val coroutineScope = rememberCoroutineScope()
-    DoItTheme {
+    TaskiaTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colors.background

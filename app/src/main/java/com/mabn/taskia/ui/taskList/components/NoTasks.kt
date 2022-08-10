@@ -24,7 +24,7 @@ import com.mabn.taskia.ui.taskList.ListType
 import kotlinx.coroutines.delay
 
 @Composable
-fun NoTasks(listType: ListType = ListType.Unscheduled) {
+fun NoTasks(listType: ListType = ListType.Tasks) {
     val isLoaded = remember { mutableStateOf(false) }
     LaunchedEffect(listType) {
         isLoaded.value = false
@@ -35,7 +35,7 @@ fun NoTasks(listType: ListType = ListType.Unscheduled) {
 }
 
 @Composable
-private fun NoTasks(listType: ListType = ListType.Unscheduled, isLoaded: Boolean) {
+private fun NoTasks(listType: ListType = ListType.Tasks, isLoaded: Boolean) {
 
     AnimatedVisibility(
         visible = isLoaded,
@@ -51,7 +51,7 @@ private fun NoTasks(listType: ListType = ListType.Unscheduled, isLoaded: Boolean
                 Text(
                     stringResource(
                         id = when (listType) {
-                            is ListType.Today -> R.string.no_today_tasks
+                            is ListType.Tasks -> R.string.no_today_tasks
                             is ListType.Loading -> R.string.emptyString
                             else -> R.string.no_tasks
                         }
@@ -62,8 +62,7 @@ private fun NoTasks(listType: ListType = ListType.Unscheduled, isLoaded: Boolean
                 Text(
                     stringResource(
                         id = when (listType) {
-                            is ListType.Today -> R.string.relax_or_add
-                            is ListType.Completed -> R.string.complete_to_show
+                            is ListType.Tasks -> R.string.relax_or_add
                             is ListType.Loading -> R.string.emptyString
                             else -> R.string.click_to_add
                         }

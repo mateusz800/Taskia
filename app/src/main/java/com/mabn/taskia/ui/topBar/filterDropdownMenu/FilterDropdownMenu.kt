@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mabn.taskia.R
 import com.mabn.taskia.domain.model.Tag
+import com.mabn.taskia.ui.calendar.CalendarViewModel
 import com.mabn.taskia.ui.common.ButtonWithoutBackground
 import com.mabn.taskia.ui.taskList.ListEvent
 import com.mabn.taskia.ui.taskList.TaskListViewModel
@@ -26,14 +27,19 @@ fun FilterDropDown(
     expanded: Boolean,
     onDismissRequest: () -> Unit
 ) {
-    val taskListViewModel:TaskListViewModel = hiltViewModel()
+    val taskListViewModel: TaskListViewModel = hiltViewModel()
+    val calendarViewModel: CalendarViewModel = hiltViewModel()
     val viewModel: FilterDropdownMenuViewModel = hiltViewModel()
     val allTags = taskListViewModel.allTags.observeAsState()
     val tags = viewModel.tags.observeAsState()
 
+    val selectedTags = viewModel.getSelectedTags().observeAsState()
+
     LaunchedEffect(allTags.value) {
         viewModel.setTags(allTags.value)
     }
+
+    calendarViewModel.setFilterTags(selectedTags.value ?: listOf())
 
     FilterDropDown(
         onEvent = viewModel::onEvent,
@@ -43,8 +49,6 @@ fun FilterDropDown(
     ) {
         onDismissRequest()
     }
-
-
 }
 
 @Composable

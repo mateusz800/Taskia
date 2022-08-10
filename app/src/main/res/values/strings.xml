@@ -59,6 +59,9 @@
     <string name="about">About</string>
     <string name="version">Version</string>
     <string name="customize">Customize</string>
+    <string name="future">Future</string>
+    <string name="tasks">Tasks</string>
+    <string name="calendar">Calendar</string>
     <plurals name="uncompleted_tasks_with_count">
         <item quantity="one">You have still uncompleted %d task</item>
         <item quantity="other">You have still uncompleted %d tasks</item>

@@ -48,7 +48,7 @@ class TaskFormViewModel @Inject constructor(
 
     var isVisible = MutableLiveData(false)
     private var _task: Task? = null
-    private var _currentList: ListType = ListType.Today
+    private var _currentList: ListType = ListType.Tasks
 
     init {
         clear()
@@ -100,7 +100,7 @@ class TaskFormViewModel @Inject constructor(
             _formState.postValue(
                 FormState(
                     dayLabel = when (_currentList) {
-                        is ListType.Today ->
+                        is ListType.Tasks ->
                             LocalDateTimeConverter.dateToString(
                                 LocalDate.now().atStartOfDay(),
                                 contextProvider.getContext()
@@ -115,6 +115,7 @@ class TaskFormViewModel @Inject constructor(
     }
 
     fun saveTask() {
+
         var task = Task(
             title = _formState.value!!.title,
             endDate = LocalDateTimeConverter.stringToDate(
@@ -166,6 +167,7 @@ class TaskFormViewModel @Inject constructor(
             taskTagRepository.insert(
                 *insertedTags.stream().map { TaskTag(parentId, it.id) }.toList().toTypedArray()
             )
+            _dataChanged.value = false
         }
     }
 
