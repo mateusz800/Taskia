@@ -70,7 +70,7 @@ class TaskListViewModel @Inject constructor(
 
     private fun collectTasks() {
         _jobs.add(viewModelScope.launch(Dispatchers.IO) {
-            taskRepository.getAll().collect { result ->
+            taskRepository.getAllUncompleted().collect { result ->
                 val newTasksData = SnapshotStateMap<Task, Pair<List<Task>, List<Tag>>>()
                 result.forEach {
                     newTasksData[it.task] = Pair(it.subtasks, it.tags)

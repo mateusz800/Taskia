@@ -43,7 +43,10 @@ fun TaskList(
 
 
     val grouped = tasks.value?.groupBy {
-        if (it.first.endDate != null && it.first.endDate!!.isBefore(
+        if (it.first.status) {
+            LocalDate.now().plusDays(1).atStartOfDay()
+        }
+        else if (it.first.endDate != null && it.first.endDate!!.isBefore(
                 LocalDate.now().atStartOfDay()
             )
         ) {
@@ -53,7 +56,7 @@ fun TaskList(
             )
         ) {
             LocalDate.now().atStartOfDay()
-        } else LocalDate.now().plusDays(1).atStartOfDay()
+        } else LocalDate.now().plusDays(2).atStartOfDay()
     }
 
     Column(
@@ -125,7 +128,11 @@ private fun TaskList(
                             )
                         ) {
                             stringResource(id = R.string.today)
-                        } else {
+
+                        } else if(it != null && it.isBefore(LocalDate.now().plusDays(2).atStartOfDay())){
+                            stringResource(id = R.string.completed)
+                        }
+                        else {
                             stringResource(id = R.string.future)
                         },
                         style = MaterialTheme.typography.h2,

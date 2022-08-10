@@ -8,13 +8,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.ZoneOffset
-import java.time.temporal.TemporalField
 
 class TaskRepository(
     private val taskDao: TaskDao,
 ) {
 
-    suspend fun getAll(): Flow<List<TaskAndSubtasks>> {
+    suspend fun getAllUncompleted(): Flow<List<TaskAndSubtasks>> {
         return withContext(Dispatchers.IO) {
             taskDao.getAll()
         }

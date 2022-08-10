@@ -19,8 +19,10 @@ interface TaskDao {
     fun deleteAll(vararg task: Task): Int
 
     @Transaction
-    @Query("SELECT * FROM Task WHERE parentId is null AND isRemoved = 0 ORDER BY endDate ASC, startTime ASC ")
-    fun getAll(): Flow<List<TaskAndSubtasks>>
+    @Query("SELECT * FROM Task WHERE parentId is null AND isRemoved = 0 AND status = 0 OR (status = 1 AND completionTime > :yesterdayDate) ORDER BY endDate ASC, startTime ASC ")
+    fun getAll(
+        yesterdayDate: LocalDateTime = LocalDate.now().atStartOfDay().minusNanos(1),
+    ): Flow<List<TaskAndSubtasks>>
 
     @Transaction
     @Query("SELECT * FROM Task WHERE parentId is null and endDate is not null and endDate >= :startDateTime and status = 0 order by endDate asc, startTime asc")

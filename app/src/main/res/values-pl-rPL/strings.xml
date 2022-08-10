@@ -28,7 +28,7 @@
     <string name="today_tasks">Dzisiejsze</string>
     <string name="upcoming_tasks">Nadchodzące</string>
     <string name="unscheduled_tasks">Niezaplanowane</string>
-    <string name="completed_tasks">Ukończone</string>
+    <string name="completed">Ukończone</string>
     <string name="pick_date">Wybierz datę</string>
     <string name="task_completed">Zadanie ukończone</string>
     <string name="remove">Usuń</string>
