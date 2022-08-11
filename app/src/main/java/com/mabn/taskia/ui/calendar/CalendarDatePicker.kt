@@ -21,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.himanshoe.kalendar.common.KalendarSelector
 import com.himanshoe.kalendar.common.KalendarStyle
+import com.himanshoe.kalendar.common.data.KalendarEvent
 import com.himanshoe.kalendar.ui.Kalendar
 import com.himanshoe.kalendar.ui.KalendarType
 import com.mabn.taskia.ui.taskList.components.TaskListSection
@@ -29,6 +30,7 @@ import java.time.LocalDate
 @Composable
 fun CalendarDatePicker(onDateChange: (LocalDate) -> Unit) {
     val type = remember { mutableStateOf<KalendarType>(KalendarType.Oceanic()) }
+    val selectedDay = remember { mutableStateOf(LocalDate.now()) }
     Column(
         modifier = Modifier.offset(y = (-20).dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -57,6 +59,7 @@ fun CalendarDatePicker(onDateChange: (LocalDate) -> Unit) {
             }, errorMessage = {
                 //Handle the error if any
             })
+        /*
         IconButton(
             onClick = { type.value = toggleCalendar(type.value) },
             modifier = Modifier.offset(y = (-30).dp)
@@ -67,6 +70,7 @@ fun CalendarDatePicker(onDateChange: (LocalDate) -> Unit) {
                 null
             )
         }
+         */
     }
 }
 

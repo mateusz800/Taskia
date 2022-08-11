@@ -15,6 +15,7 @@ import com.mabn.taskia.domain.persistence.repository.TagRepository
 import com.mabn.taskia.domain.persistence.repository.TaskRepository
 import com.mabn.taskia.domain.persistence.repository.TaskTagRepository
 import com.mabn.taskia.domain.util.ContextProvider
+import com.mabn.taskia.domain.util.ViewModelsCommunicationBridge
 import com.mabn.taskia.domain.util.dbConverter.LocalDateTimeConverter
 import com.mabn.taskia.domain.util.dbConverter.LocalTimeConverter
 import com.mabn.taskia.domain.util.extension.toFormattedString
@@ -38,7 +39,8 @@ class TaskFormViewModel @Inject constructor(
     private val tagRepository: TagRepository,
     private val taskTagRepository: TaskTagRepository,
     private val contextProvider: ContextProvider,
-    private val tasksSynchronizer: TasksSynchronizer
+    private val tasksSynchronizer: TasksSynchronizer,
+    private val defaultDateBridge: ViewModelsCommunicationBridge<LocalDate>
 ) : ViewModel() {
     private val _formState: MutableLiveData<FormState> = MutableLiveData(FormState())
     val formState: LiveData<FormState> = _formState
@@ -50,8 +52,13 @@ class TaskFormViewModel @Inject constructor(
     private var _task: Task? = null
     private var _currentList: ListType = ListType.Tasks
 
+    private var _defaultDate: LocalDate? = null
+
     init {
         clear()
+        defaultDateBridge.registerCallback {
+            _defaultDate = it
+        }
     }
 
     fun onEvent(event: FormEvent) {
@@ -99,14 +106,10 @@ class TaskFormViewModel @Inject constructor(
         runBlocking {
             _formState.postValue(
                 FormState(
-                    dayLabel = when (_currentList) {
-                        is ListType.Tasks ->
-                            LocalDateTimeConverter.dateToString(
-                                LocalDate.now().atStartOfDay(),
-                                contextProvider.getContext()
-                            )
-                        else -> contextProvider.getString(R.string.no_deadline)
-                    },
+                    dayLabel = if (_defaultDate == null) contextProvider.getString(R.string.no_deadline) else LocalDateTimeConverter.dateToString(
+                        _defaultDate!!.atStartOfDay(),
+                        contextProvider.getContext()
+                    ),
                     timeLabel = contextProvider.getString(R.string.no_time)
                 )
             )
@@ -115,7 +118,6 @@ class TaskFormViewModel @Inject constructor(
     }
 
     fun saveTask() {
-
         var task = Task(
             title = _formState.value!!.title,
             endDate = LocalDateTimeConverter.stringToDate(

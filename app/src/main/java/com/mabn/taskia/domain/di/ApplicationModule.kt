@@ -8,6 +8,7 @@ import com.mabn.taskia.domain.persistence.AppDatabase
 import com.mabn.taskia.domain.persistence.dao.*
 import com.mabn.taskia.domain.persistence.repository.*
 import com.mabn.taskia.domain.util.ContextProvider
+import com.mabn.taskia.domain.util.ViewModelsCommunicationBridge
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,12 +20,19 @@ import okhttp3.Protocol
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.time.LocalDate
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 class ApplicationModule {
+
+    @Provides
+    @Singleton
+    fun provideCalendarFormViewModelCommunicationBridge(): ViewModelsCommunicationBridge<LocalDate> {
+        return ViewModelsCommunicationBridge()
+    }
 
     @Provides
     @Singleton

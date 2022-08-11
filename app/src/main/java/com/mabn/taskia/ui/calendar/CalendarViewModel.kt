@@ -1,20 +1,25 @@
 package com.mabn.taskia.ui.calendar
 
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.mabn.taskia.domain.model.Tag
 import com.mabn.taskia.domain.model.Task
 import com.mabn.taskia.domain.persistence.repository.TagRepository
 import com.mabn.taskia.domain.persistence.repository.TaskRepository
+import com.mabn.taskia.domain.util.ViewModelsCommunicationBridge
 import com.mabn.taskia.ui.common.base.WithFilter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
 class CalendarViewModel @Inject constructor(
     private val taskRepository: TaskRepository,
+    private val defaultDateBridge: ViewModelsCommunicationBridge<LocalDate>,
     tagRepository: TagRepository
 ) : WithFilter(tagRepository) {
 
@@ -26,7 +31,10 @@ class CalendarViewModel @Inject constructor(
 
     fun onEvent(event: CalendarEvent) {
         when (event) {
-            is CalendarEvent.DateChanged -> fetchTasks(event.date)
+            is CalendarEvent.DateChanged -> {
+                defaultDateBridge.onDispatchMessage(event.date)
+                fetchTasks(event.date)
+            }
             is CalendarEvent.FilterTagsChanged -> setFilterTags(event.tags)
         }
     }
@@ -37,7 +45,7 @@ class CalendarViewModel @Inject constructor(
 
     private fun fetchTasks(date: LocalDate) {
         viewModelScope.launch {
-            taskRepository.getByDate(date).collect { result ->
+            taskRepository.getByDateAndUnscheduled(date).collect { result ->
                 _allTasks = result.map { Pair(it.task, Pair(it.subtasks, it.tags)) }
                 filter(_allTasks, filteredTasks)
 
@@ -47,9 +55,9 @@ class CalendarViewModel @Inject constructor(
 
     override fun setFilterTags(tags: List<Tag>) {
         super.setFilterTags(tags)
-        if(tags.isEmpty()){
-            val taskList = SnapshotStateList<Pair<Task,List<Task>>>()
-            taskList.addAll(_allTasks.map{Pair(it.first, it.second.first)})
+        if (tags.isEmpty()) {
+            val taskList = SnapshotStateList<Pair<Task, List<Task>>>()
+            taskList.addAll(_allTasks.map { Pair(it.first, it.second.first) })
             filteredTasks.postValue(taskList)
         } else {
             filter(_allTasks, filteredTasks)

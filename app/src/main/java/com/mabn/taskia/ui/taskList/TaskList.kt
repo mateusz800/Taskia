@@ -69,7 +69,6 @@ fun TaskList(
         ) {
             TaskList(
                 tasks = grouped ?: mapOf(),
-                listType = listType,
                 onEvent = onEvent,
                 showTaskForm = showTaskForm
             )
@@ -92,7 +91,6 @@ fun TaskList(
 @Composable
 private fun TaskList(
     tasks: Map<LocalDateTime?, List<Pair<Task, List<Task>>>>,
-    listType: ListType,
     onEvent: (ListEvent) -> Boolean,
     showTaskForm: (Task) -> Unit
 ) {
@@ -100,7 +98,6 @@ private fun TaskList(
     val coroutineScope = rememberCoroutineScope()
     val configuration = LocalConfiguration.current
     val focusManager = LocalFocusManager.current
-    val context = LocalContext.current
     LazyColumn(
         state = listState,
         modifier = Modifier
@@ -195,7 +192,6 @@ private fun TaskList_Preview() {
     MaterialTheme {
         TaskList(
             tasks = taskMap,
-            listType = ListType.Tasks,
             onEvent = { true },
             showTaskForm = {}
         )

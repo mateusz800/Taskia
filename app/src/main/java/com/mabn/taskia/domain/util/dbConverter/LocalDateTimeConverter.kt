@@ -3,10 +3,7 @@ package com.mabn.taskia.domain.util.dbConverter
 import android.content.Context
 import androidx.room.TypeConverter
 import com.mabn.taskia.R
-import java.time.Instant
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.ZoneOffset
+import java.time.*
 
 object LocalDateTimeConverter {
     @TypeConverter
@@ -41,7 +38,11 @@ object LocalDateTimeConverter {
             context.getString(R.string.yesterday) -> LocalDate.now().minusDays(1)
             context.getString(R.string.today) -> LocalDate.now()
             context.getString(R.string.tomorrow) -> LocalDate.now().plusDays(1)
-            else -> null
+            else -> {
+                val day = value.split(" ")[0].toInt()
+                val month = value.split(" ")[1]
+                LocalDate.of(LocalDate.now().year, Month.valueOf(month), day)
+            }
         }?.atStartOfDay()
     }
 }

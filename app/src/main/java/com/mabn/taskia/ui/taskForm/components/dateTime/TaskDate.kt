@@ -43,7 +43,7 @@ fun TaskDate(updateDate: (String) -> Unit, dayLabel: String) {
     )
     datePickerDialog.datePicker.minDate = System.currentTimeMillis()
 
-    Picker(label = dayLabel,
+    Picker(label = dayLabel.ifBlank { stringResource(id = R.string.no_deadline) },
         icon = {
             Icon(
                 Icons.Default.Timer,

@@ -42,9 +42,9 @@ class TaskRepository(
         }
     }
 
-    suspend fun getByDate(date: LocalDate): Flow<List<TaskAndSubtasks>> {
+    suspend fun getByDateAndUnscheduled(date: LocalDate): Flow<List<TaskAndSubtasks>> {
         return withContext(Dispatchers.IO) {
-            taskDao.getByDate(date.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli())
+            taskDao.getByDateAndUnscheduled(date.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli())
         }
 
     }
