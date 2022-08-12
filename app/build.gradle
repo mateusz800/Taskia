@@ -1,3 +1,5 @@
+import kotlinx.kover.api.KoverTaskExtension
+
 plugins {
     id 'com.android.application'
     id 'com.google.gms.google-services'
@@ -49,7 +51,7 @@ android {
 
     buildTypes {
         debug {
-            //testCoverageEnabled = true
+            testCoverageEnabled = true
         }
         release {
             minifyEnabled false
@@ -86,8 +88,8 @@ dependencies {
     implementation "androidx.compose.ui:ui:$compose_version"
     implementation "androidx.compose.material:material:$compose_version"
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.0'
-    implementation 'androidx.activity:activity-compose:1.5.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'
+    implementation 'androidx.activity:activity-compose:1.5.1'
     implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
     implementation "androidx.compose.compiler:compiler:1.2.0"
     implementation "androidx.datastore:datastore-preferences:1.0.0"

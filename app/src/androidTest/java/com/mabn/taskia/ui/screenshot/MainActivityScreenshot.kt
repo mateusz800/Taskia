@@ -2,7 +2,9 @@ package com.mabn.taskia.ui.screenshot
 
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.mabn.taskia.R
 import com.mabn.taskia.domain.model.Task
@@ -12,6 +14,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import okhttp3.internal.wait
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -39,21 +42,6 @@ class MainActivityScreenshot {
     @Inject
     lateinit var taskRepository: TaskRepository
 
-    /*
-    companion object {
-        @BeforeClass
-        fun beforeAll() {
-            CleanStatusBar.disable()
-        }
-
-        @AfterClass
-        fun afterAll() {
-            CleanStatusBar.enableWithDefaults()
-        }
-    }
-     */
-
-
     @Before
     fun setUp() {
         hiltRule.inject()
@@ -72,19 +60,18 @@ class MainActivityScreenshot {
             )
         )
         Screengrab.setDefaultScreenshotStrategy(FalconScreenshotStrategy(composeTestRule.activity))
-        //composeTestRule.waitForIdle()
     }
 
     @Test
     fun takeAddTaskScreenshot() {
         composeTestRule.onNodeWithTag("add_task_button").performClick()
-        //composeTestRule.onNodeWithTag("title_input")
-        //    .performTextInput(composeTestRule.activity.getString(R.string.call_alice))
-        //composeTestRule.waitForIdle()
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithTag("title_input")
+            .performTextInput(composeTestRule.activity.getString(R.string.call_alice))
+        composeTestRule.waitForIdle()
         Screengrab.screenshot("AddNewTask")
     }
 
-    /*
     @Test
     fun takeEditTaskScreenshot() {
         composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.finish_presentation_file))
@@ -92,16 +79,17 @@ class MainActivityScreenshot {
         composeTestRule.waitForIdle()
         Screengrab.screenshot("EditTask")
     }
-     */
 
     @Test
     fun takeListScreenshot() {
-
-        //composeTestRule.waitUntil { hasText(composeTestRule.activity.getString(R.string.call_alice)).matches(is) }
         composeTestRule.waitForIdle()
-        runBlocking { delay(5000) }
         Screengrab.screenshot("TaskList")
-        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-        //Screengrab.screenshot("DarkMode")
+    }
+
+    @Test
+    fun takeCalendarScreenshot(){
+        composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.calendar)).performClick()
+        composeTestRule.waitForIdle()
+        Screengrab.screenshot("Calendar")
     }
 }

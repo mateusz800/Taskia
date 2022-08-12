@@ -7,6 +7,7 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import com.mabn.taskia.domain.model.Task
 import com.mabn.taskia.ui.taskList.components.taskItem.TaskItem
@@ -41,7 +42,7 @@ private fun TaskList(
                 val task = it.first
                 val subtasks = it.second
                 key(task.id) {
-                    Column(modifier = Modifier/* Modifier.animateItemPlacement()*/) {
+                    Column(modifier = Modifier.testTag("task_list")/* Modifier.animateItemPlacement()*/) {
                         TaskItem(
                             task = task,
                             subtasks = subtasks,

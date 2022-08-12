@@ -11,4 +11,5 @@ sealed class ListType(val textId: Int, val icon: ImageVector? = null) {
     object Tasks : ListType(R.string.tasks, icon = Icons.Default.List)
     object Calendar : ListType(R.string.calendar, icon = Icons.Default.CalendarMonth)
     object Loading: ListType(R.string.emptyString)
+    object Unscheduled: ListType(R.string.unscheduled_tasks)
 }

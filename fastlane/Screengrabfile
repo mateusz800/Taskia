@@ -1,4 +1,3 @@
-# remove the leading '#' to uncomment lines
 android_home('$PATH')
 use_adb_root(true)
 
@@ -8,7 +7,7 @@ use_tests_in_packages(['com.mabn.taskia.ui.screenshot'])
 app_apk_path('app/build/outputs/apk/debug/app-debug.apk')
 tests_apk_path('app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk')
 test_instrumentation_runner('com.mabn.taskia.domain.di.HiltTestRunner')
-locales(['en-GB' ])
+locales(['en-GB', 'pl-PL' ])
 
 # clear all previously generated screenshots in your local output directory before creating new ones
 clear_previous_screenshots(true)

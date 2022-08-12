@@ -59,13 +59,7 @@ class TaskListViewModel @Inject constructor(
         return true
     }
 
-    fun setListType(type: ListType) {
-        _listType.value = type
-        _jobs.forEach {
-            it.cancel()
-        }
-        collectTasks()
-    }
+
 
 
     private fun collectTasks() {

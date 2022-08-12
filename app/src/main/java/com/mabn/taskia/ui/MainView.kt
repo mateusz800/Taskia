@@ -227,13 +227,13 @@ fun MainView(viewModel: MainViewModel) {
                             //.offset(y = offsetState.value.dp)
                             .padding(padding)
                     ) {
+
                         if (currentList.value == ListType.Calendar) {
                             CalendarView(
                                 calendarViewModel = hiltViewModel(),
                                 taskListViewModel = taskListViewModel
                             )
                         } else {
-
                             TaskList(
                                 viewModel = taskListViewModel,
                                 listType = currentList.value,

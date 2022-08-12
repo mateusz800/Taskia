@@ -38,7 +38,6 @@ fun TaskList(
     showTaskForm: (Task) -> Unit,
 ) {
     val onEvent = viewModel::onEvent
-    viewModel.setListType(listType)
     val tasks = viewModel.tasks.observeAsState()
 
 

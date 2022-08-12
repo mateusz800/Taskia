@@ -36,11 +36,11 @@ class MainActivityTest {
 
     @Test
     fun backPress() {
-        composeTestRule.onNodeWithText("Upcoming").performClick()
+        composeTestRule.onNodeWithText("Calendar").performClick()
         pressBackUnconditionally()
-        try{
+        try {
             assertNull(composeTestRule.activity)
-        } catch (e:NullPointerException){
+        } catch (e: NullPointerException) {
             assertTrue(true)
         }
 
@@ -50,11 +50,14 @@ class MainActivityTest {
     fun addNewTaskTest() {
         composeTestRule.onNodeWithTag("add_task_button").performClick()
         composeTestRule.onNodeWithTag("task_form").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("title_input").performTextInput("Sample task")
+        composeTestRule.onNodeWithTag("title_input")
+            .performTextInput("Sample task")
         composeTestRule.onNodeWithTag("save_task_button").performClick()
-        //composeTestRule.onNodeWithTag("task_form").assertIsNotDisplayed()
-       composeTestRule.onNodeWithText("Sample task")
-         .assertIsDisplayed()
-
+        composeTestRule.onNodeWithTag("task_form").assertIsNotDisplayed()
+        composeTestRule.onNode(
+            hasText("Sample task")
+                .and(hasParent(hasTestTag("task_list")))
+        )
+            .assertIsDisplayed()
     }
 }
