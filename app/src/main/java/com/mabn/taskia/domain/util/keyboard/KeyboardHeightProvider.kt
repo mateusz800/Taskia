@@ -52,7 +52,7 @@ class KeyboardHeightProvider(
             )
         }
         if (decorView != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            val rootWindowInsets: WindowInsets = decorView.getRootWindowInsets()
+            val rootWindowInsets: WindowInsets = decorView.rootWindowInsets
             val displayCutout = rootWindowInsets.displayCutout
             if (displayCutout != null) {
                 this.insets = Rect(
@@ -66,16 +66,16 @@ class KeyboardHeightProvider(
         return insets
     }
 
-    val keyboardHeight: Int
+    private val keyboardHeight: Int
         get() {
             val rect = Rect()
             popupView.getWindowVisibleDisplayFrame(rect)
             var keyboardHeight: Int =
                 metrics.heightPixels - (rect.bottom - rect.top) - (insets.bottom - insets.top)
             val resourceID: Int =
-                context.getResources().getIdentifier("status_bar_height", "dimen", "android")
+                context.resources.getIdentifier("status_bar_height", "dimen", "android")
             if (resourceID > 0) {
-                keyboardHeight -= context.getResources().getDimensionPixelSize(resourceID)
+                keyboardHeight -= context.resources.getDimensionPixelSize(resourceID)
             }
             if (keyboardHeight < 100) {
                 keyboardHeight = 0

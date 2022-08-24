@@ -45,7 +45,7 @@ class MainViewModel @Inject constructor(
     val currentState: StateFlow<MainViewState>
         get() = _currentState
 
-    private val _keyboardHeight = MutableLiveData<Int>(0)
+    private val _keyboardHeight = MutableLiveData(0)
     val keyboardHeight: LiveData<Int> = _keyboardHeight
 
     private val _keyboardDismiss = MutableLiveData<Boolean>()

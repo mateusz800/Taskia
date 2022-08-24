@@ -1,16 +1,9 @@
 package com.mabn.taskia.ui.taskForm.editForm
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -62,7 +55,7 @@ private fun EditFormView(
                 close()
             }
         }
-    }) {
+    }) { it ->
         Column(Modifier.padding(it)) {
             TitleTextField(
                 value = formState.title,

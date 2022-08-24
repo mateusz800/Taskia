@@ -40,7 +40,7 @@ class TaskFormViewModel @Inject constructor(
     private val taskTagRepository: TaskTagRepository,
     private val contextProvider: ContextProvider,
     private val tasksSynchronizer: TasksSynchronizer,
-    private val defaultDateBridge: ViewModelsCommunicationBridge<LocalDate>
+    defaultDateBridge: ViewModelsCommunicationBridge<LocalDate>
 ) : ViewModel() {
     private val _formState: MutableLiveData<FormState> = MutableLiveData(FormState())
     val formState: LiveData<FormState> = _formState

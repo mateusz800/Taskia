@@ -73,7 +73,6 @@ class ConnectedAccountsViewModel @Inject constructor(
                     _auth.currentUser!!.linkWithCredential(credential)
                 }
                 .addOnFailureListener(activity) {
-                    //TODO
                     println("Exception occurred")
                 }
         } else {

@@ -10,7 +10,4 @@ class ViewModelsCommunicationBridge<T> {
         _onMessageReceived?.invoke(message)
     }
 
-    fun unregister() {
-        _onMessageReceived = null
-    }
 }

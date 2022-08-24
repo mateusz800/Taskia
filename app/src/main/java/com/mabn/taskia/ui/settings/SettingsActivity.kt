@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.lifecycle.ViewModelProvider
 import com.mabn.taskia.R
-import com.mabn.taskia.ui.MainViewModel
 import com.mabn.taskia.ui.common.base.ActivityWithActionBar
 import com.mabn.taskia.ui.settings.connectedAccounts.ConnectedAccountsActivity
 import dagger.hilt.android.AndroidEntryPoint

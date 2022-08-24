@@ -34,8 +34,14 @@ platform :android do
      task: 'assemble',
      build_type: 'AndroidTest'
    )
+
    screengrab
+   frameit
+   sh('find ./metadata/** -name "*.png" | grep -v "_framed" | xargs rm')
   end
+
+
+
 
   desc "Submit a new Beta Build to Crashlytics Beta"
   lane :beta do

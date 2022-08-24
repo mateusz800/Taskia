@@ -1,3 +1,5 @@
-"TaskList" = "Organize your tasks and be more productive"
-"AddNewTask" = "Add tasks quickly";
-"EditTask" = "And edit them later";
+"01_TaskList" = "Organize your tasks \n and be more productive"
+"02_Calendar" = "Calendar view";
+"03_AddNewTask" = "Add tasks quickly";
+"04_EditTask" = "And edit them later";
+

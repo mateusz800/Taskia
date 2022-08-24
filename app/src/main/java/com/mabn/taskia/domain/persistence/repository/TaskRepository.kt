@@ -19,27 +19,8 @@ class TaskRepository(
         }
     }
 
-
-    suspend fun getAllUpcoming(): Flow<List<TaskAndSubtasks>> {
-        return withContext(Dispatchers.IO) {
-            taskDao.getAllUpcoming()
-        }
-    }
-
     fun getByGoogleId(googleId: String): Task? {
         return taskDao.getByGoogleId(googleId)
-    }
-
-    suspend fun getAllUnscheduled(): Flow<List<TaskAndSubtasks>> {
-        return withContext(Dispatchers.IO) {
-            taskDao.getAllUnscheduled()
-        }
-    }
-
-    suspend fun getAllCompleted(): Flow<List<TaskAndSubtasks>> {
-        return withContext(Dispatchers.IO) {
-            taskDao.getAllCompleted()
-        }
     }
 
     suspend fun getByDateAndUnscheduled(date: LocalDate): Flow<List<TaskAndSubtasks>> {
@@ -80,10 +61,6 @@ class TaskRepository(
 
     fun delete(task: Task): Boolean {
         return taskDao.deleteAll(task) > 0
-    }
-
-    fun deleteAll(vararg task: Task) {
-        taskDao.deleteAll(*task)
     }
 
     fun update(task: Task) {

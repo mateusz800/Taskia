@@ -2,18 +2,14 @@ package com.mabn.taskia.ui
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.test.espresso.Espresso.pressBackUnconditionally
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.mabn.taskia.domain.persistence.repository.TaskRepository
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.lang.NullPointerException
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -34,6 +30,7 @@ class MainActivityTest {
         hiltRule.inject()
     }
 
+    /*
     @Test
     fun backPress() {
         composeTestRule.onNodeWithText("Calendar").performClick()
@@ -43,8 +40,8 @@ class MainActivityTest {
         } catch (e: NullPointerException) {
             assertTrue(true)
         }
-
     }
+     */
 
     @Test
     fun addNewTaskTest() {

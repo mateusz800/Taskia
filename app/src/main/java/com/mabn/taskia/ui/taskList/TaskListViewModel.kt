@@ -22,7 +22,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import javax.inject.Inject
@@ -36,9 +35,6 @@ class TaskListViewModel @Inject constructor(
     private val tasksSynchronizer: TasksSynchronizer
 ) : WithFilter(tagRepository) {
     private val _tasks = MutableLiveData<SnapshotStateMap<Task, Pair<List<Task>, List<Tag>>>>()
-
-
-    private val _listType = MutableStateFlow<ListType>(ListType.Tasks)
     private val _jobs = mutableListOf<Job>()
 
 

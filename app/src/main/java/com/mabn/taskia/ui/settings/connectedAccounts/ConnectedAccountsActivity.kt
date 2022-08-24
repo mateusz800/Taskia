@@ -41,9 +41,7 @@ class ConnectedAccountsActivity : ActivityWithActionBar() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         actionBar?.title = getString(R.string.connected_accounts)
-        viewModel = ViewModelProvider(this).get(
-            ConnectedAccountsViewModel::class.java
-        )
+        viewModel = ViewModelProvider(this)[ConnectedAccountsViewModel::class.java]
         handleAddAccountRequest()
         setContent {
             ConnectedAccountsView(hiltViewModel())

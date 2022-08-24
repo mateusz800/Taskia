@@ -5,14 +5,15 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ModalBottomSheetState
+import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
@@ -20,8 +21,6 @@ import androidx.compose.ui.unit.dp
 import com.mabn.taskia.ui.taskForm.components.SaveButton
 import com.mabn.taskia.ui.taskForm.components.TitleTextField
 import com.mabn.taskia.ui.taskForm.components.dateTime.TaskDateTime
-import com.mabn.taskia.ui.taskForm.components.subtasks.Subtasks
-import com.mabn.taskia.ui.taskForm.components.tags.Tags
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable

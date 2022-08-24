@@ -78,8 +78,8 @@ class ApplicationModule {
 
     @Provides
     @Singleton
-    fun provideTagRepository(tagDao: TagDao, taskTagDao: TaskTagDao): TagRepository {
-        return TagRepository(tagDao, taskTagDao)
+    fun provideTagRepository(tagDao: TagDao): TagRepository {
+        return TagRepository(tagDao)
     }
 
     @Provides

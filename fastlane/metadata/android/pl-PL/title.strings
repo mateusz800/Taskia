@@ -1,2 +1,4 @@
-"addNewTask" = "Add new task";
-"noTasks" = "No tasks";
+"01_TaskList" = "Zarządzaj tym co masz do zrobienia \n i bądź bardziej produktywny/a"
+"02_Calendar" = "Widok kalendarza";
+"03_AddNewTask" = "Szybko dodawaj nowe zadania do wykonania";
+"04_EditTask" = "I edytuj je później";

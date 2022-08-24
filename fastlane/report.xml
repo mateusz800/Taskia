@@ -5,27 +5,37 @@
     
     
       
-      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000421">
+      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.00041">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="1: clean" time="4.207965">
+      <testcase classname="fastlane.lanes" name="1: clean" time="5.711576">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="2: assembleDebug" time="95.95907">
+      <testcase classname="fastlane.lanes" name="2: assembleDebug" time="87.553415">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="3: assembleAndroidTest" time="19.882861">
+      <testcase classname="fastlane.lanes" name="3: assembleAndroidTest" time="32.877032">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="4: screengrab" time="36.155079">
+      <testcase classname="fastlane.lanes" name="4: screengrab" time="68.082986">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="5: frameit" time="118.553727">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="6: find ./metadata/** -name &quot;*.png&quot; | grep -v &quot;_framed&quot; | xargs rm" time="0.0724">
         
       </testcase>
     

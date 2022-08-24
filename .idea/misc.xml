@@ -3,6 +3,44 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../../../layout/compose-model-1659516259712.xml" value="0.5042735042735043" />
+        <entry key="../../../../../layout/compose-model-1659594359312.xml" value="0.1" />
+        <entry key="../../../../../layout/compose-model-1659597188965.xml" value="0.21296296296296297" />
+        <entry key="../../../../../layout/compose-model-1659598643576.xml" value="0.21296296296296297" />
+        <entry key="../../../../../layout/compose-model-1659598931039.xml" value="0.21072635135135134" />
+        <entry key="../../../../../layout/compose-model-1659599095064.xml" value="1.0" />
+        <entry key="../../../../../layout/compose-model-1659599098528.xml" value="0.335" />
+        <entry key="../../../../../layout/compose-model-1659604056227.xml" value="0.1" />
+        <entry key="../../../../../layout/compose-model-1659604157664.xml" value="0.335" />
+        <entry key="../../../../../layout/compose-model-1659604247003.xml" value="0.30925925925925923" />
+        <entry key="../../../../../layout/compose-model-1659606004784.xml" value="0.14629629629629629" />
+        <entry key="../../../../../layout/compose-model-1659608278689.xml" value="0.12685185185185185" />
+        <entry key="../../../../../layout/compose-model-1659614791534.xml" value="0.12685185185185185" />
+        <entry key="../../../../../layout/compose-model-1659692268973.xml" value="0.1477832512315271" />
+        <entry key="../../../../../layout/compose-model-1659692582089.xml" value="0.16666666666666666" />
+        <entry key="../../../../../layout/compose-model-1659693836328.xml" value="0.1" />
+        <entry key="../../../../../layout/compose-model-1659693840683.xml" value="0.16666666666666666" />
+        <entry key="../../../../../layout/compose-model-1659693862365.xml" value="0.32727272727272727" />
+        <entry key="../../../../../layout/compose-model-1659693936725.xml" value="0.16666666666666666" />
+        <entry key="../../../../../layout/compose-model-1659695350378.xml" value="0.16666666666666666" />
+        <entry key="../../../../../layout/compose-model-1659700559189.xml" value="0.1" />
+        <entry key="../../../../../layout/compose-model-1660111114595.xml" value="0.1" />
+        <entry key="../../../../../layout/compose-model-1660111844886.xml" value="0.4639175257731959" />
+        <entry key="../../../../../layout/compose-model-1660111858977.xml" value="1.0" />
+        <entry key="../../../../../layout/compose-model-1660111910971.xml" value="0.6818181818181818" />
+        <entry key="../../../../../layout/compose-model-1660111947641.xml" value="0.4639175257731959" />
+        <entry key="../../../../../layout/compose-model-1660112005549.xml" value="1.0" />
+        <entry key="../../../../../layout/compose-model-1660112045943.xml" value="0.6818181818181818" />
+        <entry key="../../../../../layout/compose-model-1660112051966.xml" value="1.0" />
+        <entry key="../../../../../layout/compose-model-1660112066017.xml" value="0.6818181818181818" />
+        <entry key="../../../../../layout/compose-model-1660112074704.xml" value="1.0" />
+        <entry key="../../../../../layout/compose-model-1660112093661.xml" value="0.75" />
+        <entry key="../../../../../layout/compose-model-1660116552480.xml" value="0.1" />
+        <entry key="../../../../../layout/compose-model-1660135359789.xml" value="0.5659340659340659" />
+        <entry key="../../../../../layout/compose-model-1660197146330.xml" value="0.387037037037037" />
+        <entry key="../../../../../layout/compose-model-1660197158305.xml" value="0.76" />
+        <entry key="../../../../../layout/compose-model-1660213406463.xml" value="0.1" />
+        <entry key="../../../../../layout/compose-model-1660218438020.xml" value="0.2814814814814815" />
         <entry key="..\:/Users/mabn/AndroidStudioProjects/DoIt/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.1" />
         <entry key="..\:/Users/mabn/AndroidStudioProjects/DoIt/app/src/main/res/drawable-v29/ic_launcher_foreground.xml" value="0.106" />
         <entry key="..\:/Users/mabn/AndroidStudioProjects/DoIt/app/src/main/res/drawable/ic_baseline_arrow_back_24.xml" value="0.1" />
@@ -13,6 +51,32 @@
         <entry key="..\:/Users/mabn/AndroidStudioProjects/DoIt/app/src/main/res/xml/syncadapter.xml" value="0.13632246376811594" />
       </map>
     </option>
+  </component>
+  <component name="EntryPointsManager">
+    <list size="22">
+      <item index="0" class="java.lang.String" itemvalue="androidx.room.TypeConverter" />
+      <item index="1" class="java.lang.String" itemvalue="androidx.room.TypeConverter" />
+      <item index="2" class="java.lang.String" itemvalue="dagger.Module" />
+      <item index="3" class="java.lang.String" itemvalue="dagger.Module" />
+      <item index="4" class="java.lang.String" itemvalue="dagger.Provides" />
+      <item index="5" class="java.lang.String" itemvalue="dagger.Provides" />
+      <item index="6" class="java.lang.String" itemvalue="dagger.Provides" />
+      <item index="7" class="java.lang.String" itemvalue="dagger.Provides" />
+      <item index="8" class="java.lang.String" itemvalue="dagger.Provides" />
+      <item index="9" class="java.lang.String" itemvalue="dagger.Provides" />
+      <item index="10" class="java.lang.String" itemvalue="dagger.Provides" />
+      <item index="11" class="java.lang.String" itemvalue="dagger.Provides" />
+      <item index="12" class="java.lang.String" itemvalue="dagger.Provides" />
+      <item index="13" class="java.lang.String" itemvalue="dagger.Provides" />
+      <item index="14" class="java.lang.String" itemvalue="dagger.Provides" />
+      <item index="15" class="java.lang.String" itemvalue="dagger.Provides" />
+      <item index="16" class="java.lang.String" itemvalue="dagger.Provides" />
+      <item index="17" class="java.lang.String" itemvalue="dagger.Provides" />
+      <item index="18" class="java.lang.String" itemvalue="dagger.Provides" />
+      <item index="19" class="java.lang.String" itemvalue="dagger.Provides" />
+      <item index="20" class="java.lang.String" itemvalue="dagger.Provides" />
+      <item index="21" class="java.lang.String" itemvalue="dagger.Provides" />
+    </list>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />

@@ -39,7 +39,6 @@ interface TaskDao {
 
     @Transaction
     @Query("SELECT * FROM Task WHERE endDate = :date OR (endDate is null AND status = 0)  ORDER BY startTime ASC")
-    //TODO
     fun getByDateAndUnscheduled(date: Long): Flow<List<TaskAndSubtasks>>
 
     @Transaction

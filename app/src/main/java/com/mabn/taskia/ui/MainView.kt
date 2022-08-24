@@ -28,8 +28,8 @@ import com.mabn.taskia.domain.util.extension.toDp
 import com.mabn.taskia.ui.calendar.CalendarView
 import com.mabn.taskia.ui.common.AlertButton
 import com.mabn.taskia.ui.common.startEditFormActivity
-import com.mabn.taskia.ui.taskForm.TaskSimpleForm
 import com.mabn.taskia.ui.taskForm.TaskFormViewModel
+import com.mabn.taskia.ui.taskForm.TaskSimpleForm
 import com.mabn.taskia.ui.taskList.ListType
 import com.mabn.taskia.ui.taskList.TaskList
 import com.mabn.taskia.ui.taskList.TaskListViewModel

@@ -3,7 +3,6 @@ package com.mabn.taskia.ui.taskForm.components.dateTime
 import android.app.TimePickerDialog
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -15,14 +14,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mabn.taskia.R
 import java.util.*
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun TaskTime(updateTime: (String) -> Unit, timeLabel: String) {
     val context = LocalContext.current

@@ -8,7 +8,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ButtonWithoutBackground( onClick: () -> Unit,content: @Composable () -> Unit,) {
+fun ButtonWithoutBackground(onClick: () -> Unit, content: @Composable () -> Unit) {
     Button(
         onClick = { onClick() },
         elevation = null,

@@ -1,8 +1,6 @@
 package com.mabn.taskia.ui.calendar
 
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.mabn.taskia.domain.model.Tag
 import com.mabn.taskia.domain.model.Task
@@ -13,7 +11,6 @@ import com.mabn.taskia.ui.common.base.WithFilter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.time.LocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel

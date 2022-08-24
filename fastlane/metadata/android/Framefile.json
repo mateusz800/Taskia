@@ -6,14 +6,20 @@
     "stack_title" : true,
     "show_complete_frame": false,
     "title": {
-      "font": "../../fonts/Arialn.ttf",
+      "font": "../../fonts/Lato-Bold.ttf",
       "color": "#112A46"
     },
     "padding": 100
   },
   "data": [
     {
-      "filter": "AddNewTask"
+      "filter": "TaskList"
+    },
+    {
+      "filter": "Calendar"
+    },
+    {
+      "filter": "EditTask"
     }
   ]
 }

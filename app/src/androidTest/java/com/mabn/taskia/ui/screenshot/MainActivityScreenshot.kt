@@ -12,9 +12,6 @@ import com.mabn.taskia.domain.persistence.repository.TaskRepository
 import com.mabn.taskia.ui.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
-import okhttp3.internal.wait
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -63,13 +60,26 @@ class MainActivityScreenshot {
     }
 
     @Test
+    fun takeListScreenshot() {
+        composeTestRule.waitForIdle()
+        Screengrab.screenshot("01_TaskList")
+    }
+
+    @Test
+    fun takeCalendarScreenshot(){
+        composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.calendar)).performClick()
+        composeTestRule.waitForIdle()
+        Screengrab.screenshot("02_Calendar")
+    }
+
+    @Test
     fun takeAddTaskScreenshot() {
         composeTestRule.onNodeWithTag("add_task_button").performClick()
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag("title_input")
             .performTextInput(composeTestRule.activity.getString(R.string.call_alice))
         composeTestRule.waitForIdle()
-        Screengrab.screenshot("AddNewTask")
+        Screengrab.screenshot("03_AddNewTask")
     }
 
     @Test
@@ -77,19 +87,6 @@ class MainActivityScreenshot {
         composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.finish_presentation_file))
             .performClick()
         composeTestRule.waitForIdle()
-        Screengrab.screenshot("EditTask")
-    }
-
-    @Test
-    fun takeListScreenshot() {
-        composeTestRule.waitForIdle()
-        Screengrab.screenshot("TaskList")
-    }
-
-    @Test
-    fun takeCalendarScreenshot(){
-        composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.calendar)).performClick()
-        composeTestRule.waitForIdle()
-        Screengrab.screenshot("Calendar")
+        Screengrab.screenshot("04_EditTask")
     }
 }

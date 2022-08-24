@@ -12,5 +12,7 @@ locales(['en-GB', 'pl-PL' ])
 # clear all previously generated screenshots in your local output directory before creating new ones
 clear_previous_screenshots(true)
 
+# output_directory('')
+
 # For more information about all available options run
 #   fastlane screengrab --help

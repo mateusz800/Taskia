@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.mabn.taskia.domain.model.Tag
 import com.mabn.taskia.domain.model.Task
 import com.mabn.taskia.domain.persistence.repository.TagRepository
-import com.mabn.taskia.domain.persistence.repository.TaskRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 

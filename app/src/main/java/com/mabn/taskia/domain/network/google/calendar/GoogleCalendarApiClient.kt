@@ -5,6 +5,7 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Path
 
+@Suppress("UNUSED")
 interface GoogleCalendarApiClient {
     @GET("users/me/calendarList")
     suspend fun getCalendarsList(
