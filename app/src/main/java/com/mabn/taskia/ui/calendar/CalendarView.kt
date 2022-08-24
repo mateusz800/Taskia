@@ -43,8 +43,8 @@ fun CalendarView(
                     date
                 )
             )
-        })
-        grouped.keys.sortedBy{if(it is ListType.Calendar) -1 else 1}.forEach {
+        }, modifier = Modifier.padding(top = 20.dp))
+        grouped.keys.sortedBy { if (it is ListType.Calendar) -1 else 1 }.forEach {
             if (grouped[it] != null) {
                 if (it == ListType.Unscheduled) {
                     Text(

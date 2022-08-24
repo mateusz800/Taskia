@@ -12,48 +12,42 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.himanshoe.kalendar.common.KalendarSelector
-import com.himanshoe.kalendar.common.KalendarStyle
-import com.himanshoe.kalendar.ui.Kalendar
-import com.himanshoe.kalendar.ui.KalendarType
+import com.himanshoe.kalendar.Kalendar
+import com.himanshoe.kalendar.color.KalendarThemeColor
+import com.himanshoe.kalendar.component.day.config.KalendarDayColors
+import com.himanshoe.kalendar.model.KalendarType
+import kotlinx.datetime.toJavaLocalDate
 import java.time.LocalDate
 
 @Composable
-fun CalendarDatePicker(onDateChange: (LocalDate) -> Unit) {
-    val type = remember { mutableStateOf<KalendarType>(KalendarType.Oceanic()) }
-    val selectedDay = remember { mutableStateOf(LocalDate.now()) }
+fun CalendarDatePicker(onDateChange: (LocalDate) -> Unit, modifier: Modifier = Modifier) {
+    val type = remember { mutableStateOf<KalendarType>(KalendarType.Oceanic) }
     Column(
         modifier = Modifier.offset(y = (-20).dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        BackHandler(enabled = type.value == KalendarType.Firey()) {
-            type.value = KalendarType.Oceanic()
+        BackHandler(enabled = type.value == KalendarType.Firey) {
+            type.value = KalendarType.Oceanic
         }
-        Kalendar(kalendarType = type.value,
-            kalendarStyle = KalendarStyle(
-                kalendarSelector = KalendarSelector.Circle()
-                    .copy(
-                        selectedColor = MaterialTheme.colors.primary,
-                        defaultColor = Color.Transparent,
-                        defaultTextColor = MaterialTheme.colors.onBackground,
-                        selectedTextColor = MaterialTheme.colors.onPrimary,
-                        todayColor = MaterialTheme.colors.primary.copy(alpha = 0.3f)
-                    ),
-                kalendarBackgroundColor = Color.Transparent,
-                kalendarColor = Color.Transparent,
-                hasRadius = false,
-                shape = RectangleShape
+        Kalendar(
+            kalendarType = type.value,
+            kalendarThemeColor = KalendarThemeColor(
+                backgroundColor = MaterialTheme.colors.background,
+                dayBackgroundColor = MaterialTheme.colors.primary,
+                headerTextColor = MaterialTheme.colors.onBackground
             ),
-            onCurrentDayClick = { day, event ->
-                onDateChange(day)
-                //handle the date click listener
-            }, errorMessage = {
-                //Handle the error if any
-            })
+            kalendarDayColors = KalendarDayColors(
+                textColor = MaterialTheme.colors.onBackground,
+                selectedTextColor = MaterialTheme.colors.onPrimary
+            ),
+            onCurrentDayClick = { day, _ ->
+                onDateChange(day.localDate.toJavaLocalDate())
+            },
+            modifier = modifier
+        )
+        //handle the dat-
         /*
         IconButton(
             onClick = { type.value = toggleCalendar(type.value) },
@@ -71,8 +65,8 @@ fun CalendarDatePicker(onDateChange: (LocalDate) -> Unit) {
 
 private fun toggleCalendar(currentState: KalendarType): KalendarType {
     return when (currentState) {
-        is KalendarType.Oceanic -> KalendarType.Firey()
-        is KalendarType.Firey -> KalendarType.Oceanic()
+        is KalendarType.Oceanic -> KalendarType.Firey
+        is KalendarType.Firey -> KalendarType.Oceanic
     }
 }
 
