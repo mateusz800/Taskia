@@ -1,5 +1,6 @@
 package com.mabn.taskia.domain.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 
 @Entity(
@@ -7,5 +8,6 @@ import androidx.room.Entity
 )
 data class TaskTag(
     val taskId: Long,
+    @ColumnInfo(index = true)
     val tagId: Long
 )

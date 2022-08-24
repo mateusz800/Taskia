@@ -3,7 +3,6 @@ package com.mabn.taskia.ui
 import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.TweenSpec
-import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -24,7 +23,6 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mabn.taskia.R
 import com.mabn.taskia.domain.model.MessageType
-import com.mabn.taskia.domain.util.extension.toDp
 import com.mabn.taskia.ui.calendar.CalendarView
 import com.mabn.taskia.ui.common.AlertButton
 import com.mabn.taskia.ui.common.startEditFormActivity
@@ -51,7 +49,6 @@ fun MainView(viewModel: MainViewModel) {
     val formDataChanged = taskFormViewModel.dataChanged.collectAsState()
     val showTaskChangedDialog = remember { mutableStateOf(false) }
     val configuration = LocalConfiguration.current
-    val keyboardHeight = viewModel.keyboardHeight.observeAsState()
     val keyboardDismiss = viewModel.keyboardDismiss.observeAsState()
     val isLandscape = viewModel.isLandscape.observeAsState()
 
@@ -71,19 +68,6 @@ fun MainView(viewModel: MainViewModel) {
                 !formDataChanged.value
                         || it != ModalBottomSheetValue.Hidden
             }
-        )
-    val offsetState =
-        animateIntAsState(
-            targetValue = if (
-                modalBottomSheetState.progress.to == ModalBottomSheetValue.HalfExpanded &&
-                keyboardHeight.value != null &&
-                keyboardHeight.value != 0
-            ) {
-                val value =
-                    if (isLandscape.value != true)
-                        keyboardHeight.value!!.toDp + 350.toDp - configuration.screenHeightDp / 2 else 0
-                if (value > 0) value else 0
-            } else 0
         )
     // Handle displaying snackbar if any message
     val messageState = viewModel.message.observeAsState()
