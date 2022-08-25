@@ -50,6 +50,8 @@ class TaskFormViewModel @Inject constructor(
 
     private var _defaultDate: LocalDate? = null
 
+    var showUnsavedChangesDialog = MutableLiveData(false)
+
     init {
         clear()
         defaultDateBridge.registerCallback {
@@ -123,14 +125,18 @@ class TaskFormViewModel @Inject constructor(
             startTime = LocalTimeConverter.stringToLocalTime(_formState.value?.timeLabel ?: "")
         )
         if (_task != null) {
-            task = task.copy(id = _task!!.id)
+            task = task.copy(
+                id = _task!!.id,
+                status = _task!!.status,
+                completionTime = _task!!.completionTime
+            )
         }
 
         val subtaskList = _formState.value?.subtasks?.filter { it.title.isNotEmpty() }
             ?.toList()
         viewModelScope.launch(Dispatchers.IO) {
-            if(subtaskList.isNullOrEmpty()){
-                taskRepository.getSubtasks(task).forEach{
+            if (subtaskList.isNullOrEmpty()) {
+                taskRepository.getSubtasks(task).forEach {
                     taskRepository.delete(it)
                 }
             }
@@ -184,7 +190,10 @@ class TaskFormViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             if (value.isBlank()) {
                 _formState.postValue(
-                    _formState.value?.copy(dayLabel = contextProvider.getString(R.string.no_deadline), dataChanged = true)
+                    _formState.value?.copy(
+                        dayLabel = contextProvider.getString(R.string.no_deadline),
+                        dataChanged = true
+                    )
                 )
                 return@launch
             }
@@ -263,7 +272,12 @@ class TaskFormViewModel @Inject constructor(
             try {
                 subtaskList[subtaskList.indexOf(subtask)] =
                     subtaskList[subtaskList.indexOf(subtask)].copy(title = newTitle)
-                _formState.postValue(_formState.value?.copy(subtasks = subtaskList, dataChanged = true))
+                _formState.postValue(
+                    _formState.value?.copy(
+                        subtasks = subtaskList,
+                        dataChanged = true
+                    )
+                )
             } catch (e: ArrayIndexOutOfBoundsException) {
                 e.localizedMessage?.let { Log.i("TaskFormViewModel", it) }
             }

@@ -40,6 +40,7 @@ fun FilterDropDown(
     }
 
     calendarViewModel.setFilterTags(selectedTags.value ?: listOf())
+    taskListViewModel.setFilterTags(selectedTags.value ?: listOf())
 
     FilterDropDown(
         onEvent = viewModel::onEvent,

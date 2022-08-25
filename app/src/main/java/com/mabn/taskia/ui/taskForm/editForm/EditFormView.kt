@@ -24,9 +24,10 @@ import com.mabn.taskia.ui.taskForm.components.tags.Tags
 @Composable
 fun EditFormView(viewModel: TaskFormViewModel, goBack: () -> Unit) {
     val formState = viewModel.formState.observeAsState()
+    val showUnsavedChangesAlert = viewModel.showUnsavedChangesDialog.observeAsState(false)
     val unsavedChanged = remember { mutableStateOf(false) }
     BackHandler {
-        if(formState.value?.dataChanged == false){
+        if (formState.value?.dataChanged == false) {
             goBack()
             unsavedChanged.value = false
         } else {
@@ -44,7 +45,7 @@ fun EditFormView(viewModel: TaskFormViewModel, goBack: () -> Unit) {
             close = {
                 goBack()
             },
-            unsavedChanges = unsavedChanged.value
+            unsavedChanges = unsavedChanged.value || showUnsavedChangesAlert.value
         )
     }
 }

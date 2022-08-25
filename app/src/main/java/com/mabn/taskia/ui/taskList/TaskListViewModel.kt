@@ -34,7 +34,8 @@ class TaskListViewModel @Inject constructor(
     private val contextProvider: ContextProvider,
     private val tasksSynchronizer: TasksSynchronizer
 ) : WithFilter(tagRepository) {
-    private val _tasks = MutableLiveData<SnapshotStateMap<Task, Pair<List<Task>, List<Tag>>>>()
+    private val _tasks = MutableLiveData<Map<Task, Pair<List<Task>, List<Tag>>>>()
+    private var _allTasks: List<Pair<Task, Pair<List<Task>, List<Tag>>>> = listOf()
     private val _jobs = mutableListOf<Job>()
 
 
@@ -56,8 +57,6 @@ class TaskListViewModel @Inject constructor(
     }
 
 
-
-
     private fun collectTasks() {
         _jobs.add(viewModelScope.launch(Dispatchers.IO) {
             taskRepository.getAllUncompleted().collect { result ->
@@ -65,6 +64,7 @@ class TaskListViewModel @Inject constructor(
                 result.forEach {
                     newTasksData[it.task] = Pair(it.subtasks, it.tags)
                 }
+                _allTasks = result.map { Pair(it.task, Pair(it.subtasks, it.tags)) }
                 val prevValue = _tasks.value
                 _tasks.postValue(newTasksData)
                 if (prevValue == null) {
@@ -134,7 +134,7 @@ class TaskListViewModel @Inject constructor(
                         parentTask.status = false
                         taskRepository.update(parentTask)
                     }
-                } else {
+                } else if (newStatus) {
                     recentlyChangedStatusTask = task
                     messageRepository.insertMessage(Message(
                         text = contextProvider.getString(R.string.task_completed),
@@ -168,6 +168,17 @@ class TaskListViewModel @Inject constructor(
                 taskRepository.insertAll(recentlyRemovedTask!!)
                 tasksSynchronizer.insert(recentlyRemovedTask!!)
             }
+        }
+    }
+
+    override fun setFilterTags(tags: List<Tag>) {
+        super.setFilterTags(tags)
+        if (tags.isEmpty()) {
+            val taskList = SnapshotStateList<Pair<Task, List<Task>>>()
+            taskList.addAll(_allTasks.map { Pair(it.first, it.second.first) })
+            filteredTasks.postValue(taskList)
+        } else {
+            filter(_allTasks, filteredTasks)
         }
     }
 }

@@ -7,12 +7,14 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.mabn.taskia.R
 import com.mabn.taskia.domain.model.Task
 import com.mabn.taskia.ui.common.base.ActivityWithActionBar
 import com.mabn.taskia.ui.taskForm.TaskFormViewModel
 import com.mabn.taskia.ui.theme.TaskiaTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class EditFormActivity : ActivityWithActionBar() {
@@ -21,7 +23,7 @@ class EditFormActivity : ActivityWithActionBar() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val task: Task? = intent.extras?.get("task") as Task?
-        if(task != null){
+        if (task != null) {
             setTask(task)
         }
         actionBar?.title = getString(R.string.emptyString)
@@ -50,10 +52,13 @@ class EditFormActivity : ActivityWithActionBar() {
             finish()
             return true
         }
+        lifecycleScope.launch {
+            viewModel.showUnsavedChangesDialog.postValue(true)
+        }
         return false
     }
 
-    fun setTask(task:Task){
+    fun setTask(task: Task) {
         viewModel.setTask(task, this)
     }
 }
