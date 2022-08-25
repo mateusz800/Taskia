@@ -8,14 +8,10 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -24,7 +20,6 @@ import com.mabn.taskia.ui.common.CustomTextField
 import com.mabn.taskia.ui.taskList.components.taskItem.CustomCheckbox
 
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SubtaskInput(
     task: Task,
@@ -39,7 +34,6 @@ fun SubtaskInput(
             focusRequester.requestFocus()
         }
     }
-
 
     Row(verticalAlignment = Alignment.CenterVertically) {
         CustomCheckbox(status = task.status, enabled = false) {
@@ -58,13 +52,15 @@ fun SubtaskInput(
                 .fillMaxWidth()
                 .height(30.dp)
                 .focusRequester(focusRequester)
-                .onFocusChanged { state -> if(!state.hasFocus) onFocusChange() }
-                .onKeyEvent {
-                    if (it.key == Key.Enter) {
-                        onEnter.invoke()
-                    }
-                    true
-                },
+                .onFocusChanged { state -> if (!state.hasFocus) onFocusChange() }
+            /* it causes stackoverflow error
+            .onKeyEvent {
+                if (it.key == Key.Enter) {
+                    onEnter.invoke()
+                }
+                true
+            },
+             */
         )
     }
 }

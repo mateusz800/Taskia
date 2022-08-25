@@ -6,13 +6,17 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.mabn.taskia.domain.util.dbConverter.LocalDateTimeConverter
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Composable
 fun TaskGeneralInfo(
     status: Boolean,
     title: String,
-    dueDay: String? = null,
+    dueDay: LocalDateTime? = null,
     startTime: String? = null,
     onCheck: () -> Boolean,
     onClick: (() -> Unit)?,
@@ -52,8 +56,18 @@ fun TaskGeneralInfo(
                 }
             }
         }
-        if (dueDay?.isNotEmpty() == true) {
-            DueDayLabel(value = dueDay)
+        if (dueDay != null) {
+            DueDayLabel(
+                value = LocalDateTimeConverter.dateToString(
+                    dueDay,
+                    context = LocalContext.current
+                ),
+                color = if (dueDay.isBefore(
+                        LocalDate.now().plusDays(1).atStartOfDay().minusNanos(1)
+                    )
+                ) MaterialTheme.colors.error else MaterialTheme.colors.onBackground
+            )
+
         }
     }
 }

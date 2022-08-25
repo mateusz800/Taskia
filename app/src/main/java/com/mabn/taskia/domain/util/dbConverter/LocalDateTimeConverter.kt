@@ -38,7 +38,8 @@ object LocalDateTimeConverter {
             context.getString(R.string.yesterday) -> LocalDate.now().minusDays(1)
             context.getString(R.string.today) -> LocalDate.now()
             context.getString(R.string.tomorrow) -> LocalDate.now().plusDays(1)
-            context.getString(R.string.no_deadline) -> null
+            context.getString(R.string.no_deadline)  -> null
+            "" -> null
             else -> {
                 val day = value.split(" ")[0].toInt()
                 val month = value.split(" ")[1]

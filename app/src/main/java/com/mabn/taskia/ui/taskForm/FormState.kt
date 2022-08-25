@@ -8,7 +8,8 @@ data class FormState(
     val dayLabel: String = "",
     val timeLabel: String = "",
     val subtasks: List<Task> = listOf(),
-    val tags: List<Tag> = listOf(Tag(value = ""))
+    val tags: List<Tag> = listOf(Tag(value = "")),
+    val dataChanged:Boolean = false
 ) {
     fun validateData(): Boolean {
         return title.isNotBlank()

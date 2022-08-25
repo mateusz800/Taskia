@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -19,7 +20,7 @@ import androidx.compose.ui.unit.sp
 import com.mabn.taskia.R
 
 @Composable
-fun DueDayLabel(value: String) {
+fun DueDayLabel(value: String, color: Color) {
     Row(
         modifier = Modifier
             .padding(top = 5.dp)
@@ -33,9 +34,9 @@ fun DueDayLabel(value: String) {
             modifier = Modifier
                 .height(16.dp)
                 .padding(end = 10.dp),
-            tint = MaterialTheme.colors.error
+            tint = color
         )
-        Text(value, fontSize = 12.sp, color = MaterialTheme.colors.error)
+        Text(value, fontSize = 12.sp, color = color)
     }
 }
 
@@ -44,7 +45,7 @@ fun DueDayLabel(value: String) {
 private fun DueDay_Preview() {
     MaterialTheme {
         Surface {
-            DueDayLabel(value = "Yesterday")
+            DueDayLabel(value = "Yesterday", color = MaterialTheme.colors.error)
         }
     }
 }

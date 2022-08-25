@@ -9,12 +9,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mabn.taskia.domain.model.Task
 import com.mabn.taskia.ui.common.DeleteBackground
-import java.time.LocalDate
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -51,11 +49,7 @@ fun TaskItem(
                 task.status,
                 task.title,
                 startTime = if (task.startTime != null) task.startTime.toString() else null,
-                dueDay = if (task.endDate != null && task.endDate!!.isBefore(
-                        LocalDate.now().atStartOfDay()
-                    )
-                )
-                    task.getEndDay(context = LocalContext.current) else null,
+                dueDay = task.endDate,
                 onCheck = {
                     toggleStatusFun(task)
                 },

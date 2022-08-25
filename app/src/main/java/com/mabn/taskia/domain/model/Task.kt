@@ -41,7 +41,10 @@ data class Task(
 ):Parcelable {
     fun getEndDay(context: Context): String {
         if (endDate != null) {
-            return LocalDateTimeConverter.dateToString(endDate!!, context)
+            return LocalDateTimeConverter.dateToString(
+                endDate!!,
+                context,
+            )
         }
         return ""
     }

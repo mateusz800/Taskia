@@ -20,8 +20,10 @@ class EditFormActivity : ActivityWithActionBar() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val task: Task = intent.extras?.get("task") as Task
-        viewModel.setTask(task, this)
+        val task: Task? = intent.extras?.get("task") as Task?
+        if(task != null){
+            setTask(task)
+        }
         actionBar?.title = getString(R.string.emptyString)
         setContent {
             TaskiaTheme {
@@ -42,8 +44,16 @@ class EditFormActivity : ActivityWithActionBar() {
         viewModel.clear()
     }
 
+
     override fun onNavigateUp(): Boolean {
-        finish()
-        return true
+        if (viewModel.formState.value?.dataChanged != true) {
+            finish()
+            return true
+        }
+        return false
+    }
+
+    fun setTask(task:Task){
+        viewModel.setTask(task, this)
     }
 }

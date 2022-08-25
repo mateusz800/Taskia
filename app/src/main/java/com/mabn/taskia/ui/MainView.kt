@@ -19,15 +19,13 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.mabn.taskia.R
 import com.mabn.taskia.domain.model.MessageType
 import com.mabn.taskia.ui.calendar.CalendarView
-import com.mabn.taskia.ui.common.AlertButton
 import com.mabn.taskia.ui.common.startEditFormActivity
 import com.mabn.taskia.ui.taskForm.TaskFormViewModel
 import com.mabn.taskia.ui.taskForm.TaskSimpleForm
+import com.mabn.taskia.ui.taskForm.components.NotSavedAlert
 import com.mabn.taskia.ui.taskList.ListType
 import com.mabn.taskia.ui.taskList.TaskList
 import com.mabn.taskia.ui.taskList.TaskListViewModel
@@ -46,7 +44,7 @@ fun MainView(viewModel: MainViewModel) {
     val taskFormViewModel: TaskFormViewModel = hiltViewModel()
     val taskListViewModel: TaskListViewModel = hiltViewModel()
     val currentList = viewModel.currentList.collectAsState()
-    val formDataChanged = taskFormViewModel.dataChanged.collectAsState()
+    val formState = taskFormViewModel.formState.observeAsState()
     val showTaskChangedDialog = remember { mutableStateOf(false) }
     val configuration = LocalConfiguration.current
     val keyboardDismiss = viewModel.keyboardDismiss.observeAsState()
@@ -58,14 +56,14 @@ fun MainView(viewModel: MainViewModel) {
             confirmStateChange = {
                 if (it == ModalBottomSheetValue.Hidden) {
                     keyboardController?.hide()
-                    if (formDataChanged.value) {
+                    if (formState.value?.dataChanged == true) {
                         showTaskChangedDialog.value = true
                     }
                 }
                 if (it == ModalBottomSheetValue.Expanded) {
                     return@rememberModalBottomSheetState false
                 }
-                !formDataChanged.value
+                formState.value?.dataChanged != true
                         || it != ModalBottomSheetValue.Hidden
             }
         )
@@ -76,7 +74,7 @@ fun MainView(viewModel: MainViewModel) {
             modalBottomSheetState.hide()
             keyboardController?.hide()
             viewModel.onKeyboardHeightChanged(0, isLandscape.value ?: false)
-            if (formDataChanged.value) {
+            if (formState.value?.dataChanged == true) {
                 showTaskChangedDialog.value = true
             }
             taskFormViewModel.isVisible.value = false
@@ -128,7 +126,7 @@ fun MainView(viewModel: MainViewModel) {
     BackHandler(enabled = true) {
         if (modalBottomSheetState.isVisible) {
             coroutineScope.launch(Dispatchers.Main) {
-                if (formDataChanged.value) {
+                if (formState.value?.dataChanged == true) {
                     showTaskChangedDialog.value = true
                 }
                 hideBottomSheet()
@@ -248,38 +246,6 @@ fun MainView(viewModel: MainViewModel) {
     }
 }
 
-@Composable
-private fun NotSavedAlert(saveFun: () -> Unit, dismissFun: () -> Unit, discardFun: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = {
-            dismissFun()
-        },
-        properties = DialogProperties(),
-        title = {
-            Text(stringResource(id = R.string.unsaved_changes))
-        },
-        buttons = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                AlertButton(
-                    stringResource(id = R.string.discard),
-                    onClick = {
-                        discardFun()
-                    },
-                    modifier = Modifier.padding(end = 10.dp)
-                )
-                AlertButton(
-                    stringResource(id = R.string.save),
-                    onClick = { saveFun() }
-                )
-            }
-
-
-        }
-    )
-}
 
 
 @OptIn(ExperimentalMaterialApi::class)

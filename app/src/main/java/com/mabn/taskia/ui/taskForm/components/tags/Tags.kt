@@ -47,7 +47,6 @@ private fun Tags(
                         onEnter = addNewFun,
                         focus = index == tags.size - 1 && tag.value.isEmpty() && tags.size > 1
                     )
-
                 }
             }
         }

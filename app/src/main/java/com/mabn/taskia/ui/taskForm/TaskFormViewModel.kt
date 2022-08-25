@@ -22,8 +22,6 @@ import com.mabn.taskia.domain.util.extension.toFormattedString
 import com.mabn.taskia.ui.taskList.ListType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.time.LocalDate
@@ -45,8 +43,6 @@ class TaskFormViewModel @Inject constructor(
     private val _formState: MutableLiveData<FormState> = MutableLiveData(FormState())
     val formState: LiveData<FormState> = _formState
 
-    private val _dataChanged = MutableStateFlow(false)
-    val dataChanged: StateFlow<Boolean> = _dataChanged
 
     var isVisible = MutableLiveData(false)
     private var _task: Task? = null
@@ -84,7 +80,6 @@ class TaskFormViewModel @Inject constructor(
 
     fun setTask(task: Task, context: Context) {
         _task = task
-        _dataChanged.value = false
         viewModelScope.launch {
             val subtask = taskRepository.getSubtasks(task)
             val tags = taskTagRepository.getTags(task).toMutableList()
@@ -95,7 +90,8 @@ class TaskFormViewModel @Inject constructor(
                     dayLabel = task.getEndDay(context),
                     timeLabel = task.startTime.toFormattedString(context),
                     subtasks = subtask,
-                    tags = tags
+                    tags = tags,
+                    dataChanged = false
                 )
             )
         }
@@ -108,13 +104,13 @@ class TaskFormViewModel @Inject constructor(
                 FormState(
                     dayLabel = if (_defaultDate == null) contextProvider.getString(R.string.no_deadline) else LocalDateTimeConverter.dateToString(
                         _defaultDate!!.atStartOfDay(),
-                        contextProvider.getContext()
+                        contextProvider.getContext(),
                     ),
-                    timeLabel = contextProvider.getString(R.string.no_time)
+                    timeLabel = contextProvider.getString(R.string.no_time),
+                    dataChanged = false
                 )
             )
         }
-        _dataChanged.value = false
     }
 
     fun saveTask() {
@@ -132,6 +128,13 @@ class TaskFormViewModel @Inject constructor(
 
         val subtaskList = _formState.value?.subtasks?.filter { it.title.isNotEmpty() }
             ?.toList()
+        viewModelScope.launch(Dispatchers.IO) {
+            if(subtaskList.isNullOrEmpty()){
+                taskRepository.getSubtasks(task).forEach{
+                    taskRepository.delete(it)
+                }
+            }
+        }
         val insertedTags = mutableListOf<Tag>()
         val tagsList = _formState.value?.tags?.filter { it.value.isNotBlank() }
             ?.toList()
@@ -169,21 +172,19 @@ class TaskFormViewModel @Inject constructor(
             taskTagRepository.insert(
                 *insertedTags.stream().map { TaskTag(parentId, it.id) }.toList().toTypedArray()
             )
-            _dataChanged.value = false
+            _formState.postValue(_formState.value?.copy(dataChanged = false))
         }
     }
 
     private fun updateTitle(title: String) {
-        _formState.postValue(_formState.value?.copy(title = title))
-        _dataChanged.value = true
+        _formState.postValue(_formState.value?.copy(title = title, dataChanged = true))
     }
 
     private fun updateDueToDate(value: String) {
-        _dataChanged.value = true
         viewModelScope.launch(Dispatchers.IO) {
             if (value.isBlank()) {
                 _formState.postValue(
-                    _formState.value?.copy(dayLabel = contextProvider.getString(R.string.no_deadline))
+                    _formState.value?.copy(dayLabel = contextProvider.getString(R.string.no_deadline), dataChanged = true)
                 )
                 return@launch
             }
@@ -196,15 +197,15 @@ class TaskFormViewModel @Inject constructor(
                 _formState.value?.copy(
                     dayLabel = LocalDateTimeConverter.dateToString(
                         processedValue,
-                        contextProvider.getContext()
-                    )
+                        contextProvider.getContext(),
+                    ),
+                    dataChanged = true
                 )
             )
         }
     }
 
     private fun updateStartTime(value: String) {
-        _dataChanged.value = true
         viewModelScope.launch(Dispatchers.IO) {
             val processedValue: LocalTime? = try {
                 LocalTime.parse(value)
@@ -215,7 +216,8 @@ class TaskFormViewModel @Inject constructor(
                 _formState.value?.copy(
                     timeLabel = processedValue.toFormattedString(
                         contextProvider.getContext()
-                    )
+                    ),
+                    dataChanged = true
                 )
             )
         }
@@ -261,8 +263,7 @@ class TaskFormViewModel @Inject constructor(
             try {
                 subtaskList[subtaskList.indexOf(subtask)] =
                     subtaskList[subtaskList.indexOf(subtask)].copy(title = newTitle)
-                _formState.postValue(_formState.value?.copy(subtasks = subtaskList))
-                _dataChanged.value = true
+                _formState.postValue(_formState.value?.copy(subtasks = subtaskList, dataChanged = true))
             } catch (e: ArrayIndexOutOfBoundsException) {
                 e.localizedMessage?.let { Log.i("TaskFormViewModel", it) }
             }
@@ -276,8 +277,7 @@ class TaskFormViewModel @Inject constructor(
             try {
                 val index = tagList.indexOf(tag)
                 tagList[index] = tagList[index].copy(value = newValue)
-                _formState.postValue(_formState.value?.copy(tags = tagList))
-                _dataChanged.value = true
+                _formState.postValue(_formState.value?.copy(tags = tagList, dataChanged = true))
             } catch (e: ArrayIndexOutOfBoundsException) {
                 e.localizedMessage?.let { Log.i("TaskFormViewModel", it) }
             }
