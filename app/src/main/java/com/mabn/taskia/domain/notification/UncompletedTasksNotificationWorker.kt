@@ -26,7 +26,7 @@ class UncompletedTasksNotificationWorker @AssistedInject constructor(
 
     private val builder = NotificationCompat.Builder(context, channelId)
         .setSmallIcon(R.drawable.ic_launcher_foreground)
-        .setContentTitle(context.getText(R.string.day_end_is_coming))
+        .setContentTitle(context.getText(R.string.uncompleted_tasks))
         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
     override fun doWork(): Result {

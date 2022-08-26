@@ -17,12 +17,14 @@ fun TaskListSection(
     items: List<Pair<Task, List<Task>>>,
     onTaskRemove: (task: Task) -> Unit,
     toggleStatusFun: (task: Task) -> Boolean,
-    onItemClick: (task: Task) -> Unit
+    showDates: Boolean = false,
+    onItemClick: (task: Task) -> Unit,
 ) {
     TaskList(
         taskList = items,
         onTaskRemove = onTaskRemove,
         toggleStatusFun = toggleStatusFun,
+        showDates = showDates,
         onItemClick = onItemClick
     )
 }
@@ -33,6 +35,7 @@ private fun TaskList(
     taskList: List<Pair<Task, List<Task>>>,
     onTaskRemove: (task: Task) -> Unit,
     toggleStatusFun: (task: Task) -> Boolean,
+    showDates: Boolean = true,
     onItemClick: (task: Task) -> Unit
 ) {
     if (taskList.isNotEmpty()) {
@@ -47,6 +50,7 @@ private fun TaskList(
                             subtasks = subtasks,
                             removeItemFunc = onTaskRemove,
                             toggleStatusFun = toggleStatusFun,
+                            showDate = showDates,
                             onClick = { onItemClick(task) }
                         )
                     }

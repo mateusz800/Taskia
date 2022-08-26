@@ -2,6 +2,7 @@ package com.mabn.taskia.domain.network.google.tasks
 
 import android.database.sqlite.SQLiteConstraintException
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.api.client.auth.oauth2.TokenResponseException
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
@@ -87,21 +88,26 @@ class GoogleTasksSynchronizer @Inject constructor(
             googleSignInClient.silentSignIn().addOnCompleteListener {
                 runBlocking {
                     launch(Dispatchers.IO) {
-                        val token = it.result.serverAuthCode!!
-                        val tokenResponse = GoogleAuthorizationCodeTokenRequest(
-                            NetHttpTransport(),
-                            GsonFactory.getDefaultInstance(),  // Very important: Explicitly specify this new endpoint.
-                            contextProvider.getString(R.string.google_client_id),
-                            contextProvider.getString(R.string.google_client_secret),
-                            token,
-                            "" /* redirectUri, must be blank with auth code coming from Android */
-                        ).execute()
-                        account.refreshToken = tokenResponse.refreshToken
-                        account.token = tokenResponse.accessToken
-                        launch(Dispatchers.IO) {
-                            nextAction(account)
+                        try {
+                            val token = it.result.serverAuthCode!!
+                            val tokenResponse = GoogleAuthorizationCodeTokenRequest(
+                                NetHttpTransport(),
+                                GsonFactory.getDefaultInstance(),  // Very important: Explicitly specify this new endpoint.
+                                contextProvider.getString(R.string.google_client_id),
+                                contextProvider.getString(R.string.google_client_secret),
+                                token,
+                                "" /* redirectUri, must be blank with auth code coming from Android */
+                            ).execute()
+                            account.refreshToken = tokenResponse.refreshToken
+                            account.token = tokenResponse.accessToken
+                            launch(Dispatchers.IO) {
+                                nextAction(account)
+                            }
+                            accountResult.emit(account)
+                        } catch(e:TokenResponseException){
+                            e.printStackTrace()
+                            // TODO
                         }
-                        accountResult.emit(account)
                     }
                 }
             }

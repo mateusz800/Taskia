@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="google_client_id" translatable="false"> </string>
+    <string name="google_client_secret" translatable="false"> </string>
 </resources>

@@ -1,6 +1,8 @@
 package com.mabn.taskia.domain.model
 
-enum class AccountType(val title: String) {
+import com.mabn.taskia.R
+
+enum class AccountType(val title: String, val description:Int? = null) {
     UNKNOWN("unknown"),
-    GOOGLE("Google")
+    GOOGLE("Google", description = R.string.synchronize_with_google_tasks)
 }

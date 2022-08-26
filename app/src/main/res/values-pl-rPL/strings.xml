@@ -28,7 +28,7 @@
     <string name="today_tasks">Dzisiejsze</string>
     <string name="upcoming_tasks">Nadchodzące</string>
     <string name="unscheduled_tasks">Niezaplanowane</string>
-    <string name="completed">Ukończone</string>
+    <string name="completed">Ukończone dzisiaj</string>
     <string name="pick_date">Wybierz datę</string>
     <string name="task_completed">Zadanie ukończone</string>
     <string name="remove">Usuń</string>
@@ -65,4 +65,6 @@
     <string name="tasks">Zadania</string>
     <string name="calendar">Kalendarz</string>
     <string name="future">Na później</string>
+    <string name="completed_that_day">Ukończone tego dnia</string>
+    <string name="synchronize_with_google_tasks">Synchronizacja z Google Tasks API</string>
 </resources>

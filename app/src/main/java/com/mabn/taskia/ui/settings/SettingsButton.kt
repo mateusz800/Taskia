@@ -1,10 +1,7 @@
 package com.mabn.taskia.ui.settings
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -14,10 +11,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun SettingsButton(
     text: String,
+    description: String? = null,
     onClick: () -> Unit,
     icon: Painter? = null,
     enabled: Boolean = true
@@ -36,10 +35,19 @@ fun SettingsButton(
                     .padding(end = 10.dp)
             )
         }
-        Text(
-            text = text,
-            color = MaterialTheme.colors.onBackground.copy(alpha = if (enabled) 1f else 0.5f)
-        )
+        Column {
+            Text(
+                text = text,
+                color = MaterialTheme.colors.onBackground.copy(alpha = if (enabled) 1f else 0.5f)
+            )
+            if (!description.isNullOrBlank()) {
+                Text(
+                    text = description,
+                    fontSize = 10.sp,
+                    color = MaterialTheme.colors.onBackground.copy(alpha = if (enabled) 1f else 0.5f)
+                )
+            }
+        }
     }
 }
 

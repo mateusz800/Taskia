@@ -60,7 +60,8 @@ fun ConnectedAccountsView(viewModel: ConnectedAccountsViewModel) {
                                             modalBottomSheetState.hide()
                                         }
                                     }, icon = painterResource(id = R.drawable.google_logo),
-                                    enabled = sameAccountType.isNullOrEmpty()
+                                    enabled = sameAccountType.isNullOrEmpty(),
+                                    description = if(it.description != null) stringResource(id = it.description) else null
                                 )
                             }
 

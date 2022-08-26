@@ -2,6 +2,8 @@ package com.mabn.taskia.ui.calendar
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -25,9 +27,11 @@ fun CalendarView(
 ) {
     val tasks = calendarViewModel.tasks.observeAsState(listOf())
     val context = LocalContext.current
-
+    val scrollState = rememberScrollState()
     val grouped = tasks.value.groupBy {
-        if (it.first.endDate != null) ListType.Calendar else ListType.Unscheduled
+        if (it.first.completionTime != null) ListType.CompletedThatDay
+        else if (it.first.endDate != null) ListType.Calendar
+        else ListType.Unscheduled
     }
 
     DisposableEffect(Unit) {
@@ -36,7 +40,7 @@ fun CalendarView(
         }
     }
 
-    Column {
+    Column(modifier = Modifier.verticalScroll(scrollState)) {
         CalendarDatePicker(onDateChange = { date ->
             calendarViewModel.onEvent(
                 CalendarEvent.DateChanged(
@@ -44,31 +48,47 @@ fun CalendarView(
                 )
             )
         }, modifier = Modifier.padding(top = 20.dp))
-        grouped.keys.sortedBy { if (it is ListType.Calendar) -1 else 1 }.forEach {
-            if (grouped[it] != null) {
-                if (it == ListType.Unscheduled) {
-                    Text(
-                        stringResource(id = R.string.unscheduled_tasks),
-                        style = MaterialTheme.typography.h2,
-                        modifier = Modifier
-                            .padding(horizontal = 15.dp)
-                            .padding(top = 15.dp)
-                    )
-                }
-                TaskListSection(
-                    items = grouped[it]!!,
-                    onTaskRemove = { task -> taskListViewModel.onEvent(ListEvent.TaskRemoved(task)) },
-                    toggleStatusFun = { task ->
-                        taskListViewModel.onEvent(
-                            ListEvent.TaskStatusChanged(
-                                task
-                            )
+        grouped.keys.sortedBy { if (it is ListType.CompletedThatDay) -2 else if (it is ListType.Calendar) -1 else 1 }
+            .forEach {
+                if (grouped[it] != null) {
+                    if (it == ListType.CompletedThatDay) {
+                        Text(
+                            stringResource(id = R.string.completed_that_day),
+                            style = MaterialTheme.typography.h2,
+                            modifier = Modifier
+                                .padding(horizontal = 15.dp)
+                                .padding(top = 15.dp)
                         )
-                    },
-                    onItemClick = { task ->
-                        startEditFormActivity(context, task)
-                    })
+                    } else if (it == ListType.Unscheduled) {
+                        Text(
+                            stringResource(id = R.string.unscheduled_tasks),
+                            style = MaterialTheme.typography.h2,
+                            modifier = Modifier
+                                .padding(horizontal = 15.dp)
+                                .padding(top = 15.dp)
+                        )
+                    }
+                    TaskListSection(
+                        items = grouped[it]!!,
+                        onTaskRemove = { task ->
+                            taskListViewModel.onEvent(
+                                ListEvent.TaskRemoved(
+                                    task
+                                )
+                            )
+                        },
+                        toggleStatusFun = { task ->
+                            taskListViewModel.onEvent(
+                                ListEvent.TaskStatusChanged(
+                                    task
+                                )
+                            )
+                        },
+                        showDates = false,
+                        onItemClick = { task ->
+                            startEditFormActivity(context, task)
+                        })
+                }
             }
-        }
     }
 }

@@ -38,7 +38,7 @@ interface TaskDao {
     fun getAll(startTime: Long, endTime: Long): Flow<List<TaskAndSubtasks>>
 
     @Transaction
-    @Query("SELECT * FROM Task WHERE endDate = :date OR (endDate is null AND status = 0)  ORDER BY startTime ASC")
+    @Query("SELECT * FROM Task WHERE (endDate = :date AND status = 0) OR (endDate is null AND status = 0) OR (completionTime >=:date AND status = 1)  ORDER BY startTime ASC")
     fun getByDateAndUnscheduled(date: Long): Flow<List<TaskAndSubtasks>>
 
     @Transaction
@@ -71,7 +71,6 @@ interface TaskDao {
 
     @Query("SELECT * FROM Task WHERE parentId=:parentId")
     fun getSubtasks(parentId: Long): List<Task>
-
 
 
 }

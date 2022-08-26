@@ -21,6 +21,7 @@ fun TaskGeneralInfo(
     onCheck: () -> Boolean,
     onClick: (() -> Unit)?,
     expandStatus: Boolean = false,
+    showDate: Boolean = false,
     expandFun: (() -> Unit)? = null
 ) {
     Column(
@@ -56,14 +57,14 @@ fun TaskGeneralInfo(
                 }
             }
         }
-        if (dueDay != null) {
+        if (dueDay != null && showDate) {
             DueDayLabel(
                 value = LocalDateTimeConverter.dateToString(
                     dueDay,
                     context = LocalContext.current
                 ),
                 color = if (dueDay.isBefore(
-                        LocalDate.now().plusDays(1).atStartOfDay().minusNanos(1)
+                        LocalDate.now().atStartOfDay()
                     )
                 ) MaterialTheme.colors.error else MaterialTheme.colors.onBackground
             )

@@ -5,7 +5,7 @@
     <string name="subtasks">Subtasks</string>
     <string name="no_tasks">No tasks!</string>
     <string name="click_to_add">Click \"+\" button to add a new one</string>
-    <string name="uncompleted_tasks">You have some uncompleted tasks</string>
+    <string name="uncompleted_tasks">Uncompleted tasks</string>
     <string name="task_removed">Task removed</string>
     <string name="undo">undo</string>
     <string name="new_subtask">New subtask</string>
@@ -41,7 +41,6 @@
     <string name="discard">Discard</string>
      <string name="connected_accounts">Connected accounts</string>
     <string name="add_new_account">Add new account</string>
-    <string name="google_client_secret" translatable="false">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</string>
     <string name="refresh">Refresh</string>
     <string name="tags">Tags</string>
     <string name="add_tag">Add tag</string>
@@ -62,6 +61,8 @@
     <string name="future">Future</string>
     <string name="tasks">Tasks</string>
     <string name="calendar">Calendar</string>
+    <string name="completed_that_day">Completed that day</string>
+    <string name="synchronize_with_google_tasks">Synchronization with Google Tasks API</string>
     <plurals name="uncompleted_tasks_with_count">
         <item quantity="one">You have still uncompleted %d task</item>
         <item quantity="other">You have still uncompleted %d tasks</item>

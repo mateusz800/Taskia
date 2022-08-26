@@ -43,8 +43,7 @@ fun TaskList(
     val grouped = tasks.value?.groupBy {
         if (it.first.status) {
             LocalDate.now().plusDays(1).atStartOfDay()
-        }
-        else if (it.first.endDate != null && it.first.endDate!!.isBefore(
+        } else if (it.first.endDate != null && it.first.endDate!!.isBefore(
                 LocalDate.now().atStartOfDay()
             )
         ) {
@@ -124,10 +123,12 @@ private fun TaskList(
                         ) {
                             stringResource(id = R.string.today)
 
-                        } else if(it != null && it.isBefore(LocalDate.now().plusDays(2).atStartOfDay())){
+                        } else if (it != null && it.isBefore(
+                                LocalDate.now().plusDays(2).atStartOfDay()
+                            )
+                        ) {
                             stringResource(id = R.string.completed)
-                        }
-                        else {
+                        } else {
                             stringResource(id = R.string.future)
                         },
                         style = MaterialTheme.typography.h2,
@@ -150,7 +151,8 @@ private fun TaskList(
                         onItemClick = { task ->
                             showTaskForm(task)
                             focusManager.clearFocus(force = true)
-                        }
+                        },
+                        showDates = it != LocalDate.now().atStartOfDay()
                     )
                 } else {
                     TaskListSection(
@@ -164,7 +166,8 @@ private fun TaskList(
                         onItemClick = { task ->
                             showTaskForm(task)
                             focusManager.clearFocus(force = true)
-                        }
+                        },
+                        showDates = it != LocalDate.now().atStartOfDay()
                     )
                 }
             }

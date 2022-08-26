@@ -21,7 +21,8 @@ fun TaskItem(
     subtasks: List<Task>?,
     removeItemFunc: (task: Task) -> Unit,
     toggleStatusFun: (task: Task) -> Boolean,
-    onClick: ((task: Task) -> Unit)?
+    showDate:Boolean = false,
+    onClick: ((task: Task) -> Unit)?,
 ) {
     val dismissState = rememberDismissState(confirmStateChange = {
         if (it == DismissValue.DismissedToEnd) {
@@ -55,6 +56,7 @@ fun TaskItem(
                 },
                 onClick = onClickFun,
                 expandStatus = isExpanded.value,
+                showDate = showDate,
                 expandFun = if (subtasks.isNullOrEmpty()) {
                     null
                 } else {
