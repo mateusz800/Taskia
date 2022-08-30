@@ -118,6 +118,7 @@ class MainViewModel @Inject constructor(
         } else {
             _keyboardDismiss.postValue(false)
         }
+        
         _keyboardHeight.postValue(height)
         _isLandscape.postValue(isLandscape)
 

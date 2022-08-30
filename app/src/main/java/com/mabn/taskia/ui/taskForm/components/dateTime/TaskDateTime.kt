@@ -22,7 +22,8 @@ fun TaskDateTime(
         )
         TaskTime(
             updateTime = { value -> onEvent(FormEvent.TaskTimeChanged(value)) },
-            timeLabel = timeLabel
+            timeLabel = timeLabel,
+            updateDialogStatus = {status -> onEvent(FormEvent.TimeDialogOpened(status))}
         )
     }
 }

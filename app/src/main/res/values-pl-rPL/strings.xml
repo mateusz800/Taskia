@@ -6,7 +6,7 @@
     <string name="subtasks">Podzadania</string>
     <string name="no_tasks">Brak zadań!</string>
     <string name="click_to_add">Naciśnij \"+\" żeby dodać nowe</string>
-    <string name="uncompleted_tasks">Nie masz ukończonych wszystkich podzadań</string>
+    <string name="uncompleted_tasks">Nie masz ukończonych wszystkich zadań</string>
     <string name="task_removed">Zadanie zostało usunięte</string>
     <string name="undo">Cofnij</string>
     <string name="new_subtask">Nowe podzadanie</string>

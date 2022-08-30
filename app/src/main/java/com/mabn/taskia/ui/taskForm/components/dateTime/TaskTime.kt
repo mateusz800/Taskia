@@ -1,6 +1,5 @@
 package com.mabn.taskia.ui.taskForm.components.dateTime
 
-import android.app.TimePickerDialog
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
@@ -21,19 +20,26 @@ import com.mabn.taskia.R
 import java.util.*
 
 @Composable
-fun TaskTime(updateTime: (String) -> Unit, timeLabel: String) {
+fun TaskTime(
+    updateTime: (String) -> Unit,
+    timeLabel: String,
+    updateDialogStatus: (Boolean) -> Unit
+) {
     val context = LocalContext.current
     val time = remember { mutableStateOf("") }
     val menuExpanded = remember { mutableStateOf(false) }
     val calendar = Calendar.getInstance()
     val hour = calendar[Calendar.HOUR_OF_DAY]
     val minute = calendar[Calendar.MINUTE]
-    val timePickerDialog = TimePickerDialog(
+    val timePickerDialog = CustomTimePicker(
         context, { _, mHour: Int, mMinute: Int ->
             time.value = "${"%02d".format(mHour)}:${"%02d".format(mMinute)}"
             updateTime(time.value)
+            updateDialogStatus(false)
         }, hour, minute, true
     )
+
+
     Picker(label = timeLabel,
         icon = {
             Icon(
@@ -45,6 +51,7 @@ fun TaskTime(updateTime: (String) -> Unit, timeLabel: String) {
             )
         }, menuItem = mapOf(Pair(stringResource(id = R.string.pick_time)) {
             timePickerDialog.show()
+            updateDialogStatus(true)
             menuExpanded.value = false
         }, Pair(stringResource(id = R.string.reset_time)) {
             time.value = context.getString(R.string.no_time)
@@ -59,7 +66,7 @@ fun TaskTime(updateTime: (String) -> Unit, timeLabel: String) {
 private fun TaskTime_Preview() {
     MaterialTheme {
         Surface {
-            TaskTime(updateTime = {}, timeLabel = "09:30")
+            TaskTime(updateTime = {}, timeLabel = "09:30", updateDialogStatus = {})
         }
     }
 }

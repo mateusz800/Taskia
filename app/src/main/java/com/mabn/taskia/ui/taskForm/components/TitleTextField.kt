@@ -13,6 +13,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -39,7 +40,6 @@ fun TitleTextField(
             delay(10)
             focusRequester.requestFocus()
         }
-
     }
     CustomTextField(
         value = value,
@@ -49,6 +49,9 @@ fun TitleTextField(
             .fillMaxWidth()
             .padding(end = 20.dp, start = 5.dp, top = 10.dp)
             .focusRequester(focusRequester)
+            .onFocusChanged { if(!it.isFocused) {
+                focusRequester.requestFocus()
+            } }
             .testTag("title_input"),
         /*
     .onKeyEvent {

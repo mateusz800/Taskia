@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.Timer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -21,6 +22,7 @@ import com.mabn.taskia.R
 import java.util.*
 
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun TaskDate(updateDate: (String) -> Unit, dayLabel: String) {
     val context = LocalContext.current
@@ -40,6 +42,7 @@ fun TaskDate(updateDate: (String) -> Unit, dayLabel: String) {
             updateDate(date.value)
         }, year, month, day
     )
+
     datePickerDialog.datePicker.minDate = System.currentTimeMillis()
 
     Picker(label = dayLabel.ifBlank { stringResource(id = R.string.no_deadline) },

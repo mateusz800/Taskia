@@ -51,6 +51,7 @@ class TaskFormViewModel @Inject constructor(
     private var _defaultDate: LocalDate? = null
 
     var showUnsavedChangesDialog = MutableLiveData(false)
+    var timeDialogOpened: Boolean = false
 
     init {
         clear()
@@ -69,6 +70,7 @@ class TaskFormViewModel @Inject constructor(
             is FormEvent.AddNewTag -> addNewTag(event.forceFocus)
             is FormEvent.TagValueChanged -> updateTagValue(event.tag, event.newValue)
             is FormEvent.Submit -> saveTask()
+            is FormEvent.TimeDialogOpened -> timeDialogOpened = event.status
         }
     }
 

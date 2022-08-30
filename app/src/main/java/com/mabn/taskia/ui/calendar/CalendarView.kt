@@ -48,7 +48,7 @@ fun CalendarView(
                 )
             )
         }, modifier = Modifier.padding(top = 20.dp))
-        grouped.keys.sortedBy { if (it is ListType.CompletedThatDay) -2 else if (it is ListType.Calendar) -1 else 1 }
+        grouped.keys.sortedBy { if (it is ListType.CompletedThatDay) -1 else if (it is ListType.Calendar) -2 else 1 }
             .forEach {
                 if (grouped[it] != null) {
                     if (it == ListType.CompletedThatDay) {

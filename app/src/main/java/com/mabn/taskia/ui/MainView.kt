@@ -3,6 +3,7 @@ package com.mabn.taskia.ui
 import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.TweenSpec
+import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -21,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mabn.taskia.domain.model.MessageType
+import com.mabn.taskia.domain.util.extension.toDp
 import com.mabn.taskia.ui.calendar.CalendarView
 import com.mabn.taskia.ui.common.startEditFormActivity
 import com.mabn.taskia.ui.taskForm.TaskFormViewModel
@@ -47,6 +49,7 @@ fun MainView(viewModel: MainViewModel) {
     val formState = taskFormViewModel.formState.observeAsState()
     val showTaskChangedDialog = remember { mutableStateOf(false) }
     val configuration = LocalConfiguration.current
+    val keyboardHeight = viewModel.keyboardHeight.observeAsState()
     val keyboardDismiss = viewModel.keyboardDismiss.observeAsState()
     val isLandscape = viewModel.isLandscape.observeAsState()
 
@@ -66,6 +69,19 @@ fun MainView(viewModel: MainViewModel) {
                 formState.value?.dataChanged != true
                         || it != ModalBottomSheetValue.Hidden
             }
+        )
+    val offsetState =
+        animateIntAsState(
+            targetValue = if (
+                modalBottomSheetState.progress.to == ModalBottomSheetValue.HalfExpanded &&
+                keyboardHeight.value != null &&
+                keyboardHeight.value != 0
+            ) {
+                val value =
+                    if (isLandscape.value != true)
+                        keyboardHeight.value!!.toDp + 350.toDp - configuration.screenHeightDp / 2 else 0
+                if (value > 0) value else 0
+            } else 0
         )
     // Handle displaying snackbar if any message
     val messageState = viewModel.message.observeAsState()
@@ -114,7 +130,7 @@ fun MainView(viewModel: MainViewModel) {
     }
 
     LaunchedEffect(keyboardDismiss.value, modalBottomSheetState.currentValue) {
-        if (modalBottomSheetState.currentValue == ModalBottomSheetValue.HalfExpanded && keyboardDismiss.value == true) {
+        if (modalBottomSheetState.currentValue == ModalBottomSheetValue.HalfExpanded && keyboardDismiss.value == true && !taskFormViewModel.timeDialogOpened) {
             hideBottomSheet()
         }
     }
@@ -142,7 +158,7 @@ fun MainView(viewModel: MainViewModel) {
             color = MaterialTheme.colors.background
         ) {
             ModalBottomSheetLayout(
-                modifier = Modifier,//.offset(y = (-offsetState.value).dp),
+                modifier = Modifier.offset(y = (-offsetState.value).dp),
                 sheetContent = {
                     Column(
                         modifier = Modifier
@@ -167,7 +183,7 @@ fun MainView(viewModel: MainViewModel) {
                     scaffoldState = scaffoldState,
                     topBar = {
                         Box(
-                            modifier = Modifier//.offset(y = offsetState.value.dp),
+                            modifier = Modifier.offset(y = offsetState.value.dp),
                         ) {
                             TopBar(
                                 viewModel = hiltViewModel(),
